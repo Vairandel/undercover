@@ -1,0 +1,183 @@
+{
+  "id": "fetes",
+  "label": "Fêtes & Traditions",
+  "emoji": "🎉",
+  "pairs": [
+    [
+      "Anniversaire",
+      "Fête"
+    ],
+    [
+      "Mariage",
+      "Fiançailles"
+    ],
+    [
+      "Baptême",
+      "Communion"
+    ],
+    [
+      "Noël",
+      "Nouvel An"
+    ],
+    [
+      "Réveillon",
+      "Soirée"
+    ],
+    [
+      "Sapin",
+      "Guirlande"
+    ],
+    [
+      "Cadeau",
+      "Surprise"
+    ],
+    [
+      "Père Noël",
+      "Saint Nicolas"
+    ],
+    [
+      "Pâques",
+      "Chasse aux œufs"
+    ],
+    [
+      "Halloween",
+      "Carnaval"
+    ],
+    [
+      "Déguisement",
+      "Masque"
+    ],
+    [
+      "Feu d'artifice",
+      "Pétard"
+    ],
+    [
+      "Bal",
+      "Discothèque"
+    ],
+    [
+      "Confettis",
+      "Serpentin",
+      null,
+      "Long ruban de papier enroulé, lancé lors des fêtes."
+    ],
+    [
+      "Ballon",
+      "Banderole"
+    ],
+    [
+      "Bougie",
+      "Gâteau d'anniversaire"
+    ],
+    [
+      "Toast",
+      "Discours"
+    ],
+    [
+      "Invitation",
+      "Faire-part",
+      null,
+      "Carte annonçant officiellement un mariage ou une naissance."
+    ],
+    [
+      "Témoin",
+      "Demoiselle d'honneur"
+    ],
+    [
+      "Alliance",
+      "Bouquet de la mariée"
+    ],
+    [
+      "Lune de miel",
+      "Voyage de noces"
+    ],
+    [
+      "Fête des mères",
+      "Fête des pères"
+    ],
+    [
+      "Saint-Valentin",
+      "Rendez-vous"
+    ],
+    [
+      "Ramadan",
+      "Aïd",
+      null,
+      "Grande fête religieuse musulmane."
+    ],
+    [
+      "Tabaski",
+      "Korité",
+      "Fête du sacrifice du mouton, en Afrique de l'Ouest.",
+      "Fête marquant la fin du jeûne du ramadan."
+    ],
+    [
+      "Diwali",
+      "Nouvel An chinois",
+      "Fête hindoue des lumières.",
+      null
+    ],
+    [
+      "Thanksgiving",
+      "Repas de famille"
+    ],
+    [
+      "Fête nationale",
+      "Défilé"
+    ],
+    [
+      "Fête de la musique",
+      "Concert de rue"
+    ],
+    [
+      "Kermesse",
+      "Foire",
+      "Fête de plein air avec stands et jeux.",
+      null
+    ],
+    [
+      "Baby shower",
+      "Enterrement de vie de garçon"
+    ],
+    [
+      "Pot de départ",
+      "Crémaillère",
+      null,
+      "Fête donnée pour un emménagement."
+    ],
+    [
+      "Remise de diplôme",
+      "Cérémonie"
+    ],
+    [
+      "Procession",
+      "Pèlerinage"
+    ],
+    [
+      "Veillée",
+      "Conte"
+    ],
+    [
+      "Tirage au sort",
+      "Tombola",
+      null,
+      "Loterie de fête où l'on gagne des lots."
+    ],
+    [
+      "Karaoké",
+      "Blind test"
+    ],
+    [
+      "Buffet",
+      "Traiteur"
+    ],
+    [
+      "Photobooth",
+      "Album photo"
+    ],
+    [
+      "Souvenir",
+      "Porte-bonheur"
+    ]
+  ]
+}

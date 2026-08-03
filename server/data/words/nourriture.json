@@ -1,0 +1,215 @@
+{
+  "id": "nourriture",
+  "label": "Nourriture & Boissons",
+  "emoji": "🍽️",
+  "pairs": [
+    [
+      "Pizza",
+      "Tarte"
+    ],
+    [
+      "Cappuccino",
+      "Latte"
+    ],
+    [
+      "Frites",
+      "Chips"
+    ],
+    [
+      "Baguette",
+      "Ciabatta",
+      null,
+      "Pain italien plat et allongé, à la mie très aérée."
+    ],
+    [
+      "Croissant",
+      "Pain au chocolat"
+    ],
+    [
+      "Sushi",
+      "Maki"
+    ],
+    [
+      "Burger",
+      "Sandwich"
+    ],
+    [
+      "Crêpe",
+      "Pancake"
+    ],
+    [
+      "Yaourt",
+      "Fromage blanc"
+    ],
+    [
+      "Confiture",
+      "Miel"
+    ],
+    [
+      "Beurre",
+      "Margarine"
+    ],
+    [
+      "Ketchup",
+      "Mayonnaise"
+    ],
+    [
+      "Soupe",
+      "Bouillon"
+    ],
+    [
+      "Pâtes",
+      "Nouilles"
+    ],
+    [
+      "Riz",
+      "Semoule",
+      null,
+      "Blé dur concassé en petits grains, base du couscous."
+    ],
+    [
+      "Steak",
+      "Escalope"
+    ],
+    [
+      "Saucisse",
+      "Merguez",
+      null,
+      "Saucisse rouge et épicée, à base de bœuf ou de mouton."
+    ],
+    [
+      "Jambon",
+      "Bacon"
+    ],
+    [
+      "Omelette",
+      "Quiche"
+    ],
+    [
+      "Glace",
+      "Sorbet",
+      null,
+      "Glace sans lait, à base d'eau et de fruit."
+    ],
+    [
+      "Chocolat",
+      "Caramel"
+    ],
+    [
+      "Gâteau",
+      "Muffin"
+    ],
+    [
+      "Biscuit",
+      "Cookie"
+    ],
+    [
+      "Bonbon",
+      "Chewing-gum"
+    ],
+    [
+      "Thé",
+      "Infusion"
+    ],
+    [
+      "Café",
+      "Chicorée",
+      null,
+      "Boisson chaude sans caféine, faite de racine torréfiée."
+    ],
+    [
+      "Jus d'orange",
+      "Limonade"
+    ],
+    [
+      "Bière",
+      "Cidre"
+    ],
+    [
+      "Vin rouge",
+      "Vin rosé"
+    ],
+    [
+      "Champagne",
+      "Mousseux"
+    ],
+    [
+      "Eau plate",
+      "Eau gazeuse"
+    ],
+    [
+      "Smoothie",
+      "Milkshake"
+    ],
+    [
+      "Salade",
+      "Crudités"
+    ],
+    [
+      "Tomate",
+      "Poivron"
+    ],
+    [
+      "Concombre",
+      "Courgette"
+    ],
+    [
+      "Pomme",
+      "Poire"
+    ],
+    [
+      "Citron",
+      "Pamplemousse"
+    ],
+    [
+      "Fraise",
+      "Framboise"
+    ],
+    [
+      "Banane",
+      "Plantain",
+      null,
+      "Grosse banane à cuire, non sucrée, consommée en légume."
+    ],
+    [
+      "Cacahuète",
+      "Noisette"
+    ],
+    [
+      "Olive",
+      "Câpre",
+      null,
+      "Petit bouton floral confit dans le vinaigre, très salé."
+    ],
+    [
+      "Sel",
+      "Poivre"
+    ],
+    [
+      "Vinaigre",
+      "Citron pressé"
+    ],
+    [
+      "Barbecue",
+      "Rôtisserie"
+    ],
+    [
+      "Apéritif",
+      "Digestif",
+      "Boisson servie avant le repas pour ouvrir l'appétit.",
+      "Alcool fort servi après le repas."
+    ],
+    [
+      "Petit-déjeuner",
+      "Brunch"
+    ],
+    [
+      "Pique-nique",
+      "Buffet"
+    ],
+    [
+      "Cantine",
+      "Self-service"
+    ]
+  ]
+}

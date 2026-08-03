@@ -1,0 +1,191 @@
+{
+  "id": "nature",
+  "label": "Nature & Météo",
+  "emoji": "🌿",
+  "pairs": [
+    [
+      "Pluie",
+      "Averse"
+    ],
+    [
+      "Neige",
+      "Grêle"
+    ],
+    [
+      "Orage",
+      "Tonnerre"
+    ],
+    [
+      "Éclair",
+      "Foudre"
+    ],
+    [
+      "Brouillard",
+      "Brume"
+    ],
+    [
+      "Vent",
+      "Brise"
+    ],
+    [
+      "Tempête",
+      "Ouragan",
+      null,
+      "Cyclone tropical très violent de l'Atlantique."
+    ],
+    [
+      "Tornade",
+      "Cyclone"
+    ],
+    [
+      "Soleil",
+      "Rayon"
+    ],
+    [
+      "Nuage",
+      "Ciel"
+    ],
+    [
+      "Arc-en-ciel",
+      "Mirage"
+    ],
+    [
+      "Lune",
+      "Étoile"
+    ],
+    [
+      "Planète",
+      "Comète"
+    ],
+    [
+      "Aurore boréale",
+      "Coucher de soleil"
+    ],
+    [
+      "Sécheresse",
+      "Canicule"
+    ],
+    [
+      "Inondation",
+      "Marée"
+    ],
+    [
+      "Tremblement de terre",
+      "Éruption"
+    ],
+    [
+      "Avalanche",
+      "Glissement de terrain"
+    ],
+    [
+      "Arbre",
+      "Arbuste"
+    ],
+    [
+      "Chêne",
+      "Hêtre",
+      null,
+      "Grand arbre à écorce lisse et grise, feuilles ovales."
+    ],
+    [
+      "Sapin",
+      "Pin"
+    ],
+    [
+      "Palmier",
+      "Baobab",
+      null,
+      "Arbre africain au tronc énorme et aux branches courtes."
+    ],
+    [
+      "Bambou",
+      "Roseau"
+    ],
+    [
+      "Fleur",
+      "Bouquet"
+    ],
+    [
+      "Rose",
+      "Pivoine",
+      null,
+      "Grosse fleur ronde et fournie, blanche ou rose."
+    ],
+    [
+      "Tournesol",
+      "Marguerite"
+    ],
+    [
+      "Tulipe",
+      "Jonquille",
+      null,
+      "Fleur jaune de printemps, à trompette centrale."
+    ],
+    [
+      "Cactus",
+      "Aloe vera"
+    ],
+    [
+      "Feuille",
+      "Pétale"
+    ],
+    [
+      "Racine",
+      "Tronc"
+    ],
+    [
+      "Herbe",
+      "Mousse"
+    ],
+    [
+      "Champignon",
+      "Truffe"
+    ],
+    [
+      "Sable",
+      "Gravier"
+    ],
+    [
+      "Rocher",
+      "Caillou"
+    ],
+    [
+      "Terre",
+      "Argile"
+    ],
+    [
+      "Boue",
+      "Vase"
+    ],
+    [
+      "Glace",
+      "Givre",
+      null,
+      "Fine couche de glace blanche déposée par l'humidité."
+    ],
+    [
+      "Océan",
+      "Mer"
+    ],
+    [
+      "Vague",
+      "Ressac",
+      null,
+      "Retour violent de la vague après avoir frappé la côte."
+    ],
+    [
+      "Récif",
+      "Atoll",
+      null,
+      "Île corallienne en anneau entourant un lagon."
+    ],
+    [
+      "Printemps",
+      "Été"
+    ],
+    [
+      "Automne",
+      "Hiver"
+    ]
+  ]
+}

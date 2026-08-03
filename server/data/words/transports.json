@@ -1,0 +1,191 @@
+{
+  "id": "transports",
+  "label": "Transports",
+  "emoji": "🚗",
+  "pairs": [
+    [
+      "Voiture",
+      "Camionnette"
+    ],
+    [
+      "Camion",
+      "Semi-remorque"
+    ],
+    [
+      "Bus",
+      "Car"
+    ],
+    [
+      "Tramway",
+      "Métro"
+    ],
+    [
+      "Train",
+      "TGV"
+    ],
+    [
+      "Avion",
+      "Hélicoptère"
+    ],
+    [
+      "Bateau",
+      "Ferry"
+    ],
+    [
+      "Voilier",
+      "Yacht"
+    ],
+    [
+      "Sous-marin",
+      "Bathyscaphe",
+      null,
+      "Engin d'exploration conçu pour descendre dans les très grandes profondeurs."
+    ],
+    [
+      "Fusée",
+      "Navette spatiale"
+    ],
+    [
+      "Moto",
+      "Scooter"
+    ],
+    [
+      "Vélo",
+      "Trottinette"
+    ],
+    [
+      "Skate",
+      "Rollers"
+    ],
+    [
+      "Taxi",
+      "VTC"
+    ],
+    [
+      "Ambulance",
+      "Camion de pompiers"
+    ],
+    [
+      "Tracteur",
+      "Moissonneuse",
+      null,
+      "Machine agricole qui coupe et bat les céréales."
+    ],
+    [
+      "Grue",
+      "Bulldozer",
+      null,
+      "Engin de chantier à lame frontale, qui pousse la terre."
+    ],
+    [
+      "Téléphérique",
+      "Télésiège",
+      "Cabine suspendue à un câble, franchissant un relief.",
+      "Remontée mécanique à sièges suspendus, en plein air."
+    ],
+    [
+      "Montgolfière",
+      "Parapente",
+      "Ballon gonflé à l'air chaud, avec une nacelle.",
+      "Voile souple avec laquelle on décolle à pied d'une pente."
+    ],
+    [
+      "Traîneau",
+      "Calèche",
+      null,
+      "Voiture légère tirée par des chevaux."
+    ],
+    [
+      "Volant",
+      "Guidon"
+    ],
+    [
+      "Frein",
+      "Accélérateur"
+    ],
+    [
+      "Pneu",
+      "Roue"
+    ],
+    [
+      "Moteur",
+      "Batterie"
+    ],
+    [
+      "Essence",
+      "Diesel"
+    ],
+    [
+      "Phare",
+      "Clignotant"
+    ],
+    [
+      "Klaxon",
+      "Sirène"
+    ],
+    [
+      "Ceinture de sécurité",
+      "Airbag"
+    ],
+    [
+      "Rétroviseur",
+      "Pare-brise"
+    ],
+    [
+      "Coffre",
+      "Galerie"
+    ],
+    [
+      "Permis",
+      "Carte grise"
+    ],
+    [
+      "Autoroute",
+      "Nationale"
+    ],
+    [
+      "Rond-point",
+      "Carrefour"
+    ],
+    [
+      "Feu rouge",
+      "Stop"
+    ],
+    [
+      "Embouteillage",
+      "Ralentissement"
+    ],
+    [
+      "Parking",
+      "Garage"
+    ],
+    [
+      "Péage",
+      "Amende"
+    ],
+    [
+      "Passage piéton",
+      "Trottoir"
+    ],
+    [
+      "Pont",
+      "Viaduc",
+      null,
+      "Long pont sur piliers qui franchit une vallée."
+    ],
+    [
+      "Quai",
+      "Embarcadère",
+      null,
+      "Appontement aménagé pour monter à bord d'un bateau."
+    ],
+    [
+      "Billet",
+      "Abonnement"
+    ],
+    [
+      "Bagage",
+      "Valise cabine"
+    ]
+  ]
+}

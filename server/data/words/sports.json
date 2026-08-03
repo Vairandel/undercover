@@ -1,0 +1,185 @@
+{
+  "id": "sports",
+  "label": "Sports & Jeux",
+  "emoji": "⚽",
+  "pairs": [
+    [
+      "Football",
+      "Rugby"
+    ],
+    [
+      "Basketball",
+      "Handball"
+    ],
+    [
+      "Tennis",
+      "Badminton"
+    ],
+    [
+      "Ping-pong",
+      "Squash",
+      null,
+      "Sport de raquette joué contre un mur, en salle fermée."
+    ],
+    [
+      "Volley-ball",
+      "Beach-volley"
+    ],
+    [
+      "Natation",
+      "Plongeon"
+    ],
+    [
+      "Surf",
+      "Planche à voile"
+    ],
+    [
+      "Ski",
+      "Snowboard"
+    ],
+    [
+      "Patinage",
+      "Hockey"
+    ],
+    [
+      "Boxe",
+      "Karaté"
+    ],
+    [
+      "Judo",
+      "Lutte"
+    ],
+    [
+      "Escrime",
+      "Tir à l'arc"
+    ],
+    [
+      "Marathon",
+      "Semi-marathon"
+    ],
+    [
+      "Sprint",
+      "Relais"
+    ],
+    [
+      "Saut en hauteur",
+      "Saut en longueur"
+    ],
+    [
+      "Gymnastique",
+      "Trampoline"
+    ],
+    [
+      "Yoga",
+      "Pilates"
+    ],
+    [
+      "Musculation",
+      "Crossfit"
+    ],
+    [
+      "Vélo",
+      "VTT"
+    ],
+    [
+      "Moto-cross",
+      "Rallye"
+    ],
+    [
+      "Formule 1",
+      "Karting"
+    ],
+    [
+      "Golf",
+      "Mini-golf"
+    ],
+    [
+      "Bowling",
+      "Pétanque",
+      null,
+      "Jeu de boules lancées vers un cochonnet, pieds joints."
+    ],
+    [
+      "Fléchettes",
+      "Billard"
+    ],
+    [
+      "Échecs",
+      "Dames"
+    ],
+    [
+      "Poker",
+      "Belote",
+      null,
+      "Jeu de cartes français à quatre joueurs."
+    ],
+    [
+      "Monopoly",
+      "Cluedo",
+      null,
+      "Jeu de plateau où l'on doit démasquer un meurtrier."
+    ],
+    [
+      "Scrabble",
+      "Mots croisés"
+    ],
+    [
+      "Sudoku",
+      "Puzzle"
+    ],
+    [
+      "Cache-cache",
+      "Chat perché"
+    ],
+    [
+      "Corde à sauter",
+      "Élastique"
+    ],
+    [
+      "Toboggan",
+      "Balançoire"
+    ],
+    [
+      "Jeu vidéo",
+      "Jeu de société"
+    ],
+    [
+      "Arbitre",
+      "Entraîneur"
+    ],
+    [
+      "Stade",
+      "Gymnase"
+    ],
+    [
+      "Médaille",
+      "Trophée"
+    ],
+    [
+      "Championnat",
+      "Tournoi"
+    ],
+    [
+      "Supporter",
+      "Spectateur"
+    ],
+    [
+      "Échauffement",
+      "Étirement"
+    ],
+    [
+      "Pénalty",
+      "Coup franc"
+    ],
+    [
+      "Escalade",
+      "Randonnée"
+    ],
+    [
+      "Kayak",
+      "Aviron",
+      null,
+      "Sport de rame en bateau, dos à la ligne d'arrivée."
+    ]
+  ]
+}

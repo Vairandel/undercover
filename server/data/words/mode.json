@@ -1,0 +1,193 @@
+{
+  "id": "mode",
+  "label": "Vêtements & Mode",
+  "emoji": "👗",
+  "pairs": [
+    [
+      "Pantalon",
+      "Jean"
+    ],
+    [
+      "Short",
+      "Bermuda"
+    ],
+    [
+      "Jupe",
+      "Robe"
+    ],
+    [
+      "Chemise",
+      "Chemisier"
+    ],
+    [
+      "T-shirt",
+      "Polo"
+    ],
+    [
+      "Pull",
+      "Gilet"
+    ],
+    [
+      "Veste",
+      "Blouson"
+    ],
+    [
+      "Manteau",
+      "Imperméable"
+    ],
+    [
+      "Costume",
+      "Smoking"
+    ],
+    [
+      "Survêtement",
+      "Pyjama"
+    ],
+    [
+      "Maillot de bain",
+      "Bikini"
+    ],
+    [
+      "Chaussettes",
+      "Collants"
+    ],
+    [
+      "Baskets",
+      "Tennis"
+    ],
+    [
+      "Bottes",
+      "Bottines",
+      null,
+      "Bottes courtes s'arrêtant à la cheville."
+    ],
+    [
+      "Sandales",
+      "Tongs"
+    ],
+    [
+      "Escarpins",
+      "Ballerines",
+      "Chaussures féminines fermées, à talon, sans lacet.",
+      null
+    ],
+    [
+      "Chapeau",
+      "Casquette"
+    ],
+    [
+      "Bonnet",
+      "Béret",
+      null,
+      "Coiffe ronde et plate, sans visière."
+    ],
+    [
+      "Écharpe",
+      "Foulard"
+    ],
+    [
+      "Gants",
+      "Moufles",
+      null,
+      "Gants sans doigts séparés, sauf le pouce."
+    ],
+    [
+      "Ceinture",
+      "Bretelles",
+      null,
+      "Bandes passées sur les épaules pour tenir un pantalon."
+    ],
+    [
+      "Cravate",
+      "Nœud papillon"
+    ],
+    [
+      "Sac à main",
+      "Pochette"
+    ],
+    [
+      "Bijou",
+      "Accessoire"
+    ],
+    [
+      "Collier",
+      "Pendentif"
+    ],
+    [
+      "Bracelet",
+      "Chaîne"
+    ],
+    [
+      "Bague",
+      "Alliance"
+    ],
+    [
+      "Boucles d'oreilles",
+      "Piercing"
+    ],
+    [
+      "Lunettes de soleil",
+      "Lunettes de vue"
+    ],
+    [
+      "Parfum",
+      "Eau de toilette"
+    ],
+    [
+      "Maquillage",
+      "Fond de teint"
+    ],
+    [
+      "Rouge à lèvres",
+      "Gloss",
+      null,
+      "Brillant à lèvres transparent ou légèrement teinté."
+    ],
+    [
+      "Vernis",
+      "Manucure"
+    ],
+    [
+      "Tatouage",
+      "Henné"
+    ],
+    [
+      "Défilé",
+      "Podium"
+    ],
+    [
+      "Mannequin",
+      "Styliste"
+    ],
+    [
+      "Coton",
+      "Lin"
+    ],
+    [
+      "Cuir",
+      "Daim",
+      null,
+      "Cuir au toucher velouté, mat et non lustré."
+    ],
+    [
+      "Soie",
+      "Satin",
+      null,
+      "Tissu lisse et luisant sur une face."
+    ],
+    [
+      "Laine",
+      "Cachemire",
+      null,
+      "Laine très fine et douce, issue d'une chèvre."
+    ],
+    [
+      "Boutique",
+      "Friperie"
+    ],
+    [
+      "Soldes",
+      "Promotion"
+    ]
+  ]
+}
