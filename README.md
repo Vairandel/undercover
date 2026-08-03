@@ -309,7 +309,13 @@ paires fournies ne sont pas supprimables depuis l'éditeur — seulement les
 tiennes.
 
 Une fois le jeu exposé sur internet, écrire dans la banque demande le
-`ADMIN_TOKEN` ; la lecture, non.
+`ADMIN_TOKEN` ; la lecture, non. Le serveur affiche le jeton à son démarrage,
+juste sous les adresses — `npm run tunnel` en génère un au hasard si tu n'en
+imposes pas un toi-même :
+
+```bash
+ADMIN_TOKEN=monsecret npm run tunnel
+```
 
 L'ancienne méthode marche toujours — un fichier dans `server/data/words/` :
 

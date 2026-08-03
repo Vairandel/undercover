@@ -225,14 +225,22 @@ const others = getLanCandidates().slice(1)
 const warnings = []
 if (!hasBuild) warnings.push('⚠️  Client non compilé — lance `npm run build`.')
 if (isExposed && !ADMIN_TOKEN) {
-  warnings.push('⚠️  PUBLIC_URL est défini sans ADMIN_TOKEN : /api/bank/reset est bloqué pour tout le monde.')
+  warnings.push('⚠️  PUBLIC_URL est défini sans ADMIN_TOKEN : /words et /api/bank/reset sont bloqués pour tout le monde.')
 }
+
+// Printed only when the app is exposed, because that is the only case where the
+// token is required — and where a generated one would otherwise be unknowable.
+// It goes to the host's own terminal, which is exactly who needs it.
+const adminLine =
+  isExposed && ADMIN_TOKEN
+    ? `\n  Éditer les mots       ${publicUrl}/words\n  Jeton administrateur  ${ADMIN_TOKEN}`
+    : ''
 
 console.log(`
   🕵️  UNDERCOVER — serveur prêt
 
   Écran hôte            ${publicUrl}/host
-  Joueurs               ${publicUrl}
+  Joueurs               ${publicUrl}${adminLine}
 ${isExposed ? `  (exposé publiquement · réseau local : ${lanUrl})` : ''}
 ${!isExposed && others.length ? `  Autres adresses possibles : ${others.map((i) => `${i.address} (${i.name})`).join(', ')}` : ''}
   Banque : ${totalPairs()} paires · ${listThemes().length} thèmes · ${store.state.gamesPlayed} manches jouées
