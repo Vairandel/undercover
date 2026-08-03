@@ -193,6 +193,23 @@ export default function HostApp() {
         </motion.div>
       </AnimatePresence>
 
+      {/* Latecomers waiting out the round. Worth showing on the big screen: the
+          table can see the game is about to grow, and whoever just scanned the
+          QR code gets visible confirmation they are in. */}
+      {state.spectators?.length > 0 && (
+        <div className="waitingroom">
+          <span className="eyebrow">👁 En attente</span>
+          {state.spectators.map((s) => (
+            <span key={s.id} className="waitingroom__chip" style={{ borderColor: s.color }}>
+              <span>{s.avatar}</span> {s.name}
+            </span>
+          ))}
+          <span className="faint" style={{ fontSize: '0.72rem' }}>
+            {state.phase === 'lobby' ? 'peuvent prendre place' : 'joueront à la prochaine manche'}
+          </span>
+        </div>
+      )}
+
       <RulesSheet
         info={info}
         open={rulesOpen}

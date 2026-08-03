@@ -39,11 +39,20 @@ export default function PlayerApp() {
     rejoining.current = true
     try {
       // A watcher has no seat to reclaim: the old spectator entry died with the
-      // socket, so coming back simply means asking to watch again.
+      // socket, so coming back simply means asking to watch again — under the
+      // same pseudo and the same look, because that is the identity they will
+      // be seated with when this game ends.
       if (s.spectatorId) {
-        const res = await send('spectate:join', { code: s.code, name: 'Spectateur' })
-        saveSession({ code: res.code, spectatorId: res.spectatorId })
-        setSession({ code: res.code, spectatorId: res.spectatorId })
+        const res = await send('spectate:join', {
+          code: s.code,
+          name: s.name,
+          avatar: s.look?.avatar,
+          color: s.look?.color,
+          was: s.spectatorId,
+        })
+        const next = { ...s, spectatorId: res.spectatorId }
+        saveSession(next)
+        setSession(next)
         setState(res.state)
         return
       }
@@ -86,12 +95,29 @@ export default function PlayerApp() {
       setError("L'hôte t'a retiré de la partie.")
     }
 
+    /**
+     * The game we were watching ended and the server gave us a seat.
+     *
+     * We only learn our player id here, so the session has to be rewritten
+     * before rejoining — `rejoin` is what actually rebinds this socket from a
+     * spectator to a player, which nothing on the server could do for us.
+     */
+    const onSeated = ({ code, playerId }) => {
+      const prev = loadSession() ?? {}
+      const next = { code, playerId, name: prev.name, look: prev.look }
+      saveSession(next)
+      setSession(next)
+      play('join')
+      rejoin(next)
+    }
+
     socket.on('connect', onConnect)
     socket.on('disconnect', onDisconnect)
     socket.on('state', setState)
     socket.on('you', setYou)
     socket.on('event', playForEvent)
     socket.on('kicked', onKicked)
+    socket.on('seated', onSeated)
 
     if (socket.connected) onConnect()
 
@@ -102,6 +128,7 @@ export default function PlayerApp() {
       socket.off('you', setYou)
       socket.off('event', playForEvent)
       socket.off('kicked', onKicked)
+      socket.off('seated', onSeated)
     }
   }, [rejoin])
 
@@ -139,28 +166,59 @@ export default function PlayerApp() {
     }
   }, [rejoin])
 
-  /** Watch without a seat — works at any point, including mid-game. */
-  const spectate = async (code, name) => {
-    const res = await send('spectate:join', { code: code.toUpperCase(), name })
-    const s = { code: res.code, spectatorId: res.spectatorId }
+  /**
+   * Watch without a seat — works at any point, including mid-game.
+   *
+   * The pseudo and look are kept in the session because a spectator is a
+   * player-in-waiting: the server seats them automatically when this game ends,
+   * and they should sit down as themselves.
+   */
+  const spectate = async (code, name, look = {}) => {
+    const res = await send('spectate:join', {
+      code: code.toUpperCase(),
+      name,
+      avatar: look.avatar,
+      color: look.color,
+    })
+    const s = {
+      code: res.code,
+      spectatorId: res.spectatorId,
+      name: res.spectator?.name ?? name,
+      look: { avatar: res.spectator?.avatar, color: res.spectator?.color },
+    }
     saveSession(s)
     setSession(s)
     setState(res.state)
     setYou(null)
   }
 
+  /**
+   * Sit down, or start watching if the game is already running.
+   *
+   * Turning "la partie a déjà commencé" into a dead end made the latecomer fill
+   * the form twice — once to be refused, once to watch. They have already
+   * chosen everything they need; the only thing left to decide is whether they
+   * wait for the next round, and they always do.
+   */
   const join = async (code, name, look = {}) => {
-    const res = await send('player:join', {
-      code: code.toUpperCase(),
-      name,
-      avatar: look.avatar,
-      color: look.color,
-    })
-    const s = { code: res.code, playerId: res.playerId }
-    saveSession(s)
-    setSession(s)
-    setState(res.state)
-    setYou(res.you)
+    try {
+      const res = await send('player:join', {
+        code: code.toUpperCase(),
+        name,
+        avatar: look.avatar,
+        color: look.color,
+      })
+      const s = { code: res.code, playerId: res.playerId, name, look }
+      saveSession(s)
+      setSession(s)
+      setState(res.state)
+      setYou(res.you)
+      return { seated: true }
+    } catch (err) {
+      if (err.reason !== 'started') throw err
+      await spectate(code, name, look)
+      return { seated: false }
+    }
   }
 
   const act = useCallback(
@@ -189,6 +247,24 @@ export default function PlayerApp() {
     setYou(null)
   }
 
+  /**
+   * Sit down right now, without waiting for the round to end.
+   *
+   * Only reachable from the lobby — where there is no round to wait for, so the
+   * automatic seating at the end of a game would never fire. The spectator
+   * entry has to go first: it is holding this very pseudo and avatar.
+   */
+  const takeSeat = async () => {
+    if (!session) return
+    try {
+      await send('spectate:leave', { code: session.code, spectatorId: session.spectatorId })
+      await join(session.code, session.name, session.look ?? {})
+    } catch (e) {
+      play('error')
+      setError(e.message)
+    }
+  }
+
   // Watching: no seat, no private payload, no actions.
   if (session?.spectatorId && state) {
     return (
@@ -197,8 +273,9 @@ export default function PlayerApp() {
           state={state}
           leave={leave}
           connected={connected}
+          me={{ name: session.name, ...(session.look ?? {}) }}
           canJoin={state.phase === 'lobby'}
-          onJoin={() => { clearSession(); setSession(null); setState(null) }}
+          onJoin={takeSeat}
         />
         <Toast message={error} onDone={() => setError(null)} />
       </>

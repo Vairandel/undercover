@@ -32,7 +32,7 @@ const HEADLINE = {
  * not already know, which is what makes it safe to hand the link to anyone,
  * including a player who was eliminated or arrived late.
  */
-export default function SpectatorView({ state, leave, connected, canJoin, onJoin }) {
+export default function SpectatorView({ state, leave, connected, canJoin, onJoin, me }) {
   const { phase, players, settings } = state
   const speaker = players.find((p) => p.id === state.currentSpeakerId)
   const [eyebrow, title] = HEADLINE[phase] ?? ['', null]
@@ -41,9 +41,9 @@ export default function SpectatorView({ state, leave, connected, canJoin, onJoin
     <div className="screen">
       <header className="spread">
         <div className="row" style={{ gap: 8 }}>
-          <span style={{ fontSize: '1.4rem' }}>👁</span>
+          <span style={{ fontSize: '1.4rem', color: me?.color }}>{me?.avatar ?? '👁'}</span>
           <div>
-            <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>Spectateur</div>
+            <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{me?.name ?? 'Spectateur'}</div>
             <div className="faint" style={{ fontSize: '0.72rem' }}>
               {state.code} · {state.round > 0 ? `manche ${state.round}` : 'salon'}
             </div>
@@ -58,14 +58,20 @@ export default function SpectatorView({ state, leave, connected, canJoin, onJoin
         </div>
       </header>
 
-      {/* The one thing a spectator can do: take a seat once a game ends. */}
-      {canJoin && (
+      {/* In the lobby there is no round to wait out, so sitting down is manual.
+          During a game it happens by itself the moment the game ends — saying so
+          is what stops a latecomer from wondering whether they were forgotten. */}
+      {canJoin ? (
         <button
           className="btn btn--primary btn--block"
           onClick={() => { play('tap'); onJoin() }}
         >
-          ✋  Rejoindre la prochaine partie
+          ✋  Prendre ma place maintenant
         </button>
+      ) : (
+        <p className="setting__hint center">
+          Tu joues à la prochaine manche — ta place est déjà réservée.
+        </p>
       )}
 
       <AnimatePresence mode="wait">

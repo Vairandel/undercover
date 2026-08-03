@@ -45,7 +45,13 @@ export default function JoinScreen({ onJoin, onSpectate, connected, error, setEr
     setBusy(true)
     try {
       play('tap')
-      await onJoin(code, name, look)
+      const res = await onJoin(code, name, look)
+      // A game already under way puts us in the stands instead of turning us
+      // away. Say so, otherwise landing on a board you cannot touch reads as a
+      // bug rather than as "you're in, next round".
+      if (res?.seated === false) {
+        setError('Partie en cours — tu regardes, et tu joues à la prochaine manche.')
+      }
     } catch (err) {
       play('error')
       setError(err.message)
@@ -114,17 +120,18 @@ export default function JoinScreen({ onJoin, onSpectate, connected, error, setEr
           {!connected ? 'Connexion…' : busy ? 'On y va…' : 'Rejoindre'}
         </button>
 
-        {/* A game already under way refuses new players — watching is the way in
-            for a latecomer, and they take a seat at the next one. */}
+        {/* For someone who wants the stands even when a seat is free — during a
+            game, the button above already lands them here on its own. Either
+            way they are seated automatically at the next round. */}
         <button
           type="button"
           className="btn btn--ghost btn--block btn--sm"
-          disabled={code.length !== 4 || busy || !connected}
+          disabled={!ready || busy || !connected}
           onClick={async () => {
             setBusy(true)
             try {
               play('tap')
-              await onSpectate(code, name)
+              await onSpectate(code, name, look)
             } catch (err) {
               play('error')
               setError(err.message)
@@ -133,7 +140,7 @@ export default function JoinScreen({ onJoin, onSpectate, connected, error, setEr
             }
           }}
         >
-          👁  Regarder sans jouer
+          👁  Regarder cette manche
         </button>
 
         {!connected && (

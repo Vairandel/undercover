@@ -148,15 +148,14 @@ export class Game {
   addPlayer(name, { avatar = null, color = null } = {}) {
     const clean = String(name ?? '').trim().slice(0, 16)
     if (!clean) throw new GameError('Choisis un pseudo.')
-    if (this.phase !== PHASES.LOBBY) throw new GameError('La partie a déjà commencé.')
+    // The client turns this into "watch now, play next round" rather than a
+    // dead end, so the tag has to survive rewording of the sentence.
+    if (this.phase !== PHASES.LOBBY) throw new GameError('La partie a déjà commencé.', 'started')
     if (this.players.size >= MAX_PLAYERS) throw new GameError(`Table pleine (${MAX_PLAYERS} joueurs).`)
 
-    const taken = [...this.players.values()].some(
-      (p) => p.name.toLowerCase() === clean.toLowerCase(),
-    )
-    if (taken) throw new GameError('Ce pseudo est déjà pris.')
+    if (this.nameTaken(clean)) throw new GameError('Ce pseudo est déjà pris.')
 
-    const usedAvatars = new Set([...this.players.values()].map((p) => p.avatar))
+    const usedAvatars = this.usedAvatars()
     const player = {
       id: randomUUID(),
       name: clean,
@@ -186,19 +185,52 @@ export class Game {
   }
 
   /**
+   * Names and avatars are unique across seated players *and* spectators alike.
+   *
+   * A spectator is a player-in-waiting: whatever look they pick now is the one
+   * they will sit down with next round, so it has to be held for them from the
+   * moment they pick it.
+   */
+  everyone() {
+    return [...this.players.values(), ...this.spectators.values()]
+  }
+
+  nameTaken(name, exceptId = null) {
+    const wanted = name.toLowerCase()
+    return this.everyone().some((p) => p.id !== exceptId && p.name.toLowerCase() === wanted)
+  }
+
+  usedAvatars(exceptId = null) {
+    return new Set(this.everyone().filter((p) => p.id !== exceptId).map((p) => p.avatar))
+  }
+
+  /**
    * Someone watching without a seat.
    *
    * A latecomer, a friend passing by, a player who had to drop. They receive
    * exactly the public state — the same view as the shared screen — so there is
    * nothing to leak: no word, no role, no private payload. They cannot vote,
    * write, or act in any way.
+   *
+   * They do pick a pseudo and a look on the way in, because the next round
+   * seats them automatically: waiting out a game should not mean filling in the
+   * same form again the moment it ends.
    */
-  addSpectator(name) {
+  addSpectator(name, { avatar = null, color = null } = {}) {
     const clean = String(name ?? '').trim().slice(0, 16) || 'Spectateur'
     if (this.spectators.size >= MAX_SPECTATORS) {
       throw new GameError('Trop de spectateurs.')
     }
-    const spectator = { id: randomUUID(), name: clean, socketId: null, connected: true }
+    if (this.nameTaken(clean)) throw new GameError('Ce pseudo est déjà pris.')
+
+    const spectator = {
+      id: randomUUID(),
+      name: clean,
+      avatar: freeAvatar(this.usedAvatars(), avatar),
+      color: isValidColor(color) ? color : randomColor(),
+      socketId: null,
+      connected: true,
+    }
     this.spectators.set(spectator.id, spectator)
     this.touch()
     return spectator
@@ -208,6 +240,29 @@ export class Game {
     if (this.spectators.delete(id)) this.touch()
   }
 
+  /**
+   * Turns everyone who watched this game into a player for the next one.
+   *
+   * Called from `restart`, so a latecomer's whole experience is: pick a look,
+   * watch a round, and find themselves already seated when the table plays
+   * again — no second form, no scramble to rejoin before the host hits start.
+   * They come in on zero points, having sat the last one out.
+   */
+  seatSpectators() {
+    const seated = []
+    for (const s of [...this.spectators.values()]) {
+      if (this.players.size >= MAX_PLAYERS) break
+      this.spectators.delete(s.id)
+      const player = this.addPlayer(s.name, { avatar: s.avatar, color: s.color })
+      // Their socket is still connected and still in the room. Keeping it lets
+      // the caller tell that phone to switch from the spectator view to its own
+      // seat, instead of leaving them staring at a lobby they are already in.
+      player.socketId = s.socketId
+      seated.push(player)
+    }
+    return seated
+  }
+
   setAppearance(playerId, { avatar, color }) {
     if (this.phase !== PHASES.LOBBY) throw new GameError('Impossible en cours de partie.')
     const player = this.players.get(playerId)
@@ -215,7 +270,8 @@ export class Game {
 
     if (avatar !== undefined && avatar !== player.avatar) {
       if (!isValidAvatar(avatar)) throw new GameError('Avatar invalide.')
-      const owner = [...this.players.values()].find((p) => p.avatar === avatar && p.id !== playerId)
+      // Spectators count too — theirs is reserved for the seat they take next.
+      const owner = this.everyone().find((p) => p.avatar === avatar && p.id !== playerId)
       if (owner) throw new GameError(`${owner.name} a déjà cet avatar.`)
       player.avatar = avatar
     }
@@ -792,8 +848,41 @@ export class Game {
 
     this.usedClues.push({ text: clue, by: player.name, round: this.round })
     this.clues.set(playerId, { text: clue, timedOut: false })
+
+    // Mister White naming the majority word out loud wins on the spot.
+    //
+    // He has no word of his own, so he is bluffing from whatever the table has
+    // already said; landing on it exactly is the whole trick, and making him
+    // wait to be voted out first would rob it of its moment. A wrong attempt
+    // costs him nothing and reveals nothing — it goes through as an ordinary
+    // clue, which is precisely why he can afford to try.
+    if (this.whiteNailedIt(player, clue)) return
+
     this.onEvent({ type: 'clueGiven', playerId })
     this.advanceTurn()
+  }
+
+  /**
+   * Ends the game if this clue was Mister White naming the civilians' word.
+   *
+   * Deliberately `sameWord` and not `tooClose`: the fuzzy match is right for
+   * *forbidding* a clue, where a false positive costs one retry, but an instant
+   * victory has to be earned by actually saying the word.
+   */
+  whiteNailedIt(player, clue) {
+    if (player.roleId !== 'mrwhite') return false
+    if (!sameWord(clue, this.words?.civilianWord)) return false
+
+    this.lastResult = this.blankResult()
+    this.lastResult.guess = { text: clue, correct: true, by: player.id, fromClue: true }
+    this.lastResult.notes.push(`${player.name} a lâché le mot en pleine description.`)
+
+    this.onEvent({ type: 'whiteGuessRight' })
+    this.finish({
+      team: 'mrwhite',
+      reason: `Mister White a nommé « ${this.words.civilianWord} » dans sa description.`,
+    })
+    return true
   }
 
   advanceTurn() {
@@ -1215,7 +1304,7 @@ export class Game {
     const guess = String(text ?? '').trim()
     const correct = sameWord(guess, this.words.civilianWord)
 
-    this.lastResult.guess = { text: guess, correct }
+    this.lastResult.guess = { text: guess, correct, by: playerId }
     this.pendingGuesser = null
 
     if (correct) {
@@ -1360,11 +1449,22 @@ export class Game {
       p.data = {}
       p.roundPoints = 0
     }
+
+    // Anyone who watched this game sits down for the next one. Done after the
+    // clean-up loop so the seats freed by players who left are available to
+    // them, and before the crown check so a table of nothing but spectators
+    // still ends up with a host.
+    const seated = this.seatSpectators()
+    if (seated.length) {
+      this.onEvent({ type: 'spectatorsSeated', names: seated.map((p) => p.name) })
+    }
+
     if (![...this.players.values()].some((p) => p.isHost)) {
       const next = this.players.values().next().value
       if (next) next.isHost = true
     }
     this.touch()
+    return seated
   }
 
   /** Wipe the standings without touching who is in the room. */
@@ -1561,7 +1661,14 @@ export class Game {
       settings: this.settings,
       theme: this.theme,
       composition: this.players.size ? this.compositionReport() : null,
-      spectators: [...this.spectators.values()].map((s) => ({ id: s.id, name: s.name })),
+      // Their look travels with them so the host screen can show who is waiting
+      // to sit down, exactly as they will appear once seated.
+      spectators: [...this.spectators.values()].map((s) => ({
+        id: s.id,
+        name: s.name,
+        avatar: s.avatar,
+        color: s.color,
+      })),
       liveTeams: this.liveTeams(),
       currentSpeakerId: this.currentSpeakerId,
       turnDeadline: this.turnDeadline,
@@ -1746,7 +1853,19 @@ function publicModifiers(p, { includeSecret = false } = {}) {
     .map((m) => ({ id: m.id, label: m.label, emoji: m.emoji, color: m.color, secret: Boolean(m.secret) }))
 }
 
-export class GameError extends Error {}
+/**
+ * A refusal the player is meant to read.
+ *
+ * `reason` is an optional machine-readable tag for the handful of cases the
+ * client has to *act* on rather than merely display — matching on the French
+ * sentence would break the moment someone reworded it.
+ */
+export class GameError extends Error {
+  constructor(message, reason = null) {
+    super(message)
+    this.reason = reason
+  }
+}
 
 function shuffle(arr) {
   const a = [...arr]

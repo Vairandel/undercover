@@ -578,6 +578,7 @@ const WIN_SOUND = {
 export function playForEvent(event) {
   switch (event?.type) {
     case 'playerJoined': return play('join')
+    case 'spectatorsSeated': return play('join')
     case 'playerLeft': return play('leave')
     case 'gameStarted': return play('start')
     case 'roundStarted': return play('turn')

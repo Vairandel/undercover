@@ -37,7 +37,7 @@ export const POINT_FIELDS = [
   { key: 'lovers', group: 'teams', emoji: '💘', label: 'Victoire des Amoureux', min: 0, max: 15, role: 'amoureux' },
 
   { key: 'survivor', group: 'bonus', emoji: '❤️', label: 'Survivant', hint: 'Encore en vie à la fin de la partie', min: 0, max: 10 },
-  { key: 'whiteGuess', group: 'bonus', emoji: '🎯', label: 'Mot deviné', hint: 'Mister White nomme le mot des civils après avoir été démasqué', min: 0, max: 10, role: 'mrwhite' },
+  { key: 'whiteGuess', group: 'bonus', emoji: '🎯', label: 'Mot deviné', hint: 'Mister White nomme le mot des civils, en pleine description ou après avoir été démasqué', min: 0, max: 10, role: 'mrwhite' },
   { key: 'bouffon', group: 'bonus', emoji: '🤡', label: 'Bouffon lynché', hint: 'Éliminé par le vote dès la première manche', min: 0, max: 10, role: 'bouffon' },
   { key: 'duelliste', group: 'bonus', emoji: '⚔️', label: 'Duel remporté', hint: 'Le duelliste qui survit le plus longtemps', min: 0, max: 10, role: 'duelliste' },
   { key: 'mercenaire', group: 'bonus', emoji: '💰', label: 'Contrat rempli', hint: 'La cible du mercenaire tombe dès la première manche', min: 0, max: 10, role: 'mercenaire' },
@@ -102,9 +102,11 @@ export function scoreGame({ players, outcome, teamOf, lastResult, awards = [], p
       breakdown.push({ key: 'survivor', label: 'Survivant', points: points.survivor })
     }
 
+    // Keyed on who guessed, not on who was eliminated: Mister White can now
+    // land the word mid-description, without ever being voted out.
     if (
       lastResult?.guess?.correct &&
-      lastResult.eliminated?.id === player.id &&
+      (lastResult.guess.by ?? lastResult.eliminated?.id) === player.id &&
       player.roleId === 'mrwhite' &&
       points.whiteGuess > 0
     ) {

@@ -22,8 +22,10 @@ connexion internet nécessaire.
   d'en face.
 - **Banque de mots éditable** depuis `/words` : nouveaux thèmes, nouvelles
   paires, sans toucher aux fichiers.
-- **Mode spectateur** : arriver en cours de partie, regarder, prendre une place à
-  la manche suivante.
+- **Mode spectateur** : arriver en cours de partie, choisir son avatar, regarder
+  la manche en cours, et se retrouver assis automatiquement à la suivante.
+- **Mister White peut gagner d'un mot** : s'il lâche le mot des civils dans sa
+  description, il emporte la partie sur-le-champ.
 - **Variantes** : les infiltrés savent (ou non) qu'ils le sont, indices écrits,
   chrono par tour, nombre d'infiltrés, thème imposé.
 - **Avatars personnalisables** : 48 emoji × 10 couleurs, unicité garantie dans le salon.
@@ -132,6 +134,22 @@ npm start                                        # terminal 2
 Rien de tout ça ne s'active sur ton wifi : sans `PUBLIC_URL`, le comportement
 reste exactement celui d'avant.
 
+## Arriver en retard
+
+Rien à faire de particulier : on entre le code et son pseudo comme tout le
+monde. Si une partie tourne déjà, le bouton **Rejoindre** installe le retardataire
+dans les gradins au lieu de le renvoyer — son pseudo, son avatar et sa couleur
+sont retenus et réservés dès cet instant, personne d'autre ne peut les prendre.
+
+Il voit la manche se dérouler exactement comme le grand écran : aucun mot,
+aucun rôle, aucune charge privée ne descend par ce canal, et rien ne remonte —
+il ne peut ni voter, ni écrire, ni agir. Quand la partie se termine et que
+l'hôte relance, **il est assis automatiquement**, avec son avatar, à zéro point.
+Son téléphone bascule tout seul sur sa carte de rôle.
+
+Depuis le salon, où il n'y a pas de manche à attendre, un bouton lui permet de
+prendre sa place tout de suite.
+
 ## Qui pilote la partie
 
 Deux télécommandes en parallèle, pour ne pas dépendre de qui est assis devant
@@ -183,8 +201,11 @@ manquer quand même de siège — le lobby le signale.
   ce que son rôle de base dit qu'il est.
 - Les **infiltrés** gagnent à la parité, **ou dès qu'il ne reste qu'un seul civil** —
   un civil isolé ne peut plus construire de majorité, la partie est jouée.
-- **Mister White** gagne s'il devine le mot des civils après avoir été démasqué,
-  ou s'il atteint le duel final.
+- **Mister White** gagne s'il nomme le mot des civils — soit **en pleine
+  description**, ce qui met fin à la partie sur-le-champ, soit après avoir été
+  démasqué — ou s'il atteint le duel final. Il empoche alors sa victoire *et* la
+  prime « Mot deviné ». Une tentative ratée passe comme un indice ordinaire : le
+  jeu ne lui dit jamais qu'il a chauffé, sinon il saurait sans rien risquer.
 - **Mister White et les infiltrés se partagent la victoire** quand il ne reste
   qu'un civil et que les deux camps sont encore debout.
 - Les **Amoureux** gagnent ensemble s'ils sont les deux derniers survivants,

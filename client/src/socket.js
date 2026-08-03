@@ -34,7 +34,13 @@ export function send(event, payload = {}) {
         e.transient = true
         return reject(e)
       }
-      if (!res?.ok) return reject(new Error(res?.error ?? 'Erreur inconnue.'))
+      if (!res?.ok) {
+        const e = new Error(res?.error ?? 'Erreur inconnue.')
+        // A machine-readable tag for the few refusals a screen has to react to
+        // rather than merely show. Matching on the message would be brittle.
+        e.reason = res?.reason ?? null
+        return reject(e)
+      }
       resolve(res)
     })
   })

@@ -183,14 +183,17 @@ export function createRoomManager(io) {
     let roomsCreated = 0
 
     const ok = (cb, payload = {}) => typeof cb === 'function' && cb({ ok: true, ...payload })
-    const fail = (cb, message) => typeof cb === 'function' && cb({ ok: false, error: message })
+    const fail = (cb, message, extra = {}) =>
+      typeof cb === 'function' && cb({ ok: false, error: message, ...extra })
 
     /** Wraps a handler so GameError becomes a clean message instead of a crash. */
     const guard = (fn) => (payload, cb) => {
       try {
         fn(payload ?? {}, cb)
       } catch (err) {
-        if (err instanceof GameError) return fail(cb, err.message)
+        if (err instanceof GameError) {
+          return fail(cb, err.message, err.reason ? { reason: err.reason } : {})
+        }
         console.error('[socket]', err)
         fail(cb, 'Erreur serveur.')
       }
@@ -258,7 +261,17 @@ export function createRoomManager(io) {
     }))
 
     socket.on('host:restart', guard(({ code }, cb) => {
-      requireController(code).restart()
+      const game = requireController(code)
+      const seated = game.restart()
+      // Whoever watched this game now has a seat. Their phone is still showing
+      // the spectator view and still bound to a spectator id, so tell it to
+      // claim the seat — `player:rejoin` rewires that socket properly, which
+      // nothing here could do on its behalf.
+      for (const player of seated) {
+        if (player.socketId) {
+          io.to(player.socketId).emit('seated', { code: game.code, playerId: player.id })
+        }
+      }
       ok(cb)
     }))
 
@@ -295,14 +308,23 @@ export function createRoomManager(io) {
      * shared screen — so there is no cheating angle: nothing secret travels
      * down this channel, and no action is accepted back up it.
      */
-    socket.on('spectate:join', guard(({ code, name }, cb) => {
+    socket.on('spectate:join', guard(({ code, name, avatar, color, was }, cb) => {
       const game = requireGame(code)
-      const spectator = game.addSpectator(name)
+      // Reconnecting after a dropped socket. The old entry usually died with
+      // that socket, but if the disconnect has not landed yet it would sit
+      // there holding this watcher's own name and avatar against them.
+      if (was) game.removeSpectator(was)
+      const spectator = game.addSpectator(name, { avatar, color })
       spectator.socketId = socket.id
       joined = { code: game.code, spectatorId: spectator.id }
       isScreen = false
       socket.join(`room:${game.code}`)
-      ok(cb, { code: game.code, spectatorId: spectator.id, state: game.publicState() })
+      ok(cb, {
+        code: game.code,
+        spectatorId: spectator.id,
+        spectator: { name: spectator.name, avatar: spectator.avatar, color: spectator.color },
+        state: game.publicState(),
+      })
     }))
 
     socket.on('spectate:leave', guard(({ code, spectatorId }, cb) => {
