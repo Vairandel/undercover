@@ -22,6 +22,9 @@ export const PHASES = {
 export const MIN_PLAYERS = 3
 export const MAX_PLAYERS = 16
 
+/** Watchers cost almost nothing, but the list still gets broadcast. */
+export const MAX_SPECTATORS = 20
+
 /** Placeholder shown when a player let the clock run out without speaking. */
 export const NO_CLUE = '…'
 
@@ -99,6 +102,7 @@ export class Game {
   constructor(code, { onUpdate, onEvent } = {}) {
     this.code = code
     this.players = new Map()
+    this.spectators = new Map()
     this.phase = PHASES.LOBBY
     this.settings = structuredClone(DEFAULT_SETTINGS)
     this.round = 0
@@ -179,6 +183,29 @@ export class Game {
     this.onEvent({ type: 'playerJoined', name: player.name })
     this.touch()
     return player
+  }
+
+  /**
+   * Someone watching without a seat.
+   *
+   * A latecomer, a friend passing by, a player who had to drop. They receive
+   * exactly the public state — the same view as the shared screen — so there is
+   * nothing to leak: no word, no role, no private payload. They cannot vote,
+   * write, or act in any way.
+   */
+  addSpectator(name) {
+    const clean = String(name ?? '').trim().slice(0, 16) || 'Spectateur'
+    if (this.spectators.size >= MAX_SPECTATORS) {
+      throw new GameError('Trop de spectateurs.')
+    }
+    const spectator = { id: randomUUID(), name: clean, socketId: null, connected: true }
+    this.spectators.set(spectator.id, spectator)
+    this.touch()
+    return spectator
+  }
+
+  removeSpectator(id) {
+    if (this.spectators.delete(id)) this.touch()
   }
 
   setAppearance(playerId, { avatar, color }) {
@@ -680,9 +707,11 @@ export class Game {
   // ----------------------------------------------------------------- reveal
 
   markReady(playerId) {
-    if (this.phase !== PHASES.REVEAL) return
+    // Identity first, phase second. An unknown actor is an error worth
+    // reporting; a real player tapping a beat after the phase moved on is not.
     const player = this.players.get(playerId)
-    if (!player) return
+    if (!player) throw new GameError("Tu n'as pas de place dans cette partie.")
+    if (this.phase !== PHASES.REVEAL) return
     player.ready = true
 
     if (this.everyoneRevealed()) this.beginDescribe()
@@ -908,8 +937,9 @@ export class Game {
   }
 
   submitVote(voterId, targetId) {
-    if (this.phase !== PHASES.VOTE) return
     const voter = this.players.get(voterId)
+    if (!voter) throw new GameError("Tu n'as pas de place dans cette partie.")
+    if (this.phase !== PHASES.VOTE) return
     const target = this.players.get(targetId)
     if (!this.canVote(voter)) throw new GameError('Les éliminés ne votent pas.')
     if (!target?.alive) throw new GameError('Cible invalide.')
@@ -1531,6 +1561,7 @@ export class Game {
       settings: this.settings,
       theme: this.theme,
       composition: this.players.size ? this.compositionReport() : null,
+      spectators: [...this.spectators.values()].map((s) => ({ id: s.id, name: s.name })),
       liveTeams: this.liveTeams(),
       currentSpeakerId: this.currentSpeakerId,
       turnDeadline: this.turnDeadline,

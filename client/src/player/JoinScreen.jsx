@@ -4,7 +4,7 @@ import { AvatarPicker, Toast } from '../components.jsx'
 import RulesSheet from '../RulesSheet.jsx'
 import { play } from '../audio.js'
 
-export default function JoinScreen({ onJoin, connected, error, setError }) {
+export default function JoinScreen({ onJoin, onSpectate, connected, error, setError }) {
   const [code, setCode] = useState('')
   const [name, setName] = useState('')
   const [look, setLook] = useState(null)
@@ -112,6 +112,28 @@ export default function JoinScreen({ onJoin, connected, error, setError }) {
 
         <button className="btn btn--primary btn--block" disabled={!ready || busy || !connected}>
           {!connected ? 'Connexion…' : busy ? 'On y va…' : 'Rejoindre'}
+        </button>
+
+        {/* A game already under way refuses new players — watching is the way in
+            for a latecomer, and they take a seat at the next one. */}
+        <button
+          type="button"
+          className="btn btn--ghost btn--block btn--sm"
+          disabled={code.length !== 4 || busy || !connected}
+          onClick={async () => {
+            setBusy(true)
+            try {
+              play('tap')
+              await onSpectate(code, name)
+            } catch (err) {
+              play('error')
+              setError(err.message)
+            } finally {
+              setBusy(false)
+            }
+          }}
+        >
+          👁  Regarder sans jouer
         </button>
 
         {!connected && (

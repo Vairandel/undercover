@@ -7,7 +7,16 @@ import { Server as IOServer } from 'socket.io'
 import QRCode from 'qrcode'
 
 import { getLanIp, getLanCandidates } from './net.js'
-import { listThemes, totalPairs } from './words.js'
+import {
+  listThemes,
+  totalPairs,
+  themeDetail,
+  createTheme,
+  deleteTheme,
+  addPair,
+  removePair,
+  WordsError,
+} from './words.js'
 import { roleCatalogue } from './game/roles/index.js'
 import { modifierCatalogue } from './game/modifiers/index.js'
 import { createRoomManager } from './game/rooms.js'
@@ -116,16 +125,62 @@ app.get('/api/qr', async (req, reply) => {
  * `PUBLIC_URL` is set this needs `ADMIN_TOKEN`, passed as `?token=` or an
  * `x-admin-token` header.
  */
+/**
+ * Anything that writes to disk needs the token once the app is reachable from
+ * outside — otherwise a stranger with the URL could rewrite the word bank.
+ */
+function requireAdmin(req, reply) {
+  if (!isExposed) return true
+  const given = req.headers['x-admin-token'] ?? req.query.token
+  if (ADMIN_TOKEN && given === ADMIN_TOKEN) return true
+  reply.code(403).send({ error: 'Jeton administrateur requis.' })
+  return false
+}
+
 app.post('/api/bank/reset', async (req, reply) => {
-  if (isExposed) {
-    const given = req.headers['x-admin-token'] ?? req.query.token
-    if (!ADMIN_TOKEN || given !== ADMIN_TOKEN) {
-      return reply.code(403).send({ error: 'Jeton administrateur requis.' })
-    }
-  }
+  if (!requireAdmin(req, reply)) return reply
   store.resetAll()
   return { ok: true }
 })
+
+// ------------------------------------------------------------ word editor
+
+app.get('/api/words', async () => ({
+  themes: listThemes(),
+  total: totalPairs(),
+  // Lets the editor page know whether it must ask for a token before writing.
+  needsToken: isExposed,
+}))
+
+app.get('/api/words/:themeId', async (req, reply) => {
+  const detail = themeDetail(req.params.themeId)
+  if (!detail) return reply.code(404).send({ error: 'Thème introuvable.' })
+  return detail
+})
+
+/** Wraps editor calls so a validation error reads as a message, not a crash. */
+async function edit(req, reply, fn) {
+  if (!requireAdmin(req, reply)) return reply
+  try {
+    return { ok: true, theme: fn() ?? null, themes: listThemes(), total: totalPairs() }
+  } catch (err) {
+    if (err instanceof WordsError) return reply.code(400).send({ error: err.message })
+    throw err
+  }
+}
+
+app.post('/api/words/theme', async (req, reply) =>
+  edit(req, reply, () => createTheme(req.body ?? {})))
+
+app.delete('/api/words/:themeId', async (req, reply) =>
+  edit(req, reply, () => { deleteTheme(req.params.themeId); return null }))
+
+app.post('/api/words/:themeId/pair', async (req, reply) =>
+  edit(req, reply, () => addPair(req.params.themeId, req.body ?? {})))
+
+// Fastify already percent-decodes route params, so the key arrives verbatim.
+app.delete('/api/words/:themeId/pair/:key', async (req, reply) =>
+  edit(req, reply, () => removePair(req.params.themeId, req.params.key)))
 
 // ------------------------------------------------------------ static client
 

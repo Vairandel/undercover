@@ -1,5 +1,6 @@
 node_modules/
 client/dist/
 server/data/state.json
+server/data/custom-words.json
 *.log
 .DS_Store

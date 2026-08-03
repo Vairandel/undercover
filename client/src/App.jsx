@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import HostApp from './host/HostApp.jsx'
 import PlayerApp from './player/PlayerApp.jsx'
+import WordsApp from './WordsApp.jsx'
 import { unlock } from './audio.js'
 
 export default function App() {
@@ -24,5 +25,6 @@ export default function App() {
     }
   }, [])
 
+  if (path.startsWith('/words')) return <WordsApp />
   return path.startsWith('/host') ? <HostApp /> : <PlayerApp />
 }

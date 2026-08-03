@@ -21,6 +21,16 @@ const MAX_ROOMS = 200
 const MAX_ROOMS_PER_SOCKET = 10
 
 /**
+ * How much of that ceiling last session may claim back.
+ *
+ * A restarted server used to restore every saved room it had, which after
+ * enough evenings filled the cap before a single player had connected — and
+ * then refused to open a new one. Yesterday's lobbies never get to crowd out
+ * tonight's game.
+ */
+const MAX_RESTORED_ROOMS = 20
+
+/**
  * Owns the live rooms and all socket wiring.
  *
  * The server is the single source of truth for who has which word. Clients get
@@ -30,6 +40,20 @@ const MAX_ROOMS_PER_SOCKET = 10
  */
 export function createRoomManager(io) {
   const rooms = new Map()
+
+  /**
+   * Is anyone actually there?
+   *
+   * A seat left by a player who closed the tab still holds their score and word
+   * for the reconnection window, so `players.size` says "occupied" long after
+   * the room went dark — and a room restored from disk starts out entirely
+   * disconnected. Counting live sockets is what makes those reclaimable.
+   */
+  function occupied(game) {
+    for (const p of game.players.values()) if (p.connected) return true
+    for (const s of game.spectators.values()) if (s.connected) return true
+    return false
+  }
 
   /**
    * Drops rooms nobody is using. Returns how many were freed.
@@ -42,7 +66,7 @@ export function createRoomManager(io) {
     const now = Date.now()
     let freed = 0
     for (const [code, game] of rooms) {
-      if (game.players.size > 0) {
+      if (occupied(game)) {
         game.emptyAt = null
         if (now - game.createdAt <= IDLE_MS) continue
       } else {
@@ -99,6 +123,14 @@ export function createRoomManager(io) {
   function restoreSavedRooms() {
     let restored = 0
     for (const [code, snapshot] of store.freshRooms()) {
+      // Restored rooms are nobody's yet — every seat is disconnected, and the
+      // sweeper needs a full cycle to notice. Filling the ceiling with them
+      // would make the server refuse the very first `host:create` after a
+      // restart, so live play always keeps the larger share.
+      if (restored >= MAX_RESTORED_ROOMS) {
+        store.forgetRoom(code)
+        continue
+      }
       if (rooms.has(code)) continue
       rooms.set(code, newGame(code).restoreFrom(snapshot))
       restored += 1
@@ -106,10 +138,32 @@ export function createRoomManager(io) {
     return restored
   }
 
+  /**
+   * Makes room at the ceiling by dropping the coldest empty lobby.
+   *
+   * Turning a group away because two hundred abandoned rooms are still inside
+   * their reconnection window is the wrong trade: nobody is in those rooms, and
+   * the one that has been dark longest is the one least likely to be missed.
+   * Rooms with someone actually connected are never touched.
+   */
+  function evictColdest() {
+    let coldest = null
+    for (const [code, game] of rooms) {
+      if (occupied(game)) continue
+      const since = game.emptyAt ?? game.createdAt
+      if (!coldest || since < coldest.since) coldest = { code, game, since }
+    }
+    if (!coldest) return false
+    coldest.game.dispose()
+    rooms.delete(coldest.code)
+    store.forgetRoom(coldest.code)
+    return true
+  }
+
   function createRoom() {
     if (rooms.size >= MAX_ROOMS) {
       sweep()
-      if (rooms.size >= MAX_ROOMS) {
+      if (rooms.size >= MAX_ROOMS && !evictColdest()) {
         throw new GameError('Trop de parties ouvertes. Réessaie dans quelques minutes.')
       }
     }
@@ -232,6 +286,31 @@ export function createRoomManager(io) {
       ok(cb)
     }))
 
+    // ---- spectators --------------------------------------------------------
+
+    /**
+     * Watch without a seat. Works at any point, including mid-game.
+     *
+     * A spectator only ever receives the public state — the same feed as the
+     * shared screen — so there is no cheating angle: nothing secret travels
+     * down this channel, and no action is accepted back up it.
+     */
+    socket.on('spectate:join', guard(({ code, name }, cb) => {
+      const game = requireGame(code)
+      const spectator = game.addSpectator(name)
+      spectator.socketId = socket.id
+      joined = { code: game.code, spectatorId: spectator.id }
+      isScreen = false
+      socket.join(`room:${game.code}`)
+      ok(cb, { code: game.code, spectatorId: spectator.id, state: game.publicState() })
+    }))
+
+    socket.on('spectate:leave', guard(({ code, spectatorId }, cb) => {
+      requireGame(code).removeSpectator(spectatorId)
+      joined = null
+      ok(cb)
+    }))
+
     // ---- players -----------------------------------------------------------
 
     socket.on('player:join', guard(({ code, name, avatar, color }, cb) => {
@@ -334,10 +413,10 @@ export function createRoomManager(io) {
      * claimed the player.
      */
     socket.on('disconnect', () => {
-      if (!joined?.playerId) return
-      const game = rooms.get(joined.code)
+      const game = joined ? rooms.get(joined.code) : null
       if (!game) return
-      game.releaseSocket(joined.playerId, socket.id)
+      if (joined.spectatorId) return game.removeSpectator(joined.spectatorId)
+      if (joined.playerId) game.releaseSocket(joined.playerId, socket.id)
     })
   })
 

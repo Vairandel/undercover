@@ -202,6 +202,11 @@ export default function HostLobby({ state, info, joinUrl, act }) {
               )
             })}
           </div>
+
+          <hr className="divider" />
+          <a className="btn btn--ghost btn--block btn--sm" href="/words">
+            ✏️ Modifier la banque de mots
+          </a>
         </div>
       )}
 

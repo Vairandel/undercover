@@ -16,8 +16,14 @@ connexion internet nécessaire.
 - **Phase de discussion** chronométrée entre les indices et le vote.
 - **Points cumulés** sur toute la soirée, avec grille de scores animée en fin de
   partie.
-- **Indices policés** : impossible de donner son propre mot, un mot en jeu, ou un
-  indice déjà utilisé dans la partie.
+- **Indices policés** : impossible de donner son propre mot, ou un indice déjà
+  utilisé dans la partie. Les autres mots en jeu, eux, passent — refuser l'un
+  d'eux revenait à confirmer au joueur qu'il venait de deviner le mot du camp
+  d'en face.
+- **Banque de mots éditable** depuis `/words` : nouveaux thèmes, nouvelles
+  paires, sans toucher aux fichiers.
+- **Mode spectateur** : arriver en cours de partie, regarder, prendre une place à
+  la manche suivante.
 - **Variantes** : les infiltrés savent (ou non) qu'ils le sont, indices écrits,
   chrono par tour, nombre d'infiltrés, thème imposé.
 - **Avatars personnalisables** : 48 emoji × 10 couleurs, unicité garantie dans le salon.
@@ -271,7 +277,20 @@ huit modificateurs.
 
 ### Enrichir la banque de mots
 
-Ajoute un fichier dans `server/data/words/` :
+Le plus simple : la page **`/words`**, accessible depuis l'onglet 🎲 Thèmes de
+l'écran hôte. On y crée un thème, on y ajoute des paires avec leur définition
+facultative, et on voit d'un coup d'œil ce qui a déjà été joué.
+
+Tout ce qui est ajouté là atterrit dans `server/data/custom-words.json`, jamais
+dans les thèmes fournis : la banque livrée reste intacte et remplaçable, et tes
+ajouts tiennent dans un seul fichier à sauvegarder. C'est aussi pour ça que les
+paires fournies ne sont pas supprimables depuis l'éditeur — seulement les
+tiennes.
+
+Une fois le jeu exposé sur internet, écrire dans la banque demande le
+`ADMIN_TOKEN` ; la lecture, non.
+
+L'ancienne méthode marche toujours — un fichier dans `server/data/words/` :
 
 ```json
 {
@@ -291,6 +310,10 @@ npm run words:stats     # ce qui reste d'inédit par thème
 
 Pour remettre tout l'historique à zéro : `POST /api/bank/reset`.
 
+L'historique du « déjà joué » est indexé par le contenu de la paire, pas par sa
+position dans le fichier : tu peux ajouter, retirer ou réordonner sans rien
+corrompre.
+
 ---
 
 ## État actuel
@@ -304,7 +327,9 @@ White, les cinq conditions de victoire, calcul et cumul des points, abandon en
 pleine partie, reconnexion d'un téléphone verrouillé, rejouer avec les mêmes
 joueurs.
 
-Pas encore fait : un mode pass-and-play pour ceux qui n'ont pas de téléphone, un
-historique de soirée persistant sur disque (les scores vivent en mémoire et
-disparaissent si le serveur redémarre), et un éditeur de banque de mots dans
-l'interface (l'ajout se fait en éditant les JSON).
+S'ajoutent à ça le mode spectateur (arriver en cours de partie et regarder sans
+rien voir de secret), l'éditeur de banque de mots, et la restauration d'une
+soirée après un redémarrage du serveur.
+
+Pas encore fait : un mode pass-and-play pour ceux qui n'ont pas de téléphone, et
+le salon vocal.

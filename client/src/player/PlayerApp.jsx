@@ -4,6 +4,7 @@ import { playForEvent, play, ambienceForPhase } from '../audio.js'
 import { Toast } from '../components.jsx'
 import JoinScreen from './JoinScreen.jsx'
 import PlayerRound from './PlayerRound.jsx'
+import SpectatorView from './SpectatorView.jsx'
 
 export default function PlayerApp() {
   const [session, setSession] = useState(() => loadSession())
@@ -33,9 +34,19 @@ export default function PlayerApp() {
    * second.
    */
   const rejoin = useCallback(async (s, attempt = 0) => {
-    if (!s?.code || !s?.playerId || rejoining.current) return
+    if (!s?.code || rejoining.current) return
+    if (!s.playerId && !s.spectatorId) return
     rejoining.current = true
     try {
+      // A watcher has no seat to reclaim: the old spectator entry died with the
+      // socket, so coming back simply means asking to watch again.
+      if (s.spectatorId) {
+        const res = await send('spectate:join', { code: s.code, name: 'Spectateur' })
+        saveSession({ code: res.code, spectatorId: res.spectatorId })
+        setSession({ code: res.code, spectatorId: res.spectatorId })
+        setState(res.state)
+        return
+      }
       const res = await send('player:rejoin', s)
       setState(res.state)
       setYou(res.you)
@@ -128,6 +139,16 @@ export default function PlayerApp() {
     }
   }, [rejoin])
 
+  /** Watch without a seat — works at any point, including mid-game. */
+  const spectate = async (code, name) => {
+    const res = await send('spectate:join', { code: code.toUpperCase(), name })
+    const s = { code: res.code, spectatorId: res.spectatorId }
+    saveSession(s)
+    setSession(s)
+    setState(res.state)
+    setYou(null)
+  }
+
   const join = async (code, name, look = {}) => {
     const res = await send('player:join', {
       code: code.toUpperCase(),
@@ -159,7 +180,8 @@ export default function PlayerApp() {
    *  decides the game, ends it rather than leaving everyone stuck. */
   const leave = async () => {
     try {
-      await act('player:quit')
+      if (session?.spectatorId) await send('spectate:leave', { code: session.code, spectatorId: session.spectatorId })
+      else await act('player:quit')
     } catch { /* leaving is best-effort */ }
     clearSession()
     setSession(null)
@@ -167,8 +189,32 @@ export default function PlayerApp() {
     setYou(null)
   }
 
+  // Watching: no seat, no private payload, no actions.
+  if (session?.spectatorId && state) {
+    return (
+      <>
+        <SpectatorView
+          state={state}
+          leave={leave}
+          connected={connected}
+          canJoin={state.phase === 'lobby'}
+          onJoin={() => { clearSession(); setSession(null); setState(null) }}
+        />
+        <Toast message={error} onDone={() => setError(null)} />
+      </>
+    )
+  }
+
   if (!session || !state || !you) {
-    return <JoinScreen onJoin={join} connected={connected} error={error} setError={setError} />
+    return (
+      <JoinScreen
+        onJoin={join}
+        onSpectate={spectate}
+        connected={connected}
+        error={error}
+        setError={setError}
+      />
+    )
   }
 
   return (
