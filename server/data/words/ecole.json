@@ -3,191 +3,80 @@
   "label": "École & Travail",
   "emoji": "🎓",
   "pairs": [
-    [
-      "Cahier",
-      "Classeur"
-    ],
-    [
-      "Livre",
-      "Manuel"
-    ],
-    [
-      "Trousse",
-      "Cartable"
-    ],
-    [
-      "Règle",
-      "Équerre",
-      null,
-      "Instrument en angle droit pour tracer des perpendiculaires."
-    ],
-    [
-      "Compas",
-      "Rapporteur",
-      null,
-      "Demi-disque gradué servant à mesurer les angles."
-    ],
-    [
-      "Calculatrice",
-      "Boulier",
-      null,
-      "Cadre à boules coulissantes servant à compter."
-    ],
-    [
-      "Tableau",
-      "Ardoise",
-      null,
-      "Petite plaque noire sur laquelle on écrit à la craie."
-    ],
-    [
-      "Craie",
-      "Feutre"
-    ],
-    [
-      "Devoir",
-      "Exercice"
-    ],
-    [
-      "Contrôle",
-      "Examen"
-    ],
-    [
-      "Note",
-      "Moyenne"
-    ],
-    [
-      "Bulletin",
-      "Diplôme"
-    ],
-    [
-      "Récréation",
-      "Pause"
-    ],
-    [
-      "Cantine",
-      "Réfectoire",
-      null,
-      "Salle commune où l'on prend les repas."
-    ],
-    [
-      "Cours",
-      "Conférence"
-    ],
-    [
-      "Élève",
-      "Étudiant"
-    ],
-    [
-      "Professeur",
-      "Tuteur"
-    ],
-    [
-      "Directeur",
-      "Surveillant"
-    ],
-    [
-      "Classe",
-      "Amphithéâtre",
-      null,
-      "Grande salle de cours en gradins."
-    ],
-    [
-      "Rentrée",
-      "Vacances"
-    ],
-    [
-      "Mathématiques",
-      "Physique"
-    ],
-    [
-      "Histoire",
-      "Géographie"
-    ],
-    [
-      "Français",
-      "Littérature"
-    ],
-    [
-      "Chimie",
-      "Biologie"
-    ],
-    [
-      "Philosophie",
-      "Sociologie"
-    ],
-    [
-      "Sport",
-      "Éducation physique"
-    ],
-    [
-      "Dictée",
-      "Rédaction"
-    ],
-    [
-      "Exposé",
-      "Présentation"
-    ],
-    [
-      "Stage",
-      "Alternance",
-      null,
-      "Formation partagée entre école et entreprise."
-    ],
-    [
-      "CV",
-      "Lettre de motivation"
-    ],
-    [
-      "Entretien",
-      "Recrutement"
-    ],
-    [
-      "Salaire",
-      "Prime"
-    ],
-    [
-      "Contrat",
-      "Convention"
-    ],
-    [
-      "Réunion",
-      "Séminaire"
-    ],
-    [
-      "Collègue",
-      "Associé"
-    ],
-    [
-      "Patron",
-      "Manager"
-    ],
-    [
-      "Bureau",
-      "Open space"
-    ],
-    [
-      "Télétravail",
-      "Présentiel"
-    ],
-    [
-      "Heures supplémentaires",
-      "Astreinte",
-      null,
-      "Obligation de rester joignable en dehors des heures de travail."
-    ],
-    [
-      "Congé",
-      "Arrêt maladie"
-    ],
-    [
-      "Démission",
-      "Licenciement"
-    ],
-    [
-      "Retraite",
-      "Préretraite",
-      null,
-      "Cessation d'activité avant l'âge légal de la retraite."
-    ]
+    ["Cahier","Classeur"],
+    ["Livre","Manuel"],
+    ["Trousse","Cartable"],
+    ["Règle","Équerre",null,"Instrument en angle droit pour tracer des perpendiculaires."],
+    ["Compas","Rapporteur",null,"Demi-disque gradué servant à mesurer les angles."],
+    ["Calculatrice","Boulier",null,"Cadre à boules coulissantes servant à compter."],
+    ["Tableau","Ardoise",null,"Petite plaque noire sur laquelle on écrit à la craie."],
+    ["Craie","Feutre"],
+    ["Devoir","Exercice"],
+    ["Contrôle","Examen"],
+    ["Note","Moyenne"],
+    ["Bulletin","Diplôme"],
+    ["Récréation","Pause"],
+    ["Cantine","Réfectoire",null,"Salle commune où l'on prend les repas."],
+    ["Cours","Conférence"],
+    ["Élève","Étudiant"],
+    ["Professeur","Tuteur"],
+    ["Directeur","Surveillant"],
+    ["Classe","Amphithéâtre",null,"Grande salle de cours en gradins."],
+    ["Rentrée","Vacances"],
+    ["Mathématiques","Physique"],
+    ["Histoire","Géographie"],
+    ["Français","Littérature"],
+    ["Chimie","Biologie"],
+    ["Philosophie","Sociologie"],
+    ["Sport","Éducation physique"],
+    ["Dictée","Rédaction"],
+    ["Exposé","Présentation"],
+    ["Stage","Alternance",null,"Formation partagée entre école et entreprise."],
+    ["CV","Lettre de motivation"],
+    ["Entretien","Recrutement"],
+    ["Salaire","Prime"],
+    ["Contrat","Convention"],
+    ["Réunion","Séminaire"],
+    ["Collègue","Associé"],
+    ["Patron","Manager"],
+    ["Bureau","Open space"],
+    ["Télétravail","Présentiel"],
+    ["Heures supplémentaires","Astreinte",null,"Obligation de rester joignable en dehors des heures de travail."],
+    ["Congé","Arrêt maladie"],
+    ["Démission","Licenciement"],
+    ["Retraite","Préretraite",null,"Cessation d'activité avant l'âge légal de la retraite."],
+    ["Stylo plume","Encre"],
+    ["Surligneur","Marque-page"],
+    ["Agenda","Emploi du temps"],
+    ["Casier","Vestiaire"],
+    ["Internat","Externat"],
+    ["Bus scolaire","Sortie scolaire"],
+    ["Interrogation surprise","Rattrapage"],
+    ["Barème","Coefficient"],
+    ["Copie","Brouillon"],
+    ["Antisèche","Fiche de révision"],
+    ["Conseil de classe","Réunion parents-profs"],
+    ["Colle","Retenue"],
+    ["Redoublement","Passage"],
+    ["Maternelle","Primaire"],
+    ["Collège","Lycée"],
+    ["Licence","Master"],
+    ["Doctorat","Thèse"],
+    ["Bourse","Frais de scolarité"],
+    ["Amphi","Travaux dirigés"],
+    ["Partiel","Mémoire"],
+    ["Concours","Prépa"],
+    ["Anglais","Espagnol"],
+    ["Latin","Grec ancien"],
+    ["Arts plastiques","Musique"],
+    ["Technologie","Informatique"],
+    ["Économie","Droit"],
+    ["Cahier de textes","Carnet de correspondance"],
+    ["Période d'essai","Titularisation"],
+    ["Fiche de paie","Bulletin de salaire"],
+    ["Syndicat","Grève"],
+    ["Mutation","Promotion"],
+    ["Pointeuse","Badge"],
+    ["Pause déjeuner","Machine à café"]
   ]
 }

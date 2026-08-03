@@ -3,189 +3,80 @@
   "label": "Transports",
   "emoji": "🚗",
   "pairs": [
-    [
-      "Voiture",
-      "Camionnette"
-    ],
-    [
-      "Camion",
-      "Semi-remorque"
-    ],
-    [
-      "Bus",
-      "Car"
-    ],
-    [
-      "Tramway",
-      "Métro"
-    ],
-    [
-      "Train",
-      "TGV"
-    ],
-    [
-      "Avion",
-      "Hélicoptère"
-    ],
-    [
-      "Bateau",
-      "Ferry"
-    ],
-    [
-      "Voilier",
-      "Yacht"
-    ],
-    [
-      "Sous-marin",
-      "Bathyscaphe",
-      null,
-      "Engin d'exploration conçu pour descendre dans les très grandes profondeurs."
-    ],
-    [
-      "Fusée",
-      "Navette spatiale"
-    ],
-    [
-      "Moto",
-      "Scooter"
-    ],
-    [
-      "Vélo",
-      "Trottinette"
-    ],
-    [
-      "Skate",
-      "Rollers"
-    ],
-    [
-      "Taxi",
-      "VTC"
-    ],
-    [
-      "Ambulance",
-      "Camion de pompiers"
-    ],
-    [
-      "Tracteur",
-      "Moissonneuse",
-      null,
-      "Machine agricole qui coupe et bat les céréales."
-    ],
-    [
-      "Grue",
-      "Bulldozer",
-      null,
-      "Engin de chantier à lame frontale, qui pousse la terre."
-    ],
-    [
-      "Téléphérique",
-      "Télésiège",
-      "Cabine suspendue à un câble, franchissant un relief.",
-      "Remontée mécanique à sièges suspendus, en plein air."
-    ],
-    [
-      "Montgolfière",
-      "Parapente",
-      "Ballon gonflé à l'air chaud, avec une nacelle.",
-      "Voile souple avec laquelle on décolle à pied d'une pente."
-    ],
-    [
-      "Traîneau",
-      "Calèche",
-      null,
-      "Voiture légère tirée par des chevaux."
-    ],
-    [
-      "Volant",
-      "Guidon"
-    ],
-    [
-      "Frein",
-      "Accélérateur"
-    ],
-    [
-      "Pneu",
-      "Roue"
-    ],
-    [
-      "Moteur",
-      "Batterie"
-    ],
-    [
-      "Essence",
-      "Diesel"
-    ],
-    [
-      "Phare",
-      "Clignotant"
-    ],
-    [
-      "Klaxon",
-      "Sirène"
-    ],
-    [
-      "Ceinture de sécurité",
-      "Airbag"
-    ],
-    [
-      "Rétroviseur",
-      "Pare-brise"
-    ],
-    [
-      "Coffre",
-      "Galerie"
-    ],
-    [
-      "Permis",
-      "Carte grise"
-    ],
-    [
-      "Autoroute",
-      "Nationale"
-    ],
-    [
-      "Rond-point",
-      "Carrefour"
-    ],
-    [
-      "Feu rouge",
-      "Stop"
-    ],
-    [
-      "Embouteillage",
-      "Ralentissement"
-    ],
-    [
-      "Parking",
-      "Garage"
-    ],
-    [
-      "Péage",
-      "Amende"
-    ],
-    [
-      "Passage piéton",
-      "Trottoir"
-    ],
-    [
-      "Pont",
-      "Viaduc",
-      null,
-      "Long pont sur piliers qui franchit une vallée."
-    ],
-    [
-      "Quai",
-      "Embarcadère",
-      null,
-      "Appontement aménagé pour monter à bord d'un bateau."
-    ],
-    [
-      "Billet",
-      "Abonnement"
-    ],
-    [
-      "Bagage",
-      "Valise cabine"
-    ]
+    ["Voiture","Camionnette"],
+    ["Camion","Semi-remorque"],
+    ["Bus","Car"],
+    ["Tramway","Métro"],
+    ["Train","TGV"],
+    ["Avion","Hélicoptère"],
+    ["Bateau","Ferry"],
+    ["Voilier","Yacht"],
+    ["Sous-marin","Bathyscaphe",null,"Engin d'exploration conçu pour descendre dans les très grandes profondeurs."],
+    ["Fusée","Navette spatiale"],
+    ["Moto","Scooter"],
+    ["Vélo","Trottinette"],
+    ["Skate","Rollers"],
+    ["Taxi","VTC"],
+    ["Ambulance","Camion de pompiers"],
+    ["Tracteur","Moissonneuse",null,"Machine agricole qui coupe et bat les céréales."],
+    ["Grue","Bulldozer",null,"Engin de chantier à lame frontale, qui pousse la terre."],
+    ["Téléphérique","Télésiège","Cabine suspendue à un câble, franchissant un relief.","Remontée mécanique à sièges suspendus, en plein air."],
+    ["Montgolfière","Parapente","Ballon gonflé à l'air chaud, avec une nacelle.","Voile souple avec laquelle on décolle à pied d'une pente."],
+    ["Traîneau","Calèche",null,"Voiture légère tirée par des chevaux."],
+    ["Volant","Guidon"],
+    ["Frein","Accélérateur"],
+    ["Pneu","Roue"],
+    ["Moteur","Batterie"],
+    ["Essence","Diesel"],
+    ["Phare","Clignotant"],
+    ["Klaxon","Sirène"],
+    ["Ceinture de sécurité","Airbag"],
+    ["Rétroviseur","Pare-brise"],
+    ["Coffre","Galerie"],
+    ["Permis","Carte grise"],
+    ["Autoroute","Nationale"],
+    ["Rond-point","Carrefour"],
+    ["Feu rouge","Stop"],
+    ["Embouteillage","Ralentissement"],
+    ["Parking","Garage"],
+    ["Péage","Amende"],
+    ["Passage piéton","Trottoir"],
+    ["Pont","Viaduc",null,"Long pont sur piliers qui franchit une vallée."],
+    ["Quai","Embarcadère",null,"Appontement aménagé pour monter à bord d'un bateau."],
+    ["Billet","Abonnement"],
+    ["Bagage","Valise cabine"],
+    ["Berline","Break"],
+    ["SUV","Monospace"],
+    ["Cabriolet","Coupé"],
+    ["Voiture électrique","Voiture hybride"],
+    ["Borne de recharge","Pompe à essence"],
+    ["Bus articulé","Navette"],
+    ["Trolleybus","Funiculaire","Bus urbain alimenté par des câbles électriques aériens."],
+    ["RER","Train de nuit"],
+    ["Locomotive","Wagon"],
+    ["Rail","Aiguillage"],
+    ["Passage à niveau","Tunnel routier"],
+    ["Cargo","Pétrolier"],
+    ["Chalutier","Barque"],
+    ["Canoë","Pédalo"],
+    ["Jet privé","Avion de ligne"],
+    ["Planeur","ULM",null,"Petit avion très léger, souvent biplace."],
+    ["Piste de décollage","Tour de contrôle"],
+    ["Escale","Correspondance"],
+    ["Hôtesse de l'air","Contrôleur"],
+    ["Carte d'embarquement","Passeport"],
+    ["Soute","Cabine"],
+    ["Turbulence","Atterrissage"],
+    ["Quad","Buggy"],
+    ["Side-car","Tricycle"],
+    ["Monocycle","Draisienne",null,"Petit vélo sans pédales, pour apprendre l'équilibre."],
+    ["Casque","Gilet réfléchissant"],
+    ["Antivol","Chaîne de vélo"],
+    ["Piste cyclable","Voie de bus"],
+    ["Limitation de vitesse","Radar"],
+    ["Contrôle technique","Révision"],
+    ["Dépanneuse","Fourrière"],
+    ["Covoiturage","Autopartage"],
+    ["Carte de transport","Composteur"]
   ]
 }

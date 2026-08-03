@@ -3,183 +3,80 @@
   "label": "Sports & Jeux",
   "emoji": "⚽",
   "pairs": [
-    [
-      "Football",
-      "Rugby"
-    ],
-    [
-      "Basketball",
-      "Handball"
-    ],
-    [
-      "Tennis",
-      "Badminton"
-    ],
-    [
-      "Ping-pong",
-      "Squash",
-      null,
-      "Sport de raquette joué contre un mur, en salle fermée."
-    ],
-    [
-      "Volley-ball",
-      "Beach-volley"
-    ],
-    [
-      "Natation",
-      "Plongeon"
-    ],
-    [
-      "Surf",
-      "Planche à voile"
-    ],
-    [
-      "Ski",
-      "Snowboard"
-    ],
-    [
-      "Patinage",
-      "Hockey"
-    ],
-    [
-      "Boxe",
-      "Karaté"
-    ],
-    [
-      "Judo",
-      "Lutte"
-    ],
-    [
-      "Escrime",
-      "Tir à l'arc"
-    ],
-    [
-      "Marathon",
-      "Semi-marathon"
-    ],
-    [
-      "Sprint",
-      "Relais"
-    ],
-    [
-      "Saut en hauteur",
-      "Saut en longueur"
-    ],
-    [
-      "Gymnastique",
-      "Trampoline"
-    ],
-    [
-      "Yoga",
-      "Pilates"
-    ],
-    [
-      "Musculation",
-      "Crossfit"
-    ],
-    [
-      "Vélo",
-      "VTT"
-    ],
-    [
-      "Moto-cross",
-      "Rallye"
-    ],
-    [
-      "Formule 1",
-      "Karting"
-    ],
-    [
-      "Golf",
-      "Mini-golf"
-    ],
-    [
-      "Bowling",
-      "Pétanque",
-      null,
-      "Jeu de boules lancées vers un cochonnet, pieds joints."
-    ],
-    [
-      "Fléchettes",
-      "Billard"
-    ],
-    [
-      "Échecs",
-      "Dames"
-    ],
-    [
-      "Poker",
-      "Belote",
-      null,
-      "Jeu de cartes français à quatre joueurs."
-    ],
-    [
-      "Monopoly",
-      "Cluedo",
-      null,
-      "Jeu de plateau où l'on doit démasquer un meurtrier."
-    ],
-    [
-      "Scrabble",
-      "Mots croisés"
-    ],
-    [
-      "Sudoku",
-      "Puzzle"
-    ],
-    [
-      "Cache-cache",
-      "Chat perché"
-    ],
-    [
-      "Corde à sauter",
-      "Élastique"
-    ],
-    [
-      "Toboggan",
-      "Balançoire"
-    ],
-    [
-      "Jeu vidéo",
-      "Jeu de société"
-    ],
-    [
-      "Arbitre",
-      "Entraîneur"
-    ],
-    [
-      "Stade",
-      "Gymnase"
-    ],
-    [
-      "Médaille",
-      "Trophée"
-    ],
-    [
-      "Championnat",
-      "Tournoi"
-    ],
-    [
-      "Supporter",
-      "Spectateur"
-    ],
-    [
-      "Échauffement",
-      "Étirement"
-    ],
-    [
-      "Pénalty",
-      "Coup franc"
-    ],
-    [
-      "Escalade",
-      "Randonnée"
-    ],
-    [
-      "Kayak",
-      "Aviron",
-      null,
-      "Sport de rame en bateau, dos à la ligne d'arrivée."
-    ]
+    ["Football","Rugby"],
+    ["Basketball","Handball"],
+    ["Tennis","Badminton"],
+    ["Ping-pong","Squash",null,"Sport de raquette joué contre un mur, en salle fermée."],
+    ["Volley-ball","Beach-volley"],
+    ["Natation","Plongeon"],
+    ["Surf","Planche à voile"],
+    ["Ski","Snowboard"],
+    ["Patinage","Hockey"],
+    ["Boxe","Karaté"],
+    ["Judo","Lutte"],
+    ["Escrime","Tir à l'arc"],
+    ["Marathon","Semi-marathon"],
+    ["Sprint","Relais"],
+    ["Saut en hauteur","Saut en longueur"],
+    ["Gymnastique","Trampoline"],
+    ["Yoga","Pilates"],
+    ["Musculation","Crossfit"],
+    ["Vélo","VTT"],
+    ["Moto-cross","Rallye"],
+    ["Formule 1","Karting"],
+    ["Golf","Mini-golf"],
+    ["Bowling","Pétanque",null,"Jeu de boules lancées vers un cochonnet, pieds joints."],
+    ["Fléchettes","Billard"],
+    ["Échecs","Dames"],
+    ["Poker","Belote",null,"Jeu de cartes français à quatre joueurs."],
+    ["Monopoly","Cluedo",null,"Jeu de plateau où l'on doit démasquer un meurtrier."],
+    ["Scrabble","Mots croisés"],
+    ["Sudoku","Puzzle"],
+    ["Cache-cache","Chat perché"],
+    ["Corde à sauter","Élastique"],
+    ["Toboggan","Balançoire"],
+    ["Jeu vidéo","Jeu de société"],
+    ["Arbitre","Entraîneur"],
+    ["Stade","Gymnase"],
+    ["Médaille","Trophée"],
+    ["Championnat","Tournoi"],
+    ["Supporter","Spectateur"],
+    ["Échauffement","Étirement"],
+    ["Pénalty","Coup franc"],
+    ["Escalade","Randonnée"],
+    ["Kayak","Aviron",null,"Sport de rame en bateau, dos à la ligne d'arrivée."],
+    ["Water-polo","Natation synchronisée"],
+    ["Triathlon","Décathlon"],
+    ["Haies","Steeple",null,"Course d'obstacles avec une rivière à franchir."],
+    ["Lancer de poids","Lancer de disque"],
+    ["Javelot","Marteau"],
+    ["Saut à la perche","Triple saut"],
+    ["Marche athlétique","Course de fond"],
+    ["Cricket","Baseball"],
+    ["Football américain","Rugby à sept"],
+    ["Hockey sur gazon","Crosse"],
+    ["Taekwondo","Kung-fu"],
+    ["Aïkido","Sumo"],
+    ["Capoeira","Kickboxing"],
+    ["Haltérophilie","Powerlifting"],
+    ["Trampoline acrobatique","Cheval d'arçons"],
+    ["Barres parallèles","Poutre"],
+    ["Patinage artistique","Patinage de vitesse"],
+    ["Luge","Bobsleigh"],
+    ["Biathlon","Ski de fond"],
+    ["Saut à ski","Saut à l'élastique"],
+    ["Parachutisme","Deltaplane"],
+    ["Plongée","Apnée"],
+    ["Voile","Jet-ski"],
+    ["Rafting","Canyoning"],
+    ["Équitation","Course hippique"],
+    ["Tir sportif","Biathlon laser"],
+    ["Fitness","Zumba"],
+    ["Danse classique","Hip-hop"],
+    ["Skateparc","Half-pipe"],
+    ["Baby-foot","Flipper"],
+    ["Jeu de dames","Backgammon"],
+    ["Uno","Tarot"],
+    ["Dés","Jeu de l'oie"]
   ]
 }

@@ -3,195 +3,80 @@
   "label": "Lieux & Voyages",
   "emoji": "🗺️",
   "pairs": [
-    [
-      "Plage",
-      "Piscine"
-    ],
-    [
-      "Montagne",
-      "Colline"
-    ],
-    [
-      "Forêt",
-      "Jungle"
-    ],
-    [
-      "Désert",
-      "Savane"
-    ],
-    [
-      "Île",
-      "Presqu'île",
-      null,
-      "Terre entourée d'eau sauf sur une bande qui la relie au continent."
-    ],
-    [
-      "Rivière",
-      "Fleuve"
-    ],
-    [
-      "Lac",
-      "Étang",
-      null,
-      "Petite étendue d'eau stagnante, moins profonde qu'un lac."
-    ],
-    [
-      "Cascade",
-      "Fontaine"
-    ],
-    [
-      "Grotte",
-      "Tunnel"
-    ],
-    [
-      "Volcan",
-      "Geyser",
-      null,
-      "Source chaude qui projette par intermittence une colonne d'eau bouillante."
-    ],
-    [
-      "Hôtel",
-      "Auberge",
-      null,
-      "Petit hôtel simple, souvent à la campagne."
-    ],
-    [
-      "Camping",
-      "Bungalow"
-    ],
-    [
-      "Aéroport",
-      "Gare"
-    ],
-    [
-      "Port",
-      "Marina",
-      null,
-      "Port de plaisance aménagé pour les bateaux de loisir."
-    ],
-    [
-      "Musée",
-      "Galerie"
-    ],
-    [
-      "Château",
-      "Palais"
-    ],
-    [
-      "Église",
-      "Cathédrale"
-    ],
-    [
-      "Mosquée",
-      "Temple"
-    ],
-    [
-      "Marché",
-      "Supermarché"
-    ],
-    [
-      "Restaurant",
-      "Cafétéria"
-    ],
-    [
-      "Bar",
-      "Boîte de nuit"
-    ],
-    [
-      "Parc",
-      "Jardin public"
-    ],
-    [
-      "Zoo",
-      "Aquarium"
-    ],
-    [
-      "Stade",
-      "Aréna"
-    ],
-    [
-      "Hôpital",
-      "Clinique"
-    ],
-    [
-      "École",
-      "Université"
-    ],
-    [
-      "Bibliothèque",
-      "Médiathèque",
-      null,
-      "Bibliothèque qui prête aussi films, musique et jeux."
-    ],
-    [
-      "Banque",
-      "Bureau de poste"
-    ],
-    [
-      "Pharmacie",
-      "Parapharmacie"
-    ],
-    [
-      "Boulangerie",
-      "Épicerie"
-    ],
-    [
-      "Village",
-      "Hameau",
-      null,
-      "Groupe de quelques maisons isolées, sans église ni commerce."
-    ],
-    [
-      "Ville",
-      "Métropole"
-    ],
-    [
-      "Quartier",
-      "Banlieue"
-    ],
-    [
-      "Paris",
-      "Londres"
-    ],
-    [
-      "Rome",
-      "Athènes"
-    ],
-    [
-      "Tokyo",
-      "Séoul"
-    ],
-    [
-      "New York",
-      "Chicago"
-    ],
-    [
-      "Le Caire",
-      "Marrakech"
-    ],
-    [
-      "Dakar",
-      "Abidjan"
-    ],
-    [
-      "Rio de Janeiro",
-      "Buenos Aires"
-    ],
-    [
-      "Tour Eiffel",
-      "Statue de la Liberté"
-    ],
-    [
-      "Pyramides",
-      "Colisée"
-    ],
-    [
-      "Sahara",
-      "Amazonie"
-    ],
-    [
-      "Everest",
-      "Kilimandjaro"
-    ]
+    ["Plage","Piscine"],
+    ["Montagne","Colline"],
+    ["Forêt","Jungle"],
+    ["Désert","Savane"],
+    ["Île","Presqu'île",null,"Terre entourée d'eau sauf sur une bande qui la relie au continent."],
+    ["Rivière","Fleuve"],
+    ["Lac","Étang",null,"Petite étendue d'eau stagnante, moins profonde qu'un lac."],
+    ["Cascade","Fontaine"],
+    ["Grotte","Tunnel"],
+    ["Volcan","Geyser",null,"Source chaude qui projette par intermittence une colonne d'eau bouillante."],
+    ["Hôtel","Auberge",null,"Petit hôtel simple, souvent à la campagne."],
+    ["Camping","Bungalow"],
+    ["Aéroport","Gare"],
+    ["Port","Marina",null,"Port de plaisance aménagé pour les bateaux de loisir."],
+    ["Musée","Galerie"],
+    ["Château","Palais"],
+    ["Église","Cathédrale"],
+    ["Mosquée","Temple"],
+    ["Marché","Supermarché"],
+    ["Restaurant","Cafétéria"],
+    ["Bar","Boîte de nuit"],
+    ["Parc","Jardin public"],
+    ["Zoo","Aquarium"],
+    ["Stade","Aréna"],
+    ["Hôpital","Clinique"],
+    ["École","Université"],
+    ["Bibliothèque","Médiathèque",null,"Bibliothèque qui prête aussi films, musique et jeux."],
+    ["Banque","Bureau de poste"],
+    ["Pharmacie","Parapharmacie"],
+    ["Boulangerie","Épicerie"],
+    ["Village","Hameau",null,"Groupe de quelques maisons isolées, sans église ni commerce."],
+    ["Ville","Métropole"],
+    ["Quartier","Banlieue"],
+    ["Paris","Londres"],
+    ["Rome","Athènes"],
+    ["Tokyo","Séoul"],
+    ["New York","Chicago"],
+    ["Le Caire","Marrakech"],
+    ["Dakar","Abidjan"],
+    ["Rio de Janeiro","Buenos Aires"],
+    ["Tour Eiffel","Statue de la Liberté"],
+    ["Pyramides","Colisée"],
+    ["Sahara","Amazonie"],
+    ["Everest","Kilimandjaro"],
+    ["Falaise","Dune"],
+    ["Vallée","Canyon"],
+    ["Plateau","Plaine"],
+    ["Glacier","Banquise"],
+    ["Marais","Mangrove",null,"Forêt tropicale les pieds dans une eau salée."],
+    ["Oasis","Puits"],
+    ["Col","Sommet"],
+    ["Sentier","Piste"],
+    ["Frontière","Douane"],
+    ["Ambassade","Consulat"],
+    ["Mairie","Préfecture"],
+    ["Commissariat","Caserne"],
+    ["Tribunal","Prison"],
+    ["Usine","Entrepôt"],
+    ["Chantier","Carrière"],
+    ["Ferme","Grange"],
+    ["Moulin","Silo"],
+    ["Phare","Digue"],
+    ["Cimetière","Mémorial"],
+    ["Théâtre","Opéra"],
+    ["Cirque","Fête foraine"],
+    ["Salle de sport","Spa"],
+    ["Auberge de jeunesse","Chambre d'hôtes"],
+    ["Aire de repos","Station-service"],
+    ["Berlin","Vienne"],
+    ["Madrid","Lisbonne"],
+    ["Istanbul","Beyrouth"],
+    ["Nairobi","Addis-Abeba"],
+    ["Sydney","Auckland"],
+    ["Montréal","Québec"],
+    ["Grande Muraille","Taj Mahal"]
   ]
 }

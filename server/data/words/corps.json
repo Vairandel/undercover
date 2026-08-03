@@ -3,191 +3,80 @@
   "label": "Corps & Santé",
   "emoji": "🩺",
   "pairs": [
-    [
-      "Tête",
-      "Crâne"
-    ],
-    [
-      "Cheveux",
-      "Barbe"
-    ],
-    [
-      "Œil",
-      "Sourcil"
-    ],
-    [
-      "Nez",
-      "Narine"
-    ],
-    [
-      "Bouche",
-      "Lèvres"
-    ],
-    [
-      "Dent",
-      "Molaire",
-      null,
-      "Grosse dent du fond, qui broie les aliments."
-    ],
-    [
-      "Langue",
-      "Palais"
-    ],
-    [
-      "Oreille",
-      "Tympan",
-      null,
-      "Membrane du fond de l'oreille qui vibre au son."
-    ],
-    [
-      "Cou",
-      "Nuque",
-      null,
-      "Arrière du cou, sous le crâne."
-    ],
-    [
-      "Épaule",
-      "Clavicule",
-      null,
-      "Os long qui relie l'épaule au sternum."
-    ],
-    [
-      "Bras",
-      "Avant-bras"
-    ],
-    [
-      "Coude",
-      "Poignet"
-    ],
-    [
-      "Main",
-      "Paume"
-    ],
-    [
-      "Doigt",
-      "Pouce"
-    ],
-    [
-      "Ongle",
-      "Cuticule",
-      null,
-      "Fine peau morte à la base de l'ongle."
-    ],
-    [
-      "Dos",
-      "Colonne vertébrale"
-    ],
-    [
-      "Ventre",
-      "Estomac"
-    ],
-    [
-      "Cœur",
-      "Poumon"
-    ],
-    [
-      "Foie",
-      "Rein"
-    ],
-    [
-      "Cerveau",
-      "Nerf"
-    ],
-    [
-      "Os",
-      "Muscle"
-    ],
-    [
-      "Genou",
-      "Cheville"
-    ],
-    [
-      "Jambe",
-      "Cuisse"
-    ],
-    [
-      "Pied",
-      "Talon"
-    ],
-    [
-      "Peau",
-      "Grain de beauté"
-    ],
-    [
-      "Sang",
-      "Plasma",
-      null,
-      "Partie liquide et jaunâtre du sang."
-    ],
-    [
-      "Rhume",
-      "Grippe"
-    ],
-    [
-      "Fièvre",
-      "Frisson"
-    ],
-    [
-      "Toux",
-      "Éternuement"
-    ],
-    [
-      "Migraine",
-      "Vertige"
-    ],
-    [
-      "Allergie",
-      "Éruption"
-    ],
-    [
-      "Blessure",
-      "Cicatrice"
-    ],
-    [
-      "Bleu",
-      "Bosse"
-    ],
-    [
-      "Fracture",
-      "Entorse",
-      null,
-      "Ligament étiré ou déchiré, sans fracture."
-    ],
-    [
-      "Piqûre",
-      "Vaccin"
-    ],
-    [
-      "Médicament",
-      "Sirop"
-    ],
-    [
-      "Pansement",
-      "Plâtre"
-    ],
-    [
-      "Ordonnance",
-      "Consultation"
-    ],
-    [
-      "Radiographie",
-      "Échographie",
-      null,
-      "Image de l'intérieur du corps obtenue par ultrasons."
-    ],
-    [
-      "Opération",
-      "Anesthésie",
-      null,
-      "Suppression de la douleur avant une opération."
-    ],
-    [
-      "Régime",
-      "Jeûne"
-    ],
-    [
-      "Sommeil",
-      "Sieste"
-    ]
+    ["Tête","Crâne"],
+    ["Cheveux","Barbe"],
+    ["Œil","Sourcil"],
+    ["Nez","Narine"],
+    ["Bouche","Lèvres"],
+    ["Dent","Molaire",null,"Grosse dent du fond, qui broie les aliments."],
+    ["Langue","Palais"],
+    ["Oreille","Tympan",null,"Membrane du fond de l'oreille qui vibre au son."],
+    ["Cou","Nuque",null,"Arrière du cou, sous le crâne."],
+    ["Épaule","Clavicule",null,"Os long qui relie l'épaule au sternum."],
+    ["Bras","Avant-bras"],
+    ["Coude","Poignet"],
+    ["Main","Paume"],
+    ["Doigt","Pouce"],
+    ["Ongle","Cuticule",null,"Fine peau morte à la base de l'ongle."],
+    ["Dos","Colonne vertébrale"],
+    ["Ventre","Estomac"],
+    ["Cœur","Poumon"],
+    ["Foie","Rein"],
+    ["Cerveau","Nerf"],
+    ["Os","Muscle"],
+    ["Genou","Cheville"],
+    ["Jambe","Cuisse"],
+    ["Pied","Talon"],
+    ["Peau","Grain de beauté"],
+    ["Sang","Plasma",null,"Partie liquide et jaunâtre du sang."],
+    ["Rhume","Grippe"],
+    ["Fièvre","Frisson"],
+    ["Toux","Éternuement"],
+    ["Migraine","Vertige"],
+    ["Allergie","Éruption"],
+    ["Blessure","Cicatrice"],
+    ["Bleu","Bosse"],
+    ["Fracture","Entorse",null,"Ligament étiré ou déchiré, sans fracture."],
+    ["Piqûre","Vaccin"],
+    ["Médicament","Sirop"],
+    ["Pansement","Plâtre"],
+    ["Ordonnance","Consultation"],
+    ["Radiographie","Échographie",null,"Image de l'intérieur du corps obtenue par ultrasons."],
+    ["Opération","Anesthésie",null,"Suppression de la douleur avant une opération."],
+    ["Régime","Jeûne"],
+    ["Sommeil","Sieste"],
+    ["Front","Tempe"],
+    ["Joue","Menton"],
+    ["Cil","Paupière"],
+    ["Pupille","Iris"],
+    ["Gencive","Émail"],
+    ["Gorge","Amygdale"],
+    ["Larynx","Trachée"],
+    ["Aisselle","Aine"],
+    ["Côte","Sternum"],
+    ["Hanche","Bassin"],
+    ["Mollet","Tibia"],
+    ["Orteil","Voûte plantaire"],
+    ["Tendon","Ligament"],
+    ["Articulation","Cartilage"],
+    ["Artère","Veine"],
+    ["Intestin","Côlon"],
+    ["Pancréas","Rate",null,"Organe du ventre qui filtre le sang, sous les côtes gauches."],
+    ["Vessie","Uretère"],
+    ["Thyroïde","Hypophyse",null,"Petite glande du cerveau qui commande les autres."],
+    ["Moelle","Vertèbre"],
+    ["Angine","Bronchite"],
+    ["Otite","Sinusite"],
+    ["Varicelle","Rougeole"],
+    ["Asthme","Essoufflement"],
+    ["Nausée","Brûlure d'estomac"],
+    ["Crampe","Courbature"],
+    ["Ampoule","Écorchure"],
+    ["Brûlure","Coup de soleil"],
+    ["Insomnie","Ronflement"],
+    ["Carie","Détartrage"],
+    ["Prise de sang","Perfusion"],
+    ["Attelle","Béquille"],
+    ["Kiné","Rééducation"]
   ]
 }

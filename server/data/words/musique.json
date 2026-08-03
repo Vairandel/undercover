@@ -3,191 +3,80 @@
   "label": "Musique",
   "emoji": "🎵",
   "pairs": [
-    [
-      "Guitare",
-      "Ukulélé"
-    ],
-    [
-      "Piano",
-      "Clavier"
-    ],
-    [
-      "Violon",
-      "Alto",
-      null,
-      "Instrument à cordes un peu plus grand et plus grave que le violon."
-    ],
-    [
-      "Violoncelle",
-      "Contrebasse"
-    ],
-    [
-      "Batterie",
-      "Percussions"
-    ],
-    [
-      "Trompette",
-      "Trombone"
-    ],
-    [
-      "Saxophone",
-      "Clarinette"
-    ],
-    [
-      "Flûte",
-      "Harmonica"
-    ],
-    [
-      "Harpe",
-      "Cithare",
-      null,
-      "Instrument à cordes pincées, posé à plat sur les genoux."
-    ],
-    [
-      "Djembé",
-      "Bongo",
-      null,
-      "Paire de petits tambours joués aux mains, coincés entre les genoux."
-    ],
-    [
-      "Accordéon",
-      "Orgue"
-    ],
-    [
-      "Micro",
-      "Casque"
-    ],
-    [
-      "Enceinte",
-      "Ampli"
-    ],
-    [
-      "Concert",
-      "Festival"
-    ],
-    [
-      "Album",
-      "Single"
-    ],
-    [
-      "Refrain",
-      "Couplet"
-    ],
-    [
-      "Mélodie",
-      "Harmonie"
-    ],
-    [
-      "Rythme",
-      "Tempo"
-    ],
-    [
-      "Partition",
-      "Tablature",
-      null,
-      "Notation qui indique où poser les doigts plutôt que les notes."
-    ],
-    [
-      "Chorale",
-      "Orchestre"
-    ],
-    [
-      "Chanteur",
-      "Rappeur"
-    ],
-    [
-      "DJ",
-      "Producteur"
-    ],
-    [
-      "Rock",
-      "Metal"
-    ],
-    [
-      "Pop",
-      "Variété"
-    ],
-    [
-      "Rap",
-      "Slam",
-      null,
-      "Poésie dite à voix haute, sans musique."
-    ],
-    [
-      "Jazz",
-      "Blues"
-    ],
-    [
-      "Reggae",
-      "Ska",
-      null,
-      "Musique jamaïcaine rapide et cuivrée, ancêtre du reggae."
-    ],
-    [
-      "Classique",
-      "Opéra"
-    ],
-    [
-      "Techno",
-      "House"
-    ],
-    [
-      "Afrobeat",
-      "Coupé-décalé"
-    ],
-    [
-      "Salsa",
-      "Bachata",
-      null,
-      "Danse et musique dominicaines, lentes et sentimentales."
-    ],
-    [
-      "Country",
-      "Folk"
-    ],
-    [
-      "Playlist",
-      "Radio"
-    ],
-    [
-      "Spotify",
-      "Deezer"
-    ],
-    [
-      "Karaoké",
-      "Blind test"
-    ],
-    [
-      "Clip",
-      "Live"
-    ],
-    [
-      "Tournée",
-      "Showcase",
-      null,
-      "Mini-concert promotionnel, court et privé."
-    ],
-    [
-      "Disque d'or",
-      "Grammy"
-    ],
-    [
-      "Vinyle",
-      "Cassette"
-    ],
-    [
-      "Baladeur",
-      "Chaîne hi-fi",
-      "Petit lecteur de musique portable.",
-      "Ensemble d'appareils audio de salon, avec enceintes séparées."
-    ],
-    [
-      "Berceuse",
-      "Hymne"
-    ],
-    [
-      "Sonnerie",
-      "Générique"
-    ]
+    ["Guitare","Ukulélé"],
+    ["Piano","Clavier"],
+    ["Violon","Alto",null,"Instrument à cordes un peu plus grand et plus grave que le violon."],
+    ["Violoncelle","Contrebasse"],
+    ["Batterie","Percussions"],
+    ["Trompette","Trombone"],
+    ["Saxophone","Clarinette"],
+    ["Flûte","Harmonica"],
+    ["Harpe","Cithare",null,"Instrument à cordes pincées, posé à plat sur les genoux."],
+    ["Djembé","Bongo",null,"Paire de petits tambours joués aux mains, coincés entre les genoux."],
+    ["Accordéon","Orgue"],
+    ["Micro","Casque"],
+    ["Enceinte","Ampli"],
+    ["Concert","Festival"],
+    ["Album","Single"],
+    ["Refrain","Couplet"],
+    ["Mélodie","Harmonie"],
+    ["Rythme","Tempo"],
+    ["Partition","Tablature",null,"Notation qui indique où poser les doigts plutôt que les notes."],
+    ["Chorale","Orchestre"],
+    ["Chanteur","Rappeur"],
+    ["DJ","Producteur"],
+    ["Rock","Metal"],
+    ["Pop","Variété"],
+    ["Rap","Slam",null,"Poésie dite à voix haute, sans musique."],
+    ["Jazz","Blues"],
+    ["Reggae","Ska",null,"Musique jamaïcaine rapide et cuivrée, ancêtre du reggae."],
+    ["Classique","Opéra"],
+    ["Techno","House"],
+    ["Afrobeat","Coupé-décalé"],
+    ["Salsa","Bachata",null,"Danse et musique dominicaines, lentes et sentimentales."],
+    ["Country","Folk"],
+    ["Playlist","Radio"],
+    ["Spotify","Deezer"],
+    ["Karaoké","Blind test"],
+    ["Clip","Live"],
+    ["Tournée","Showcase",null,"Mini-concert promotionnel, court et privé."],
+    ["Disque d'or","Grammy"],
+    ["Vinyle","Cassette"],
+    ["Baladeur","Chaîne hi-fi","Petit lecteur de musique portable.","Ensemble d'appareils audio de salon, avec enceintes séparées."],
+    ["Berceuse","Hymne"],
+    ["Sonnerie","Générique"],
+    ["Banjo","Mandoline"],
+    ["Sitar","Balafon","Luth indien à long manche et cordes résonantes.","Xylophone africain aux lames de bois et calebasses."],
+    ["Kora","Ngoni","Harpe-luth ouest-africaine à vingt et une cordes.","Petit luth traditionnel du Mali."],
+    ["Cornemuse","Bandonéon",null,"Petit accordéon carré, âme du tango argentin."],
+    ["Tambourin","Maracas"],
+    ["Triangle","Xylophone"],
+    ["Gong","Cymbale"],
+    ["Synthétiseur","Boîte à rythmes"],
+    ["Table de mixage","Platine"],
+    ["Studio","Cabine d'enregistrement"],
+    ["Maquette","Démo"],
+    ["Featuring","Reprise"],
+    ["Remix","Mashup"],
+    ["Sample","Boucle"],
+    ["Basse","Aigu"],
+    ["Note","Accord"],
+    ["Gamme","Solfège"],
+    ["Clé de sol","Métronome"],
+    ["Répétition","Balance"],
+    ["Coulisses","Loge"],
+    ["Première partie","Tête d'affiche"],
+    ["Backstage","Fosse"],
+    ["Rappel","Bis"],
+    ["Soul","Funk"],
+    ["R&B","Zouk"],
+    ["Punk","Grunge"],
+    ["Disco","Électro"],
+    ["Raï","Gnawa","Musique populaire algérienne née à Oran.","Musique rituelle marocaine, transe et guembri."],
+    ["Flamenco","Fado",null,"Chant portugais mélancolique, guitare et voix."],
+    ["Gospel","Negro spiritual"],
+    ["Bossa nova","Samba"],
+    ["Comédie musicale","Opérette"],
+    ["Fanfare","Harmonie"]
   ]
 }

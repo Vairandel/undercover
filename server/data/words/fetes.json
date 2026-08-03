@@ -3,181 +3,80 @@
   "label": "Fêtes & Traditions",
   "emoji": "🎉",
   "pairs": [
-    [
-      "Anniversaire",
-      "Fête"
-    ],
-    [
-      "Mariage",
-      "Fiançailles"
-    ],
-    [
-      "Baptême",
-      "Communion"
-    ],
-    [
-      "Noël",
-      "Nouvel An"
-    ],
-    [
-      "Réveillon",
-      "Soirée"
-    ],
-    [
-      "Sapin",
-      "Guirlande"
-    ],
-    [
-      "Cadeau",
-      "Surprise"
-    ],
-    [
-      "Père Noël",
-      "Saint Nicolas"
-    ],
-    [
-      "Pâques",
-      "Chasse aux œufs"
-    ],
-    [
-      "Halloween",
-      "Carnaval"
-    ],
-    [
-      "Déguisement",
-      "Masque"
-    ],
-    [
-      "Feu d'artifice",
-      "Pétard"
-    ],
-    [
-      "Bal",
-      "Discothèque"
-    ],
-    [
-      "Confettis",
-      "Serpentin",
-      null,
-      "Long ruban de papier enroulé, lancé lors des fêtes."
-    ],
-    [
-      "Ballon",
-      "Banderole"
-    ],
-    [
-      "Bougie",
-      "Gâteau d'anniversaire"
-    ],
-    [
-      "Toast",
-      "Discours"
-    ],
-    [
-      "Invitation",
-      "Faire-part",
-      null,
-      "Carte annonçant officiellement un mariage ou une naissance."
-    ],
-    [
-      "Témoin",
-      "Demoiselle d'honneur"
-    ],
-    [
-      "Alliance",
-      "Bouquet de la mariée"
-    ],
-    [
-      "Lune de miel",
-      "Voyage de noces"
-    ],
-    [
-      "Fête des mères",
-      "Fête des pères"
-    ],
-    [
-      "Saint-Valentin",
-      "Rendez-vous"
-    ],
-    [
-      "Ramadan",
-      "Aïd",
-      null,
-      "Grande fête religieuse musulmane."
-    ],
-    [
-      "Tabaski",
-      "Korité",
-      "Fête du sacrifice du mouton, en Afrique de l'Ouest.",
-      "Fête marquant la fin du jeûne du ramadan."
-    ],
-    [
-      "Diwali",
-      "Nouvel An chinois",
-      "Fête hindoue des lumières.",
-      null
-    ],
-    [
-      "Thanksgiving",
-      "Repas de famille"
-    ],
-    [
-      "Fête nationale",
-      "Défilé"
-    ],
-    [
-      "Fête de la musique",
-      "Concert de rue"
-    ],
-    [
-      "Kermesse",
-      "Foire",
-      "Fête de plein air avec stands et jeux.",
-      null
-    ],
-    [
-      "Baby shower",
-      "Enterrement de vie de garçon"
-    ],
-    [
-      "Pot de départ",
-      "Crémaillère",
-      null,
-      "Fête donnée pour un emménagement."
-    ],
-    [
-      "Remise de diplôme",
-      "Cérémonie"
-    ],
-    [
-      "Procession",
-      "Pèlerinage"
-    ],
-    [
-      "Veillée",
-      "Conte"
-    ],
-    [
-      "Tirage au sort",
-      "Tombola",
-      null,
-      "Loterie de fête où l'on gagne des lots."
-    ],
-    [
-      "Karaoké",
-      "Blind test"
-    ],
-    [
-      "Buffet",
-      "Traiteur"
-    ],
-    [
-      "Photobooth",
-      "Album photo"
-    ],
-    [
-      "Souvenir",
-      "Porte-bonheur"
-    ]
+    ["Anniversaire","Fête"],
+    ["Mariage","Fiançailles"],
+    ["Baptême","Communion"],
+    ["Noël","Nouvel An"],
+    ["Réveillon","Soirée"],
+    ["Sapin","Guirlande"],
+    ["Cadeau","Surprise"],
+    ["Père Noël","Saint Nicolas"],
+    ["Pâques","Chasse aux œufs"],
+    ["Halloween","Carnaval"],
+    ["Déguisement","Masque"],
+    ["Feu d'artifice","Pétard"],
+    ["Bal","Discothèque"],
+    ["Confettis","Serpentin",null,"Long ruban de papier enroulé, lancé lors des fêtes."],
+    ["Ballon","Banderole"],
+    ["Bougie","Gâteau d'anniversaire"],
+    ["Toast","Discours"],
+    ["Invitation","Faire-part",null,"Carte annonçant officiellement un mariage ou une naissance."],
+    ["Témoin","Demoiselle d'honneur"],
+    ["Alliance","Bouquet de la mariée"],
+    ["Lune de miel","Voyage de noces"],
+    ["Fête des mères","Fête des pères"],
+    ["Saint-Valentin","Rendez-vous"],
+    ["Ramadan","Aïd",null,"Grande fête religieuse musulmane."],
+    ["Tabaski","Korité","Fête du sacrifice du mouton, en Afrique de l'Ouest.","Fête marquant la fin du jeûne du ramadan."],
+    ["Diwali","Nouvel An chinois","Fête hindoue des lumières.",null],
+    ["Thanksgiving","Repas de famille"],
+    ["Fête nationale","Défilé"],
+    ["Fête de la musique","Concert de rue"],
+    ["Kermesse","Foire","Fête de plein air avec stands et jeux.",null],
+    ["Baby shower","Enterrement de vie de garçon"],
+    ["Pot de départ","Crémaillère",null,"Fête donnée pour un emménagement."],
+    ["Remise de diplôme","Cérémonie"],
+    ["Procession","Pèlerinage"],
+    ["Veillée","Conte"],
+    ["Tirage au sort","Tombola",null,"Loterie de fête où l'on gagne des lots."],
+    ["Chaises musicales","Limbo"],
+    ["Buffet","Traiteur"],
+    ["Photobooth","Album photo"],
+    ["Souvenir","Porte-bonheur"],
+    ["Baptême civil","Parrainage"],
+    ["Bar-mitsva","Confirmation"],
+    ["Épiphanie","Galette des rois"],
+    ["Chandeleur","Mardi gras"],
+    ["Poisson d'avril","Farce"],
+    ["Fête du travail","Muguet"],
+    ["Beaujolais nouveau","Vendanges"],
+    ["Soirée pyjama","Nuit blanche"],
+    ["Apéro dînatoire","Barbecue entre amis"],
+    ["Bal masqué","Soirée déguisée"],
+    ["Char","Fanfare de rue"],
+    ["Cotillons","Chapeau de fête"],
+    ["Bougie magique","Cierge"],
+    ["Couronne","Fève"],
+    ["Œuf en chocolat","Cloche de Pâques"],
+    ["Citrouille","Toile d'araignée"],
+    ["Bonbons d'Halloween","Farce ou friandise"],
+    ["Bûche de Noël","Pain d'épices"],
+    ["Chaussette de Noël","Calendrier de l'Avent"],
+    ["Crèche","Santon",null,"Petite figurine peinte de la crèche provençale."],
+    ["Renne du Père Noël","Traîneau volant"],
+    ["Compte à rebours","Douze coups de minuit"],
+    ["Bonne résolution","Carte de vœux"],
+    ["Henné","Dot"],
+    ["Griot","Djembéfola","Conteur et musicien traditionnel ouest-africain.","Joueur de djembé."],
+    ["Fête des voisins","Vide-grenier"],
+    ["Carnaval de Rio","Notting Hill"],
+    ["Oktoberfest","Fête du vin"],
+    ["Hanoukka","Pessah"],
+    ["Nouvel An berbère","Yennayer"],
+    ["Fête du mouton","Repas de fête"],
+    ["Anniversaire de mariage","Noces d'or"],
+    ["Départ à la retraite","Pot de bienvenue"],
+    ["Baptême de l'air","Première fois"],
+    ["Feu de camp","Veillée scoute"]
   ]
 }

@@ -3,189 +3,80 @@
   "label": "Nature & Météo",
   "emoji": "🌿",
   "pairs": [
-    [
-      "Pluie",
-      "Averse"
-    ],
-    [
-      "Neige",
-      "Grêle"
-    ],
-    [
-      "Orage",
-      "Tonnerre"
-    ],
-    [
-      "Éclair",
-      "Foudre"
-    ],
-    [
-      "Brouillard",
-      "Brume"
-    ],
-    [
-      "Vent",
-      "Brise"
-    ],
-    [
-      "Tempête",
-      "Ouragan",
-      null,
-      "Cyclone tropical très violent de l'Atlantique."
-    ],
-    [
-      "Tornade",
-      "Cyclone"
-    ],
-    [
-      "Soleil",
-      "Rayon"
-    ],
-    [
-      "Nuage",
-      "Ciel"
-    ],
-    [
-      "Arc-en-ciel",
-      "Mirage"
-    ],
-    [
-      "Lune",
-      "Étoile"
-    ],
-    [
-      "Planète",
-      "Comète"
-    ],
-    [
-      "Aurore boréale",
-      "Coucher de soleil"
-    ],
-    [
-      "Sécheresse",
-      "Canicule"
-    ],
-    [
-      "Inondation",
-      "Marée"
-    ],
-    [
-      "Tremblement de terre",
-      "Éruption"
-    ],
-    [
-      "Avalanche",
-      "Glissement de terrain"
-    ],
-    [
-      "Arbre",
-      "Arbuste"
-    ],
-    [
-      "Chêne",
-      "Hêtre",
-      null,
-      "Grand arbre à écorce lisse et grise, feuilles ovales."
-    ],
-    [
-      "Sapin",
-      "Pin"
-    ],
-    [
-      "Palmier",
-      "Baobab",
-      null,
-      "Arbre africain au tronc énorme et aux branches courtes."
-    ],
-    [
-      "Bambou",
-      "Roseau"
-    ],
-    [
-      "Fleur",
-      "Bouquet"
-    ],
-    [
-      "Rose",
-      "Pivoine",
-      null,
-      "Grosse fleur ronde et fournie, blanche ou rose."
-    ],
-    [
-      "Tournesol",
-      "Marguerite"
-    ],
-    [
-      "Tulipe",
-      "Jonquille",
-      null,
-      "Fleur jaune de printemps, à trompette centrale."
-    ],
-    [
-      "Cactus",
-      "Aloe vera"
-    ],
-    [
-      "Feuille",
-      "Pétale"
-    ],
-    [
-      "Racine",
-      "Tronc"
-    ],
-    [
-      "Herbe",
-      "Mousse"
-    ],
-    [
-      "Champignon",
-      "Truffe"
-    ],
-    [
-      "Sable",
-      "Gravier"
-    ],
-    [
-      "Rocher",
-      "Caillou"
-    ],
-    [
-      "Terre",
-      "Argile"
-    ],
-    [
-      "Boue",
-      "Vase"
-    ],
-    [
-      "Glace",
-      "Givre",
-      null,
-      "Fine couche de glace blanche déposée par l'humidité."
-    ],
-    [
-      "Océan",
-      "Mer"
-    ],
-    [
-      "Vague",
-      "Ressac",
-      null,
-      "Retour violent de la vague après avoir frappé la côte."
-    ],
-    [
-      "Récif",
-      "Atoll",
-      null,
-      "Île corallienne en anneau entourant un lagon."
-    ],
-    [
-      "Printemps",
-      "Été"
-    ],
-    [
-      "Automne",
-      "Hiver"
-    ]
+    ["Pluie","Averse"],
+    ["Neige","Grêle"],
+    ["Orage","Tonnerre"],
+    ["Éclair","Foudre"],
+    ["Brouillard","Brume"],
+    ["Vent","Brise"],
+    ["Tempête","Ouragan",null,"Cyclone tropical très violent de l'Atlantique."],
+    ["Tornade","Cyclone"],
+    ["Soleil","Rayon"],
+    ["Nuage","Ciel"],
+    ["Arc-en-ciel","Mirage"],
+    ["Lune","Étoile"],
+    ["Planète","Comète"],
+    ["Aurore boréale","Coucher de soleil"],
+    ["Sécheresse","Canicule"],
+    ["Inondation","Marée"],
+    ["Tremblement de terre","Éruption"],
+    ["Avalanche","Glissement de terrain"],
+    ["Arbre","Arbuste"],
+    ["Chêne","Hêtre",null,"Grand arbre à écorce lisse et grise, feuilles ovales."],
+    ["Sapin","Pin"],
+    ["Palmier","Baobab",null,"Arbre africain au tronc énorme et aux branches courtes."],
+    ["Bambou","Roseau"],
+    ["Fleur","Bouquet"],
+    ["Rose","Pivoine",null,"Grosse fleur ronde et fournie, blanche ou rose."],
+    ["Tournesol","Marguerite"],
+    ["Tulipe","Jonquille",null,"Fleur jaune de printemps, à trompette centrale."],
+    ["Cactus","Aloe vera"],
+    ["Feuille","Pétale"],
+    ["Racine","Tronc"],
+    ["Herbe","Mousse"],
+    ["Champignon","Truffe"],
+    ["Sable","Gravier"],
+    ["Rocher","Caillou"],
+    ["Terre","Argile"],
+    ["Boue","Vase"],
+    ["Glace","Givre",null,"Fine couche de glace blanche déposée par l'humidité."],
+    ["Océan","Mer"],
+    ["Vague","Ressac",null,"Retour violent de la vague après avoir frappé la côte."],
+    ["Récif","Atoll",null,"Île corallienne en anneau entourant un lagon."],
+    ["Printemps","Été"],
+    ["Automne","Hiver"],
+    ["Bruine","Crachin",null,"Pluie fine et continue, typique des côtes."],
+    ["Verglas","Gel"],
+    ["Rosée","Condensation"],
+    ["Grêlon","Flocon"],
+    ["Bourrasque","Rafale"],
+    ["Alizé","Mousson","Vent régulier des zones tropicales.","Vent saisonnier qui apporte la grande saison des pluies."],
+    ["Harmattan","Sirocco","Vent sec et poussiéreux venu du Sahara vers le golfe de Guinée.","Vent chaud du désert vers la Méditerranée."],
+    ["Éclipse","Croissant de lune"],
+    ["Galaxie","Nébuleuse"],
+    ["Météorite","Astéroïde"],
+    ["Satellite","Station spatiale"],
+    ["Équinoxe","Solstice"],
+    ["Marée haute","Marée basse"],
+    ["Courant","Tourbillon"],
+    ["Source","Torrent"],
+    ["Delta","Estuaire","Embouchure d'un fleuve divisée en plusieurs bras.","Embouchure d'un fleuve élargie où la mer remonte."],
+    ["Bosquet","Haie"],
+    ["Saule","Peuplier"],
+    ["Bouleau","Érable"],
+    ["Olivier","Figuier"],
+    ["Cyprès","Cèdre"],
+    ["Lierre","Vigne vierge"],
+    ["Fougère","Trèfle"],
+    ["Lavande","Thym"],
+    ["Coquelicot","Bleuet"],
+    ["Orchidée","Lys"],
+    ["Nénuphar","Lotus"],
+    ["Graine","Bourgeon"],
+    ["Écorce","Sève"],
+    ["Pollen","Nectar"],
+    ["Ruisseau","Mare"],
+    ["Toundra","Steppe","Plaine glacée du Grand Nord, sans arbres.","Vaste plaine herbeuse et sèche."],
+    ["Marécage","Tourbière",null,"Sol gorgé d'eau où la végétation morte s'accumule."]
   ]
 }

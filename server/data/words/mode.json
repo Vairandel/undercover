@@ -3,191 +3,80 @@
   "label": "Vêtements & Mode",
   "emoji": "👗",
   "pairs": [
-    [
-      "Pantalon",
-      "Jean"
-    ],
-    [
-      "Short",
-      "Bermuda"
-    ],
-    [
-      "Jupe",
-      "Robe"
-    ],
-    [
-      "Chemise",
-      "Chemisier"
-    ],
-    [
-      "T-shirt",
-      "Polo"
-    ],
-    [
-      "Pull",
-      "Gilet"
-    ],
-    [
-      "Veste",
-      "Blouson"
-    ],
-    [
-      "Manteau",
-      "Imperméable"
-    ],
-    [
-      "Costume",
-      "Smoking"
-    ],
-    [
-      "Survêtement",
-      "Pyjama"
-    ],
-    [
-      "Maillot de bain",
-      "Bikini"
-    ],
-    [
-      "Chaussettes",
-      "Collants"
-    ],
-    [
-      "Baskets",
-      "Tennis"
-    ],
-    [
-      "Bottes",
-      "Bottines",
-      null,
-      "Bottes courtes s'arrêtant à la cheville."
-    ],
-    [
-      "Sandales",
-      "Tongs"
-    ],
-    [
-      "Escarpins",
-      "Ballerines",
-      "Chaussures féminines fermées, à talon, sans lacet.",
-      null
-    ],
-    [
-      "Chapeau",
-      "Casquette"
-    ],
-    [
-      "Bonnet",
-      "Béret",
-      null,
-      "Coiffe ronde et plate, sans visière."
-    ],
-    [
-      "Écharpe",
-      "Foulard"
-    ],
-    [
-      "Gants",
-      "Moufles",
-      null,
-      "Gants sans doigts séparés, sauf le pouce."
-    ],
-    [
-      "Ceinture",
-      "Bretelles",
-      null,
-      "Bandes passées sur les épaules pour tenir un pantalon."
-    ],
-    [
-      "Cravate",
-      "Nœud papillon"
-    ],
-    [
-      "Sac à main",
-      "Pochette"
-    ],
-    [
-      "Bijou",
-      "Accessoire"
-    ],
-    [
-      "Collier",
-      "Pendentif"
-    ],
-    [
-      "Bracelet",
-      "Chaîne"
-    ],
-    [
-      "Bague",
-      "Alliance"
-    ],
-    [
-      "Boucles d'oreilles",
-      "Piercing"
-    ],
-    [
-      "Lunettes de soleil",
-      "Lunettes de vue"
-    ],
-    [
-      "Parfum",
-      "Eau de toilette"
-    ],
-    [
-      "Maquillage",
-      "Fond de teint"
-    ],
-    [
-      "Rouge à lèvres",
-      "Gloss",
-      null,
-      "Brillant à lèvres transparent ou légèrement teinté."
-    ],
-    [
-      "Vernis",
-      "Manucure"
-    ],
-    [
-      "Tatouage",
-      "Henné"
-    ],
-    [
-      "Défilé",
-      "Podium"
-    ],
-    [
-      "Mannequin",
-      "Styliste"
-    ],
-    [
-      "Coton",
-      "Lin"
-    ],
-    [
-      "Cuir",
-      "Daim",
-      null,
-      "Cuir au toucher velouté, mat et non lustré."
-    ],
-    [
-      "Soie",
-      "Satin",
-      null,
-      "Tissu lisse et luisant sur une face."
-    ],
-    [
-      "Laine",
-      "Cachemire",
-      null,
-      "Laine très fine et douce, issue d'une chèvre."
-    ],
-    [
-      "Boutique",
-      "Friperie"
-    ],
-    [
-      "Soldes",
-      "Promotion"
-    ]
+    ["Pantalon","Jean"],
+    ["Short","Bermuda"],
+    ["Jupe","Robe"],
+    ["Chemise","Chemisier"],
+    ["T-shirt","Polo"],
+    ["Pull","Gilet"],
+    ["Veste","Blouson"],
+    ["Manteau","Imperméable"],
+    ["Costume","Smoking"],
+    ["Survêtement","Pyjama"],
+    ["Maillot de bain","Bikini"],
+    ["Chaussettes","Collants"],
+    ["Baskets","Tennis"],
+    ["Bottes","Bottines",null,"Bottes courtes s'arrêtant à la cheville."],
+    ["Sandales","Tongs"],
+    ["Escarpins","Ballerines","Chaussures féminines fermées, à talon, sans lacet.",null],
+    ["Chapeau","Casquette"],
+    ["Bonnet","Béret",null,"Coiffe ronde et plate, sans visière."],
+    ["Écharpe","Foulard"],
+    ["Gants","Moufles",null,"Gants sans doigts séparés, sauf le pouce."],
+    ["Ceinture","Bretelles",null,"Bandes passées sur les épaules pour tenir un pantalon."],
+    ["Cravate","Nœud papillon"],
+    ["Sac à main","Pochette"],
+    ["Bijou","Accessoire"],
+    ["Collier","Pendentif"],
+    ["Bracelet","Chaîne"],
+    ["Bague","Alliance"],
+    ["Boucles d'oreilles","Piercing"],
+    ["Lunettes de soleil","Lunettes de vue"],
+    ["Parfum","Eau de toilette"],
+    ["Maquillage","Fond de teint"],
+    ["Rouge à lèvres","Gloss",null,"Brillant à lèvres transparent ou légèrement teinté."],
+    ["Vernis","Manucure"],
+    ["Tatouage","Henné"],
+    ["Défilé","Podium"],
+    ["Mannequin","Styliste"],
+    ["Coton","Lin"],
+    ["Cuir","Daim",null,"Cuir au toucher velouté, mat et non lustré."],
+    ["Soie","Satin",null,"Tissu lisse et luisant sur une face."],
+    ["Laine","Cachemire",null,"Laine très fine et douce, issue d'une chèvre."],
+    ["Boutique","Friperie"],
+    ["Soldes","Promotion"],
+    ["Sweat","Hoodie"],
+    ["Débardeur","Marcel"],
+    ["Combinaison","Salopette"],
+    ["Blazer","Trench"],
+    ["Doudoune","Parka"],
+    ["Poncho","Cape"],
+    ["Kimono","Peignoir"],
+    ["Boubou","Caftan",null,"Longue tunique ample portée au Maghreb."],
+    ["Sari","Kilt"],
+    ["Jupe plissée","Jupe crayon"],
+    ["Legging","Jogging"],
+    ["Mocassins","Derbies"],
+    ["Sabots","Espadrilles"],
+    ["Chaussons","Claquettes"],
+    ["Talons aiguilles","Compensées"],
+    ["Visière","Bandana"],
+    ["Turban","Voile"],
+    ["Mitaines","Manchettes"],
+    ["Broche","Épingle"],
+    ["Barrette","Chouchou"],
+    ["Sac banane","Besace"],
+    ["Cabas","Panier"],
+    ["Mascara","Eye-liner"],
+    ["Blush","Highlighter"],
+    ["Crème hydratante","Sérum"],
+    ["Après-shampoing","Masque capillaire"],
+    ["Tresse","Chignon"],
+    ["Frange","Dégradé"],
+    ["Velours","Tweed"],
+    ["Denim","Toile"],
+    ["Dentelle","Broderie"],
+    ["Fermeture éclair","Bouton-pression"],
+    ["Retouche","Ourlet"]
   ]
 }

@@ -3,225 +3,80 @@
   "label": "Animaux",
   "emoji": "🦊",
   "pairs": [
-    [
-      "Chien",
-      "Loup"
-    ],
-    [
-      "Chat",
-      "Lynx",
-      null,
-      "Félin sauvage à oreilles pointues et queue très courte."
-    ],
-    [
-      "Lion",
-      "Tigre"
-    ],
-    [
-      "Cheval",
-      "Âne"
-    ],
-    [
-      "Vache",
-      "Buffle"
-    ],
-    [
-      "Mouton",
-      "Chèvre"
-    ],
-    [
-      "Cochon",
-      "Sanglier"
-    ],
-    [
-      "Poule",
-      "Dinde"
-    ],
-    [
-      "Canard",
-      "Oie"
-    ],
-    [
-      "Pigeon",
-      "Tourterelle"
-    ],
-    [
-      "Aigle",
-      "Faucon"
-    ],
-    [
-      "Hibou",
-      "Chouette"
-    ],
-    [
-      "Corbeau",
-      "Pie"
-    ],
-    [
-      "Perroquet",
-      "Perruche"
-    ],
-    [
-      "Autruche",
-      "Émeu",
-      null,
-      "Grand oiseau coureur australien, incapable de voler."
-    ],
-    [
-      "Pingouin",
-      "Manchot",
-      "Oiseau marin de l'hémisphère nord, capable de voler.",
-      "Oiseau marin de l'Antarctique, qui ne vole pas."
-    ],
-    [
-      "Dauphin",
-      "Marsouin",
-      null,
-      "Petit cétacé trapu au museau court, cousin du dauphin."
-    ],
-    [
-      "Baleine",
-      "Cachalot",
-      null,
-      "Grand cétacé à tête carrée, plongeur des grandes profondeurs."
-    ],
-    [
-      "Requin",
-      "Orque"
-    ],
-    [
-      "Poisson rouge",
-      "Carpe"
-    ],
-    [
-      "Pieuvre",
-      "Calmar",
-      null,
-      "Mollusque marin allongé à dix bras."
-    ],
-    [
-      "Crabe",
-      "Homard"
-    ],
-    [
-      "Crevette",
-      "Écrevisse",
-      null,
-      "Petit crustacé d'eau douce, à pinces, qui rougit à la cuisson."
-    ],
-    [
-      "Tortue",
-      "Caméléon"
-    ],
-    [
-      "Serpent",
-      "Anguille"
-    ],
-    [
-      "Crocodile",
-      "Alligator",
-      null,
-      "Crocodilien à museau large et arrondi."
-    ],
-    [
-      "Grenouille",
-      "Crapaud"
-    ],
-    [
-      "Lézard",
-      "Iguane"
-    ],
-    [
-      "Papillon",
-      "Libellule"
-    ],
-    [
-      "Abeille",
-      "Guêpe"
-    ],
-    [
-      "Fourmi",
-      "Termite",
-      null,
-      "Insecte social pâle qui bâtit des termitières et ronge le bois."
-    ],
-    [
-      "Araignée",
-      "Scorpion"
-    ],
-    [
-      "Moustique",
-      "Mouche"
-    ],
-    [
-      "Escargot",
-      "Limace"
-    ],
-    [
-      "Souris",
-      "Rat"
-    ],
-    [
-      "Écureuil",
-      "Marmotte"
-    ],
-    [
-      "Lapin",
-      "Lièvre"
-    ],
-    [
-      "Hamster",
-      "Cochon d'Inde"
-    ],
-    [
-      "Renard",
-      "Chacal",
-      null,
-      "Canidé sauvage africain, plus petit que le loup."
-    ],
-    [
-      "Ours",
-      "Panda"
-    ],
-    [
-      "Singe",
-      "Gorille"
-    ],
-    [
-      "Éléphant",
-      "Rhinocéros"
-    ],
-    [
-      "Girafe",
-      "Zèbre"
-    ],
-    [
-      "Chameau",
-      "Dromadaire",
-      "Camélidé à deux bosses.",
-      "Camélidé à une seule bosse."
-    ],
-    [
-      "Kangourou",
-      "Wallaby",
-      null,
-      "Petit marsupial australien, version miniature du kangourou."
-    ],
-    [
-      "Hérisson",
-      "Porc-épic",
-      null,
-      "Rongeur couvert de longs piquants qu'il peut détacher."
-    ],
-    [
-      "Chauve-souris",
-      "Hirondelle"
-    ],
-    [
-      "Taupe",
-      "Blaireau",
-      null,
-      "Mammifère fouisseur au museau rayé de noir et blanc."
-    ]
+    ["Chien","Loup"],
+    ["Chat","Lynx",null,"Félin sauvage à oreilles pointues et queue très courte."],
+    ["Lion","Tigre"],
+    ["Cheval","Âne"],
+    ["Vache","Buffle"],
+    ["Mouton","Chèvre"],
+    ["Cochon","Sanglier"],
+    ["Poule","Dinde"],
+    ["Canard","Oie"],
+    ["Pigeon","Tourterelle"],
+    ["Aigle","Faucon"],
+    ["Hibou","Chouette"],
+    ["Corbeau","Pie"],
+    ["Perroquet","Perruche"],
+    ["Autruche","Émeu",null,"Grand oiseau coureur australien, incapable de voler."],
+    ["Pingouin","Manchot","Oiseau marin de l'hémisphère nord, capable de voler.","Oiseau marin de l'Antarctique, qui ne vole pas."],
+    ["Dauphin","Marsouin",null,"Petit cétacé trapu au museau court, cousin du dauphin."],
+    ["Baleine","Cachalot",null,"Grand cétacé à tête carrée, plongeur des grandes profondeurs."],
+    ["Requin","Orque"],
+    ["Poisson rouge","Carpe"],
+    ["Pieuvre","Calmar",null,"Mollusque marin allongé à dix bras."],
+    ["Crabe","Homard"],
+    ["Crevette","Écrevisse",null,"Petit crustacé d'eau douce, à pinces, qui rougit à la cuisson."],
+    ["Tortue","Caméléon"],
+    ["Serpent","Anguille"],
+    ["Crocodile","Alligator",null,"Crocodilien à museau large et arrondi."],
+    ["Grenouille","Crapaud"],
+    ["Lézard","Iguane"],
+    ["Papillon","Libellule"],
+    ["Abeille","Guêpe"],
+    ["Fourmi","Termite",null,"Insecte social pâle qui bâtit des termitières et ronge le bois."],
+    ["Araignée","Scorpion"],
+    ["Moustique","Mouche"],
+    ["Escargot","Limace"],
+    ["Souris","Rat"],
+    ["Écureuil","Marmotte"],
+    ["Lapin","Lièvre"],
+    ["Hamster","Cochon d'Inde"],
+    ["Renard","Chacal",null,"Canidé sauvage africain, plus petit que le loup."],
+    ["Ours","Panda"],
+    ["Singe","Gorille"],
+    ["Éléphant","Rhinocéros"],
+    ["Girafe","Zèbre"],
+    ["Chameau","Dromadaire","Camélidé à deux bosses.","Camélidé à une seule bosse."],
+    ["Kangourou","Wallaby",null,"Petit marsupial australien, version miniature du kangourou."],
+    ["Hérisson","Porc-épic",null,"Rongeur couvert de longs piquants qu'il peut détacher."],
+    ["Chauve-souris","Hirondelle"],
+    ["Taupe","Blaireau",null,"Mammifère fouisseur au museau rayé de noir et blanc."],
+    ["Coyote","Dingo",null,"Chien sauvage d'Australie, au pelage fauve."],
+    ["Panthère","Jaguar"],
+    ["Guépard","Léopard"],
+    ["Bison","Yak",null,"Bovin à longs poils des hauts plateaux d'Asie."],
+    ["Antilope","Gazelle"],
+    ["Élan","Renne"],
+    ["Cerf","Biche"],
+    ["Chevreuil","Daim"],
+    ["Phoque","Otarie"],
+    ["Morse","Éléphant de mer"],
+    ["Loutre","Castor"],
+    ["Raton laveur","Coati",null,"Petit mammifère d'Amérique au long museau et à la queue annelée."],
+    ["Furet","Belette"],
+    ["Moufette","Putois","Petit mammifère américain qui se défend par un jet nauséabond."],
+    ["Paresseux","Tatou"],
+    ["Fourmilier","Pangolin",null,"Mammifère couvert de grandes écailles, qui se roule en boule."],
+    ["Lama","Alpaga"],
+    ["Hippopotame","Tapir",null,"Mammifère trapu au museau en forme de petite trompe."],
+    ["Chimpanzé","Bonobo"],
+    ["Orang-outan","Babouin"],
+    ["Lémurien","Ouistiti"],
+    ["Flamant rose","Cigogne"],
+    ["Pélican","Cormoran"],
+    ["Mouette","Goéland"],
+    ["Colibri","Martin-pêcheur"],
+    ["Paon","Faisan"],
+    ["Caille","Perdrix"]
   ]
 }

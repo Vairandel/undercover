@@ -3,201 +3,80 @@
   "label": "Objets du quotidien",
   "emoji": "🪑",
   "pairs": [
-    [
-      "Chaise",
-      "Tabouret"
-    ],
-    [
-      "Canapé",
-      "Fauteuil"
-    ],
-    [
-      "Table",
-      "Bureau"
-    ],
-    [
-      "Lit",
-      "Matelas"
-    ],
-    [
-      "Oreiller",
-      "Coussin"
-    ],
-    [
-      "Couverture",
-      "Couette"
-    ],
-    [
-      "Armoire",
-      "Commode",
-      null,
-      "Meuble bas à tiroirs, pour ranger le linge."
-    ],
-    [
-      "Étagère",
-      "Bibliothèque"
-    ],
-    [
-      "Rideau",
-      "Store",
-      null,
-      "Panneau enroulable ou orientable qui filtre la lumière."
-    ],
-    [
-      "Tapis",
-      "Paillasson",
-      null,
-      "Petit tapis rugueux posé devant une porte d'entrée."
-    ],
-    [
-      "Miroir",
-      "Cadre"
-    ],
-    [
-      "Lampe",
-      "Bougie"
-    ],
-    [
-      "Ampoule",
-      "Néon"
-    ],
-    [
-      "Balai",
-      "Serpillière"
-    ],
-    [
-      "Aspirateur",
-      "Balai vapeur"
-    ],
-    [
-      "Éponge",
-      "Chiffon"
-    ],
-    [
-      "Poubelle",
-      "Corbeille"
-    ],
-    [
-      "Clé",
-      "Cadenas"
-    ],
-    [
-      "Porte",
-      "Portail"
-    ],
-    [
-      "Fenêtre",
-      "Hublot"
-    ],
-    [
-      "Escalier",
-      "Échelle"
-    ],
-    [
-      "Parapluie",
-      "Parasol"
-    ],
-    [
-      "Sac à dos",
-      "Valise"
-    ],
-    [
-      "Portefeuille",
-      "Porte-monnaie"
-    ],
-    [
-      "Montre",
-      "Réveil"
-    ],
-    [
-      "Lunettes",
-      "Loupe"
-    ],
-    [
-      "Stylo",
-      "Crayon"
-    ],
-    [
-      "Gomme",
-      "Correcteur"
-    ],
-    [
-      "Ciseaux",
-      "Cutter",
-      null,
-      "Couteau à lame coulissante et cassable."
-    ],
-    [
-      "Colle",
-      "Ruban adhésif"
-    ],
-    [
-      "Marteau",
-      "Maillet"
-    ],
-    [
-      "Tournevis",
-      "Clé à molette"
-    ],
-    [
-      "Couteau",
-      "Éplucheur",
-      null,
-      "Petit ustensile qui retire la peau des légumes."
-    ],
-    [
-      "Fourchette",
-      "Cuillère"
-    ],
-    [
-      "Assiette",
-      "Plateau"
-    ],
-    [
-      "Verre",
-      "Tasse"
-    ],
-    [
-      "Casserole",
-      "Poêle"
-    ],
-    [
-      "Four",
-      "Micro-ondes"
-    ],
-    [
-      "Frigo",
-      "Congélateur"
-    ],
-    [
-      "Bouilloire",
-      "Cafetière"
-    ],
-    [
-      "Grille-pain",
-      "Gaufrier",
-      null,
-      "Appareil à plaques alvéolées pour cuire les gaufres."
-    ],
-    [
-      "Brosse à dents",
-      "Peigne"
-    ],
-    [
-      "Serviette",
-      "Gant de toilette"
-    ],
-    [
-      "Savon",
-      "Shampoing"
-    ],
-    [
-      "Ventilateur",
-      "Climatiseur"
-    ],
-    [
-      "Radiateur",
-      "Cheminée"
-    ]
+    ["Chaise","Tabouret"],
+    ["Canapé","Fauteuil"],
+    ["Table","Bureau"],
+    ["Lit","Matelas"],
+    ["Oreiller","Coussin"],
+    ["Couverture","Couette"],
+    ["Armoire","Commode",null,"Meuble bas à tiroirs, pour ranger le linge."],
+    ["Étagère","Bibliothèque"],
+    ["Rideau","Store",null,"Panneau enroulable ou orientable qui filtre la lumière."],
+    ["Tapis","Paillasson",null,"Petit tapis rugueux posé devant une porte d'entrée."],
+    ["Miroir","Cadre"],
+    ["Lampe","Bougie"],
+    ["Ampoule","Néon"],
+    ["Balai","Serpillière"],
+    ["Aspirateur","Balai vapeur"],
+    ["Éponge","Chiffon"],
+    ["Poubelle","Corbeille"],
+    ["Clé","Cadenas"],
+    ["Porte","Portail"],
+    ["Fenêtre","Hublot"],
+    ["Escalier","Échelle"],
+    ["Parapluie","Parasol"],
+    ["Sac à dos","Valise"],
+    ["Portefeuille","Porte-monnaie"],
+    ["Montre","Réveil"],
+    ["Lunettes","Loupe"],
+    ["Stylo","Crayon"],
+    ["Gomme","Correcteur"],
+    ["Ciseaux","Cutter",null,"Couteau à lame coulissante et cassable."],
+    ["Colle","Ruban adhésif"],
+    ["Marteau","Maillet"],
+    ["Tournevis","Clé à molette"],
+    ["Couteau","Éplucheur",null,"Petit ustensile qui retire la peau des légumes."],
+    ["Fourchette","Cuillère"],
+    ["Assiette","Plateau"],
+    ["Verre","Tasse"],
+    ["Casserole","Poêle"],
+    ["Four","Micro-ondes"],
+    ["Frigo","Congélateur"],
+    ["Bouilloire","Cafetière"],
+    ["Grille-pain","Gaufrier",null,"Appareil à plaques alvéolées pour cuire les gaufres."],
+    ["Brosse à dents","Peigne"],
+    ["Serviette","Gant de toilette"],
+    ["Savon","Shampoing"],
+    ["Ventilateur","Climatiseur"],
+    ["Radiateur","Cheminée"],
+    ["Tiroir","Placard"],
+    ["Penderie","Dressing"],
+    ["Coffre-fort","Tirelire"],
+    ["Boîte aux lettres","Sonnette"],
+    ["Interrupteur","Prise"],
+    ["Rallonge","Multiprise"],
+    ["Pile","Accumulateur"],
+    ["Torche","Lanterne"],
+    ["Allumette","Briquet"],
+    ["Vase","Pot de fleurs"],
+    ["Horloge","Sablier"],
+    ["Thermomètre","Baromètre"],
+    ["Balance","Pèse-personne"],
+    ["Seau","Bassine"],
+    ["Arrosoir","Tuyau"],
+    ["Pelle","Râteau"],
+    ["Perceuse","Visseuse"],
+    ["Scie","Lime"],
+    ["Pince","Tenaille"],
+    ["Clou","Vis"],
+    ["Écrou","Boulon"],
+    ["Niveau à bulle","Fil à plomb",null,"Poids suspendu à un fil, pour vérifier la verticale."],
+    ["Passoire","Écumoire",null,"Grande cuillère percée, pour retirer ce qui flotte."],
+    ["Louche","Spatule"],
+    ["Fouet","Batteur"],
+    ["Rouleau à pâtisserie","Moule à gâteau"],
+    ["Planche à découper","Billot"],
+    ["Tire-bouchon","Décapsuleur"],
+    ["Cocotte-minute","Mijoteuse"]
   ]
 }

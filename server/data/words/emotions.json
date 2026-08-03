@@ -3,197 +3,80 @@
   "label": "Émotions & Situations",
   "emoji": "🎭",
   "pairs": [
-    [
-      "Joie",
-      "Bonheur"
-    ],
-    [
-      "Tristesse",
-      "Mélancolie",
-      null,
-      "Tristesse douce et durable, sans cause précise."
-    ],
-    [
-      "Colère",
-      "Rage"
-    ],
-    [
-      "Peur",
-      "Angoisse"
-    ],
-    [
-      "Surprise",
-      "Choc"
-    ],
-    [
-      "Dégoût",
-      "Répulsion",
-      null,
-      "Dégoût violent qui pousse à s'écarter."
-    ],
-    [
-      "Amour",
-      "Amitié"
-    ],
-    [
-      "Jalousie",
-      "Envie"
-    ],
-    [
-      "Honte",
-      "Gêne"
-    ],
-    [
-      "Fierté",
-      "Vanité",
-      null,
-      "Orgueil vide, satisfaction de soi sans fondement."
-    ],
-    [
-      "Stress",
-      "Pression"
-    ],
-    [
-      "Fatigue",
-      "Épuisement"
-    ],
-    [
-      "Ennui",
-      "Lassitude",
-      null,
-      "Fatigue morale, découragement lent."
-    ],
-    [
-      "Curiosité",
-      "Indiscrétion",
-      null,
-      "Curiosité déplacée pour ce qui ne nous regarde pas."
-    ],
-    [
-      "Espoir",
-      "Optimisme"
-    ],
-    [
-      "Doute",
-      "Hésitation"
-    ],
-    [
-      "Regret",
-      "Remords",
-      null,
-      "Regret douloureux d'une faute commise."
-    ],
-    [
-      "Nostalgie",
-      "Souvenir"
-    ],
-    [
-      "Courage",
-      "Témérité",
-      null,
-      "Courage excessif, qui frôle l'imprudence."
-    ],
-    [
-      "Timidité",
-      "Réserve"
-    ],
-    [
-      "Confiance",
-      "Naïveté"
-    ],
-    [
-      "Mensonge",
-      "Secret"
-    ],
-    [
-      "Trahison",
-      "Vengeance"
-    ],
-    [
-      "Pardon",
-      "Excuse"
-    ],
-    [
-      "Dispute",
-      "Malentendu"
-    ],
-    [
-      "Réconciliation",
-      "Compromis"
-    ],
-    [
-      "Rendez-vous",
-      "Retrouvailles"
-    ],
-    [
-      "Séparation",
-      "Rupture"
-    ],
-    [
-      "Solitude",
-      "Isolement"
-    ],
-    [
-      "Rire",
-      "Sourire"
-    ],
-    [
-      "Larme",
-      "Sanglot",
-      null,
-      "Pleur bruyant, secoué par la respiration."
-    ],
-    [
-      "Cri",
-      "Murmure"
-    ],
-    [
-      "Silence",
-      "Calme"
-    ],
-    [
-      "Panique",
-      "Affolement",
-      null,
-      "Panique désordonnée qui fait perdre ses moyens."
-    ],
-    [
-      "Soulagement",
-      "Délivrance",
-      null,
-      "Soulagement profond après une épreuve."
-    ],
-    [
-      "Impatience",
-      "Hâte"
-    ],
-    [
-      "Patience",
-      "Résignation",
-      null,
-      "Acceptation passive de ce qu'on ne peut changer."
-    ],
-    [
-      "Rêve",
-      "Cauchemar"
-    ],
-    [
-      "Chance",
-      "Hasard"
-    ],
-    [
-      "Malchance",
-      "Poisse",
-      null,
-      "Malchance tenace et répétée."
-    ],
-    [
-      "Victoire",
-      "Exploit"
-    ],
-    [
-      "Défaite",
-      "Échec"
-    ]
+    ["Joie","Bonheur"],
+    ["Tristesse","Mélancolie",null,"Tristesse douce et durable, sans cause précise."],
+    ["Colère","Rage"],
+    ["Peur","Angoisse"],
+    ["Surprise","Choc"],
+    ["Dégoût","Répulsion",null,"Dégoût violent qui pousse à s'écarter."],
+    ["Amour","Amitié"],
+    ["Jalousie","Envie"],
+    ["Honte","Gêne"],
+    ["Fierté","Vanité",null,"Orgueil vide, satisfaction de soi sans fondement."],
+    ["Stress","Pression"],
+    ["Fatigue","Épuisement"],
+    ["Ennui","Lassitude",null,"Fatigue morale, découragement lent."],
+    ["Curiosité","Indiscrétion",null,"Curiosité déplacée pour ce qui ne nous regarde pas."],
+    ["Espoir","Optimisme"],
+    ["Doute","Hésitation"],
+    ["Regret","Remords",null,"Regret douloureux d'une faute commise."],
+    ["Nostalgie","Souvenir"],
+    ["Courage","Témérité",null,"Courage excessif, qui frôle l'imprudence."],
+    ["Timidité","Réserve"],
+    ["Confiance","Naïveté"],
+    ["Mensonge","Secret"],
+    ["Trahison","Vengeance"],
+    ["Pardon","Excuse"],
+    ["Dispute","Malentendu"],
+    ["Réconciliation","Compromis"],
+    ["Rendez-vous","Retrouvailles"],
+    ["Séparation","Rupture"],
+    ["Solitude","Isolement"],
+    ["Rire","Sourire"],
+    ["Larme","Sanglot",null,"Pleur bruyant, secoué par la respiration."],
+    ["Cri","Murmure"],
+    ["Silence","Calme"],
+    ["Panique","Affolement",null,"Panique désordonnée qui fait perdre ses moyens."],
+    ["Soulagement","Délivrance",null,"Soulagement profond après une épreuve."],
+    ["Impatience","Hâte"],
+    ["Patience","Résignation",null,"Acceptation passive de ce qu'on ne peut changer."],
+    ["Rêve","Cauchemar"],
+    ["Chance","Hasard"],
+    ["Malchance","Poisse",null,"Malchance tenace et répétée."],
+    ["Victoire","Exploit"],
+    ["Défaite","Échec"],
+    ["Enthousiasme","Excitation"],
+    ["Sérénité","Quiétude"],
+    ["Euphorie","Extase"],
+    ["Chagrin","Peine"],
+    ["Déception","Amertume"],
+    ["Découragement","Abattement"],
+    ["Irritation","Agacement"],
+    ["Frustration","Exaspération"],
+    ["Rancune","Ressentiment"],
+    ["Terreur","Effroi"],
+    ["Appréhension","Inquiétude"],
+    ["Méfiance","Suspicion"],
+    ["Admiration","Respect"],
+    ["Tendresse","Affection"],
+    ["Compassion","Pitié"],
+    ["Gratitude","Reconnaissance"],
+    ["Culpabilité","Repentir"],
+    ["Embarras","Malaise"],
+    ["Orgueil","Arrogance"],
+    ["Modestie","Humilité"],
+    ["Détermination","Obstination"],
+    ["Audace","Insolence"],
+    ["Indifférence","Détachement"],
+    ["Lassitude","Usure"],
+    ["Émerveillement","Fascination"],
+    ["Perplexité","Confusion"],
+    ["Soupçon","Intuition"],
+    ["Complicité","Connivence"],
+    ["Rivalité","Compétition"],
+    ["Coup de foudre","Béguin"],
+    ["Déclaration","Aveu"],
+    ["Quiproquo","Malentendu"],
+    ["Fou rire","Éclat de rire"]
   ]
 }

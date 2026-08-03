@@ -3,175 +3,80 @@
   "label": "Cinéma & Séries",
   "emoji": "🎬",
   "pairs": [
-    [
-      "Film",
-      "Série"
-    ],
-    [
-      "Cinéma",
-      "Théâtre"
-    ],
-    [
-      "Acteur",
-      "Figurant",
-      null,
-      "Personne qui apparaît à l'écran sans texte ni rôle."
-    ],
-    [
-      "Réalisateur",
-      "Producteur"
-    ],
-    [
-      "Scénario",
-      "Storyboard"
-    ],
-    [
-      "Bande-annonce",
-      "Générique"
-    ],
-    [
-      "Sous-titres",
-      "Doublage"
-    ],
-    [
-      "Comédie",
-      "Parodie"
-    ],
-    [
-      "Thriller",
-      "Policier"
-    ],
-    [
-      "Horreur",
-      "Épouvante"
-    ],
-    [
-      "Science-fiction",
-      "Fantastique"
-    ],
-    [
-      "Documentaire",
-      "Reportage"
-    ],
-    [
-      "Dessin animé",
-      "Anime"
-    ],
-    [
-      "Super-héros",
-      "Justicier"
-    ],
-    [
-      "Méchant",
-      "Antagoniste"
-    ],
-    [
-      "Cascade",
-      "Effet spécial"
-    ],
-    [
-      "Popcorn",
-      "Nachos"
-    ],
-    [
-      "Écran géant",
-      "Home cinéma"
-    ],
-    [
-      "Netflix",
-      "Prime Video"
-    ],
-    [
-      "Oscar",
-      "César"
-    ],
-    [
-      "Festival de Cannes",
-      "Tapis rouge"
-    ],
-    [
-      "Star Wars",
-      "Star Trek"
-    ],
-    [
-      "Batman",
-      "Superman"
-    ],
-    [
-      "Spider-Man",
-      "Iron Man"
-    ],
-    [
-      "Harry Potter",
-      "Le Seigneur des Anneaux"
-    ],
-    [
-      "Titanic",
-      "Avatar"
-    ],
-    [
-      "Le Roi Lion",
-      "Le Livre de la Jungle"
-    ],
-    [
-      "La Reine des Neiges",
-      "Raiponce"
-    ],
-    [
-      "Toy Story",
-      "Shrek"
-    ],
-    [
-      "Matrix",
-      "Inception"
-    ],
-    [
-      "Jurassic Park",
-      "King Kong"
-    ],
-    [
-      "James Bond",
-      "Mission Impossible"
-    ],
-    [
-      "Fast and Furious",
-      "Taxi"
-    ],
-    [
-      "Game of Thrones",
-      "Vikings"
-    ],
-    [
-      "Breaking Bad",
-      "Narcos"
-    ],
-    [
-      "Friends",
-      "How I Met Your Mother"
-    ],
-    [
-      "Squid Game",
-      "Alice in Borderland"
-    ],
-    [
-      "Stranger Things",
-      "Dark"
-    ],
-    [
-      "The Walking Dead",
-      "Zombieland"
-    ],
-    [
-      "Rocky",
-      "Creed"
-    ],
-    [
-      "Le Parrain",
-      "Scarface"
-    ],
-    [
-      "Intouchables",
-      "Bienvenue chez les Ch'tis"
-    ]
+    ["Film","Série"],
+    ["Cinéma","Théâtre"],
+    ["Acteur","Figurant",null,"Personne qui apparaît à l'écran sans texte ni rôle."],
+    ["Réalisateur","Producteur"],
+    ["Scénario","Storyboard"],
+    ["Bande-annonce","Générique"],
+    ["Sous-titres","Doublage"],
+    ["Comédie","Parodie"],
+    ["Thriller","Policier"],
+    ["Horreur","Épouvante"],
+    ["Science-fiction","Fantastique"],
+    ["Documentaire","Reportage"],
+    ["Dessin animé","Anime"],
+    ["Super-héros","Justicier"],
+    ["Méchant","Antagoniste"],
+    ["Cascade","Effet spécial"],
+    ["Popcorn","Nachos"],
+    ["Écran géant","Home cinéma"],
+    ["Netflix","Prime Video"],
+    ["Oscar","César"],
+    ["Festival de Cannes","Tapis rouge"],
+    ["Star Wars","Star Trek"],
+    ["Batman","Superman"],
+    ["Spider-Man","Iron Man"],
+    ["Harry Potter","Le Seigneur des Anneaux"],
+    ["Titanic","Avatar"],
+    ["Le Roi Lion","Le Livre de la Jungle"],
+    ["La Reine des Neiges","Raiponce"],
+    ["Toy Story","Shrek"],
+    ["Matrix","Inception"],
+    ["Jurassic Park","King Kong"],
+    ["James Bond","Mission Impossible"],
+    ["Fast and Furious","Taxi"],
+    ["Game of Thrones","Vikings"],
+    ["Breaking Bad","Narcos"],
+    ["Friends","How I Met Your Mother"],
+    ["Squid Game","Alice in Borderland"],
+    ["Stranger Things","Dark"],
+    ["The Walking Dead","Zombieland"],
+    ["Rocky","Creed"],
+    ["Le Parrain","Scarface"],
+    ["Intouchables","Bienvenue chez les Ch'tis"],
+    ["Court-métrage","Long-métrage"],
+    ["Préquelle","Suite"],
+    ["Remake","Adaptation"],
+    ["Casting","Audition"],
+    ["Répétition","Prise"],
+    ["Clap","Plateau"],
+    ["Perche","Steadicam"],
+    ["Gros plan","Plan large"],
+    ["Travelling","Panoramique"],
+    ["Montage","Étalonnage",null,"Réglage des couleurs d'un film, après le montage."],
+    ["Bande originale","Bruitage"],
+    ["Décor","Costume"],
+    ["Maquillage de cinéma","Prothèse"],
+    ["Doublure","Sosie"],
+    ["Blockbuster","Film d'auteur"],
+    ["Navet","Chef-d'œuvre"],
+    ["Spoiler","Rebondissement"],
+    ["Cliffhanger","Fin ouverte"],
+    ["Saison","Épisode"],
+    ["Pilote","Final"],
+    ["Binge-watching","Marathon"],
+    ["Western","Péplum",null,"Film à grand spectacle situé dans l'Antiquité."],
+    ["Comédie romantique","Drame"],
+    ["Film catastrophe","Film de guerre"],
+    ["Biopic","Docufiction"],
+    ["Disney","Pixar"],
+    ["Studio Ghibli","DreamWorks"],
+    ["Marvel","DC"],
+    ["Le Dîner de cons","La Cité de la peur"],
+    ["Amélie Poulain","Les Choristes"],
+    ["Retour vers le futur","Interstellar"],
+    ["Le Silence des agneaux","Seven"],
+    ["Casa de Papel","Prison Break"]
   ]
 }

@@ -4,8 +4,8 @@ Le jeu d'Undercover, hébergé sur ton PC. Les joueurs rejoignent depuis leur
 téléphone en se connectant à ton wifi. Aucun compte, aucun cloud, aucune
 connexion internet nécessaire.
 
-- **688 paires de mots** réparties sur **16 thèmes**, jamais deux fois la même
-  tant que le thème n'est pas épuisé. 119 paires portent une définition, affichée
+- **1200 paires de mots**, **75 par thème** sur **16 thèmes**, jamais deux fois la même
+  tant que le thème n'est pas épuisé. 160 paires portent une définition, affichée
   quand le mot est trop obscur pour être décrit à l'aveugle.
 - **3 rôles + 8 modificateurs** : Civil, Infiltré et Mister White décident du
   camp et du mot ; Amoureux, Vengeuse, Duelliste, Bouffon, Mercenaire, Maire,

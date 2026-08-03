@@ -3,185 +3,80 @@
   "label": "Métiers",
   "emoji": "👷",
   "pairs": [
-    [
-      "Médecin",
-      "Infirmier"
-    ],
-    [
-      "Chirurgien",
-      "Dentiste"
-    ],
-    [
-      "Pharmacien",
-      "Vétérinaire"
-    ],
-    [
-      "Professeur",
-      "Instituteur"
-    ],
-    [
-      "Avocat",
-      "Notaire",
-      null,
-      "Juriste qui authentifie les actes : ventes, successions, mariages."
-    ],
-    [
-      "Juge",
-      "Procureur",
-      null,
-      "Magistrat qui représente l'accusation au procès."
-    ],
-    [
-      "Policier",
-      "Gendarme"
-    ],
-    [
-      "Pompier",
-      "Secouriste"
-    ],
-    [
-      "Soldat",
-      "Garde du corps"
-    ],
-    [
-      "Cuisinier",
-      "Pâtissier"
-    ],
-    [
-      "Serveur",
-      "Barman"
-    ],
-    [
-      "Boulanger",
-      "Boucher"
-    ],
-    [
-      "Coiffeur",
-      "Barbier"
-    ],
-    [
-      "Tailleur",
-      "Couturier"
-    ],
-    [
-      "Menuisier",
-      "Ébéniste",
-      null,
-      "Menuisier spécialisé dans le meuble fin et le placage."
-    ],
-    [
-      "Plombier",
-      "Électricien"
-    ],
-    [
-      "Maçon",
-      "Peintre en bâtiment"
-    ],
-    [
-      "Architecte",
-      "Ingénieur"
-    ],
-    [
-      "Mécanicien",
-      "Garagiste"
-    ],
-    [
-      "Chauffeur",
-      "Livreur"
-    ],
-    [
-      "Pilote",
-      "Steward"
-    ],
-    [
-      "Marin",
-      "Pêcheur"
-    ],
-    [
-      "Agriculteur",
-      "Jardinier"
-    ],
-    [
-      "Éleveur",
-      "Berger",
-      null,
-      "Éleveur qui garde et conduit un troupeau."
-    ],
-    [
-      "Journaliste",
-      "Reporter"
-    ],
-    [
-      "Écrivain",
-      "Traducteur"
-    ],
-    [
-      "Photographe",
-      "Cameraman"
-    ],
-    [
-      "Acteur",
-      "Cascadeur",
-      null,
-      "Professionnel qui exécute les scènes dangereuses à la place des acteurs."
-    ],
-    [
-      "Chanteur",
-      "Musicien"
-    ],
-    [
-      "Danseur",
-      "Chorégraphe"
-    ],
-    [
-      "Peintre",
-      "Sculpteur"
-    ],
-    [
-      "Comptable",
-      "Banquier"
-    ],
-    [
-      "Vendeur",
-      "Caissier"
-    ],
-    [
-      "Secrétaire",
-      "Assistant"
-    ],
-    [
-      "Informaticien",
-      "Développeur"
-    ],
-    [
-      "Scientifique",
-      "Chercheur"
-    ],
-    [
-      "Astronaute",
-      "Explorateur"
-    ],
-    [
-      "Bibliothécaire",
-      "Archiviste"
-    ],
-    [
-      "Facteur",
-      "Coursier"
-    ],
-    [
-      "Agent immobilier",
-      "Concierge"
-    ],
-    [
-      "Kinésithérapeute",
-      "Ostéopathe",
-      "Rééducateur du mouvement par exercices et massages.",
-      "Praticien qui soigne par manipulations du corps."
-    ],
-    [
-      "Psychologue",
-      "Psychiatre"
-    ]
+    ["Médecin","Infirmier"],
+    ["Chirurgien","Dentiste"],
+    ["Pharmacien","Vétérinaire"],
+    ["Professeur","Instituteur"],
+    ["Avocat","Notaire",null,"Juriste qui authentifie les actes : ventes, successions, mariages."],
+    ["Juge","Procureur",null,"Magistrat qui représente l'accusation au procès."],
+    ["Policier","Gendarme"],
+    ["Pompier","Secouriste"],
+    ["Soldat","Garde du corps"],
+    ["Cuisinier","Pâtissier"],
+    ["Serveur","Barman"],
+    ["Boulanger","Boucher"],
+    ["Coiffeur","Barbier"],
+    ["Tailleur","Couturier"],
+    ["Menuisier","Ébéniste",null,"Menuisier spécialisé dans le meuble fin et le placage."],
+    ["Plombier","Électricien"],
+    ["Maçon","Peintre en bâtiment"],
+    ["Architecte","Ingénieur"],
+    ["Mécanicien","Garagiste"],
+    ["Chauffeur","Livreur"],
+    ["Pilote","Steward"],
+    ["Marin","Pêcheur"],
+    ["Agriculteur","Jardinier"],
+    ["Éleveur","Berger",null,"Éleveur qui garde et conduit un troupeau."],
+    ["Journaliste","Reporter"],
+    ["Écrivain","Traducteur"],
+    ["Photographe","Cameraman"],
+    ["Acteur","Cascadeur",null,"Professionnel qui exécute les scènes dangereuses à la place des acteurs."],
+    ["Chanteur","Musicien"],
+    ["Danseur","Chorégraphe"],
+    ["Peintre","Sculpteur"],
+    ["Comptable","Banquier"],
+    ["Vendeur","Caissier"],
+    ["Secrétaire","Assistant"],
+    ["Informaticien","Développeur"],
+    ["Scientifique","Chercheur"],
+    ["Astronaute","Explorateur"],
+    ["Bibliothécaire","Archiviste"],
+    ["Facteur","Coursier"],
+    ["Agent immobilier","Concierge"],
+    ["Kinésithérapeute","Ostéopathe","Rééducateur du mouvement par exercices et massages.","Praticien qui soigne par manipulations du corps."],
+    ["Psychologue","Psychiatre"],
+    ["Sage-femme","Puéricultrice"],
+    ["Radiologue","Anesthésiste"],
+    ["Opticien","Orthophoniste"],
+    ["Aide-soignant","Ambulancier"],
+    ["Huissier","Greffier",null,"Fonctionnaire qui tient les registres du tribunal."],
+    ["Douanier","Contrôleur fiscal"],
+    ["Détective","Enquêteur"],
+    ["Maître-nageur","Moniteur de ski"],
+    ["Chef de rang","Sommelier",null,"Spécialiste des vins qui conseille en salle."],
+    ["Charcutier","Poissonnier"],
+    ["Fromager","Chocolatier"],
+    ["Barista","Caviste"],
+    ["Esthéticienne","Manucure"],
+    ["Modéliste","Brodeur"],
+    ["Cordonnier","Maroquinier",null,"Artisan du cuir : sacs, ceintures, bagages."],
+    ["Serrurier","Vitrier"],
+    ["Couvreur","Charpentier"],
+    ["Carreleur","Plaquiste",null,"Ouvrier qui pose les cloisons et les plafonds en plaques."],
+    ["Soudeur","Chaudronnier"],
+    ["Grutier","Conducteur d'engins"],
+    ["Géomètre","Urbaniste"],
+    ["Designer","Graphiste"],
+    ["Monteur","Ingénieur du son"],
+    ["Animateur","Présentateur"],
+    ["Humoriste","Magicien"],
+    ["Bibliothécaire scolaire","Documentaliste"],
+    ["Éducateur","Animateur socioculturel"],
+    ["Guide touristique","Interprète"],
+    ["Croupier","Réceptionniste"],
+    ["Commercial","Négociateur"],
+    ["Logisticien","Magasinier"],
+    ["Apiculteur","Ostréiculteur",null,"Éleveur d'huîtres."],
+    ["Bûcheron","Forestier"]
   ]
 }
