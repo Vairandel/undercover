@@ -399,6 +399,105 @@ export function ChatFeed({ messages, meId, compact }) {
   )
 }
 
+/**
+ * Round-by-round post-mortem.
+ *
+ * The scoreboard says who won; this says *how* — the clues, who accused whom,
+ * and who it actually was. It is the part of the evening people argue about
+ * afterwards, and the server already had every byte of it.
+ */
+export function Recap({ rounds, players }) {
+  const [open, setOpen] = useState(false)
+  if (!rounds?.length) return null
+
+  const byId = new Map(players.map((p) => [p.id, p]))
+  const who = (id) => byId.get(id) ?? { name: '?', avatar: '·', color: 'var(--text-dim)' }
+
+  return (
+    <div className="stack" style={{ gap: 10, width: '100%' }}>
+      <button
+        type="button"
+        className="btn btn--ghost btn--block btn--sm"
+        onClick={() => { play('tap'); setOpen((v) => !v) }}
+      >
+        {open ? 'Masquer le déroulé' : `📜  Revoir la partie (${rounds.length} manche${rounds.length > 1 ? 's' : ''})`}
+      </button>
+
+      {open && (
+        <div className="recap scroll-y">
+          {rounds.map((r) => {
+            const clues = Object.entries(r.clues ?? {}).filter(([, text]) => text)
+            const votes = Object.entries(r.votes ?? {})
+            return (
+              <section className="recap__round" key={r.round}>
+                <p className="eyebrow">Manche {r.round}</p>
+
+                {clues.length > 0 && (
+                  <div className="recap__group">
+                    {clues.map(([pid, text]) => {
+                      const p = who(pid)
+                      return (
+                        <span className="recap__chip" key={pid} style={{ '--chip': p.color }}>
+                          {p.avatar} {p.name}
+                          <strong>{text === '…' ? '—' : `« ${text} »`}</strong>
+                        </span>
+                      )
+                    })}
+                  </div>
+                )}
+
+                {votes.length > 0 && (
+                  <div className="recap__group">
+                    {votes.map(([voter, target]) => (
+                      <span className="recap__vote" key={voter}>
+                        {who(voter).avatar} {who(voter).name}
+                        <span className="faint"> → </span>
+                        {who(target).avatar} {who(target).name}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <p className="recap__outcome">
+                  {r.tie ? (
+                    <span className="faint">⚖️ Égalité, personne n'est éliminé.</span>
+                  ) : r.eliminated ? (
+                    <>
+                      {r.eliminated.avatar} <strong>{r.eliminated.name}</strong> éliminé —{' '}
+                      <span style={{ color: r.eliminated.roleColor }}>
+                        {r.eliminated.roleEmoji} {r.eliminated.roleLabel}
+                      </span>
+                      {r.eliminated.word && <span className="faint"> · « {r.eliminated.word} »</span>}
+                    </>
+                  ) : (
+                    <span className="faint">—</span>
+                  )}
+                </p>
+
+                {r.alsoEliminated?.map((x) => (
+                  <p className="recap__outcome" key={x.id}>
+                    {x.avatar} <strong>{x.name}</strong> tombe aussi —{' '}
+                    <span style={{ color: x.roleColor }}>{x.roleEmoji} {x.roleLabel}</span>
+                  </p>
+                ))}
+
+                {r.guess && (
+                  <p className="recap__outcome">
+                    🃏 tentative « {r.guess.text} » —{' '}
+                    <strong style={{ color: r.guess.correct ? 'var(--ok)' : 'var(--danger)' }}>
+                      {r.guess.correct ? 'exact' : 'raté'}
+                    </strong>
+                  </p>
+                )}
+              </section>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function Switch({ checked, onChange, disabled }) {
   return (
     <button

@@ -4,6 +4,7 @@ import {
   ChatFeed,
   PhaseTimer,
   PlayerChip,
+  Recap,
   ScoreBoard,
   TurnTimer,
   outcomeStyle,
@@ -263,6 +264,8 @@ function GameOver({ state, act }) {
       </motion.div>
 
       <ScoreBoard rows={state.scoreboard} />
+
+      <Recap rounds={state.recap} players={state.players} />
 
       <div className="row" style={{ gap: 12 }}>
         <button

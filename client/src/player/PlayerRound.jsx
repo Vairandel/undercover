@@ -7,6 +7,7 @@ import {
   ConfirmButton,
   PhaseTimer,
   PlayerChip,
+  Recap,
   ScoreBoard,
   TurnTimer,
   outcomeStyle,
@@ -1073,6 +1074,8 @@ function GameOver({ state, you }) {
       </div>
 
       <ScoreBoard rows={state.scoreboard} compact />
+
+      <Recap rounds={state.recap} players={state.players} />
 
       <div className="players" style={{ marginTop: 8 }}>
         {state.players.map((p) => (

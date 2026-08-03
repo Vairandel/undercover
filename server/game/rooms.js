@@ -1,4 +1,5 @@
 import { Game, GameError } from './engine.js'
+import { store } from '../store.js'
 
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ' // no I/O — unreadable on a TV
 
@@ -50,6 +51,7 @@ export function createRoomManager(io) {
       }
       game.dispose()
       rooms.delete(code)
+      store.forgetRoom(code)
       freed += 1
     }
     return freed
@@ -74,6 +76,34 @@ export function createRoomManager(io) {
     for (const player of game.players.values()) {
       io.to(`player:${player.id}`).emit('you', game.privateState(player.id))
     }
+    // Piggy-backs on every state change; the store debounces its own writes, so
+    // this costs nothing beyond building the snapshot.
+    if (game.players.size > 0) store.saveRoom(game.code, game.snapshot())
+    else store.forgetRoom(game.code)
+  }
+
+  /** Builds an empty room object under a known code, wired for broadcast. */
+  function newGame(code) {
+    return new Game(code, {
+      onUpdate: (g) => broadcast(g),
+      onEvent: (e) => io.to(`room:${code}`).emit('event', e),
+    })
+  }
+
+  /**
+   * Brings back last session's rooms.
+   *
+   * Players land in the lobby with their score and their seat waiting; whoever
+   * still has the page open reconnects into it without noticing the restart.
+   */
+  function restoreSavedRooms() {
+    let restored = 0
+    for (const [code, snapshot] of store.freshRooms()) {
+      if (rooms.has(code)) continue
+      rooms.set(code, newGame(code).restoreFrom(snapshot))
+      restored += 1
+    }
+    return restored
   }
 
   function createRoom() {
@@ -84,11 +114,7 @@ export function createRoomManager(io) {
       }
     }
     const code = newCode()
-
-    const game = new Game(code, {
-      onUpdate: (g) => broadcast(g),
-      onEvent: (e) => io.to(`room:${code}`).emit('event', e),
-    })
+    const game = newGame(code)
     rooms.set(code, game)
     return game
   }
@@ -315,8 +341,11 @@ export function createRoomManager(io) {
     })
   })
 
+  const restored = restoreSavedRooms()
+
   return {
     rooms,
+    restored,
     stats: () => ({ rooms: rooms.size, players: [...rooms.values()].reduce((n, g) => n + g.players.size, 0) }),
   }
 }

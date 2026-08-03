@@ -5,7 +5,10 @@ import { fileURLToPath } from 'node:url'
 const dataDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'data')
 const statePath = path.join(dataDir, 'state.json')
 
-const EMPTY = { seenPairs: {}, gamesPlayed: 0, lastTheme: null }
+const EMPTY = { seenPairs: {}, gamesPlayed: 0, lastTheme: null, rooms: {} }
+
+/** Saved rooms older than this are dropped on load — last night is over. */
+const ROOM_TTL_MS = 24 * 60 * 60 * 1000
 
 /**
  * Tiny JSON-file store. Deliberately not SQLite: the only thing we persist is
@@ -52,6 +55,43 @@ class Store {
     this.#state.gamesPlayed += 1
     this.#state.lastTheme = themeId
     this.#persist()
+  }
+
+  /**
+   * Remembers a room's roster, scores and settings across a restart.
+   *
+   * Deliberately *not* the game in progress: restoring a half-played round
+   * faithfully (turn order, hidden words, pending interrupts) is fragile, while
+   * the thing people actually mourn is the evening's leaderboard. So a restart
+   * drops you back in the lobby with the same code, the same players and the
+   * same scores.
+   */
+  saveRoom(code, snapshot) {
+    this.#state.rooms[code] = { ...snapshot, savedAt: Date.now() }
+    this.#persist()
+  }
+
+  forgetRoom(code) {
+    if (!(code in this.#state.rooms)) return
+    delete this.#state.rooms[code]
+    this.#persist()
+  }
+
+  /** Saved rooms still young enough to be worth restoring. */
+  freshRooms() {
+    const now = Date.now()
+    const out = []
+    let expired = false
+    for (const [code, room] of Object.entries(this.#state.rooms)) {
+      if (now - (room.savedAt ?? 0) > ROOM_TTL_MS) {
+        delete this.#state.rooms[code]
+        expired = true
+      } else {
+        out.push([code, room])
+      }
+    }
+    if (expired) this.#persist()
+    return out
   }
 
   /** Called when a theme is exhausted, so it can start cycling again. */

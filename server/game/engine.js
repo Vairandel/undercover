@@ -1418,6 +1418,96 @@ export class Game {
     }
   }
 
+  /**
+   * What survives a server restart: who was in the room, their look, their
+   * score, and how the host had set the game up.
+   *
+   * Not the round in progress — see `store.saveRoom`.
+   */
+  snapshot() {
+    return {
+      settings: this.settings,
+      gameNumber: this.gameNumber,
+      players: [...this.players.values()]
+        .filter((p) => !p.left)
+        .map((p) => ({
+          id: p.id,
+          name: p.name,
+          avatar: p.avatar,
+          color: p.color,
+          score: p.score,
+          wins: p.wins,
+          isHost: p.isHost,
+        })),
+    }
+  }
+
+  /**
+   * Rebuilds a room from a snapshot, in the lobby, everyone disconnected.
+   *
+   * Seats are held open with no eviction timer: these players never had a
+   * socket to lose, so they simply wait to be reclaimed by whoever still has
+   * the session in their browser.
+   */
+  restoreFrom(snapshot) {
+    if (!snapshot) return this
+    this.settings = { ...structuredClone(DEFAULT_SETTINGS), ...(snapshot.settings ?? {}) }
+    this.settings.points = sanitisePoints(this.settings.points)
+    this.gameNumber = snapshot.gameNumber ?? 0
+
+    for (const saved of snapshot.players ?? []) {
+      if (!saved?.id || !saved?.name) continue
+      this.players.set(saved.id, {
+        id: saved.id,
+        name: saved.name,
+        avatar: saved.avatar ?? '🎭',
+        color: isValidColor(saved.color) ? saved.color : randomColor(),
+        socketId: null,
+        connected: false,
+        alive: true,
+        left: false,
+        kicked: false,
+        roleId: null,
+        modifiers: [],
+        word: null,
+        wordDef: null,
+        data: {},
+        ready: false,
+        score: Number(saved.score) || 0,
+        roundPoints: 0,
+        wins: Number(saved.wins) || 0,
+        isHost: Boolean(saved.isHost),
+      })
+    }
+    this.ensureHost()
+    return this
+  }
+
+  /**
+   * The whole game, round by round, for the post-mortem.
+   *
+   * Only ever built once the game is over, so nothing here can leak: the words
+   * and every role are public by then. `history` holds the finished rounds and
+   * `lastResult` the one that ended it — that final round is never pushed into
+   * history, since `continueRound` is what does the pushing.
+   */
+  recap() {
+    if (this.phase !== PHASES.GAME_OVER) return null
+    const rounds = [...this.history, this.lastResult].filter(Boolean)
+
+    return rounds.map((r) => ({
+      round: r.round,
+      clues: r.clues ?? {},
+      votes: r.votes ?? {},
+      tally: r.tally ?? {},
+      tie: Boolean(r.tie),
+      eliminated: r.eliminated ?? null,
+      alsoEliminated: r.alsoEliminated ?? [],
+      guess: r.guess ?? null,
+      announce: r.announce ?? null,
+    }))
+  }
+
   standings() {
     return [...this.players.values()]
       .map((p) => ({
@@ -1440,13 +1530,11 @@ export class Game {
       gameNumber: this.gameNumber,
       settings: this.settings,
       theme: this.theme,
-      themeInfo: this.themeInfo,
       composition: this.players.size ? this.compositionReport() : null,
       liveTeams: this.liveTeams(),
       currentSpeakerId: this.currentSpeakerId,
       turnDeadline: this.turnDeadline,
       phaseDeadline: this.phaseDeadline,
-      turnOrder: this.turnOrder,
       outcome: this.outcome,
       scoreboard: this.scoreboard,
       standings: this.standings(),
@@ -1463,7 +1551,7 @@ export class Game {
       skipRequests: [...this.skipRequests],
       skipNeeded: this.phase === PHASES.DISCUSS ? this.activeVoters().length : 0,
       awards: this.phase === PHASES.GAME_OVER ? this.awards : [],
-      usedClues: this.settings.writtenClues ? this.usedClues : [],
+      recap: this.recap(),
       // Read-only once the vote opens: the argument is over, but everyone can
       // still re-read what was said before ticking a name.
       chat: this.settings.writtenClues ? this.chat : [],

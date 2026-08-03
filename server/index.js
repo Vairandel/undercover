@@ -160,7 +160,7 @@ const io = new IOServer(app.server, {
   pingTimeout: 30000,
 })
 
-createRoomManager(io)
+const gameRooms = createRoomManager(io)
 
 // ------------------------------------------------------------------ boot
 
@@ -181,6 +181,7 @@ console.log(`
 ${isExposed ? `  (exposé publiquement · réseau local : ${lanUrl})` : ''}
 ${!isExposed && others.length ? `  Autres adresses possibles : ${others.map((i) => `${i.address} (${i.name})`).join(', ')}` : ''}
   Banque : ${totalPairs()} paires · ${listThemes().length} thèmes · ${store.state.gamesPlayed} manches jouées
+${gameRooms.restored ? `  ♻️  ${gameRooms.restored} salon(s) restauré(s) avec leurs scores` : ''}
 ${warnings.length ? '\n  ' + warnings.join('\n  ') : ''}
 ${isExposed ? '' : '  Si les téléphones ne se connectent pas : npm run firewall'}
 `)

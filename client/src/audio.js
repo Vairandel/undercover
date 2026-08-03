@@ -29,7 +29,9 @@ function ensure() {
   ctx = new AC()
 
   master = ctx.createGain()
-  master.gain.value = 0.55
+  // Honour the level chosen before the context existed (it is created lazily,
+  // on the first user gesture).
+  master.gain.value = getVolume().gain
 
   // A gentle compressor stops layered chords from clipping on phone speakers,
   // which is where most of this will actually be heard.
@@ -80,10 +82,52 @@ export function unlock() {
   unlocked = true
 }
 
+/**
+ * Volume as three steps rather than a slider.
+ *
+ * A party game gets its sound set once, in a hurry, by someone holding a drink.
+ * Three taps through "fort → discret → coupé" is faster than aiming at a
+ * slider, and the choice survives a reload.
+ */
+export const VOLUME_STEPS = [
+  { id: 'full', label: 'Son fort', icon: '🔊', gain: 0.55 },
+  { id: 'low', label: 'Son discret', icon: '🔉', gain: 0.22 },
+  { id: 'off', label: 'Son coupé', icon: '🔇', gain: 0 },
+]
+
+const VOLUME_KEY = 'undercover.volume'
+let volumeId = 'full'
+
+try {
+  const saved = localStorage.getItem(VOLUME_KEY)
+  if (saved && VOLUME_STEPS.some((s) => s.id === saved)) volumeId = saved
+} catch { /* private browsing */ }
+
+enabled = volumeId !== 'off'
+
+function applyVolume() {
+  const step = VOLUME_STEPS.find((s) => s.id === volumeId) ?? VOLUME_STEPS[0]
+  enabled = step.gain > 0
+  if (master) master.gain.value = step.gain
+  if (!enabled) stopAmbience()
+  try { localStorage.setItem(VOLUME_KEY, volumeId) } catch { /* private browsing */ }
+}
+
+export function getVolume() {
+  return VOLUME_STEPS.find((s) => s.id === volumeId) ?? VOLUME_STEPS[0]
+}
+
+/** Steps to the next level and returns it, for a single cycling button. */
+export function cycleVolume() {
+  const i = VOLUME_STEPS.findIndex((s) => s.id === volumeId)
+  volumeId = VOLUME_STEPS[(i + 1) % VOLUME_STEPS.length].id
+  applyVolume()
+  return getVolume()
+}
+
 export function setEnabled(v) {
-  enabled = v
-  if (master) master.gain.value = v ? 0.55 : 0
-  if (!v) stopAmbience()
+  volumeId = v ? 'full' : 'off'
+  applyVolume()
 }
 
 export function isEnabled() {

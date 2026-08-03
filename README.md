@@ -75,30 +75,34 @@ l'écran `/host` — le reste fonctionne, chaque téléphone étant autonome.
 
 ### Avec Cloudflare Tunnel (gratuit, rien à héberger)
 
-Ton PC reste le serveur ; le tunnel lui donne une adresse publique en HTTPS.
+Une seule commande :
 
 ```bash
-# 1. Le jeu tourne comme d'habitude
-npm run play
-
-# 2. Dans un autre terminal
-cloudflared tunnel --url http://localhost:3000
+npm run tunnel
 ```
 
-`cloudflared` affiche une URL du type `https://xxxx.trycloudflare.com`.
-**Relance alors le serveur en lui donnant cette adresse**, sinon le QR code et
-l'adresse affichée pointeront vers ton IP locale, inutilisable de l'extérieur :
+Elle compile le client, ouvre un tunnel Cloudflare, lit l'adresse publique dans
+sa sortie et démarre le serveur en la lui passant — plus de copier-coller. Les
+deux processus sont liés : `Ctrl+C` arrête tout, et si l'un tombe l'autre suit,
+pour ne jamais laisser un serveur derrière un tunnel mort.
 
-```bash
-PUBLIC_URL=https://xxxx.trycloudflare.com ADMIN_TOKEN=un-secret-au-hasard npm start
-```
-
-En PowerShell :
+Prérequis, une seule fois :
 
 ```powershell
+winget install --id Cloudflare.cloudflared
+```
+
+Le QR code de l'écran hôte se construit à partir de l'adresse que **le
+navigateur** utilise, donc il suit automatiquement le tunnel, y compris quand
+celui-ci change d'adresse.
+
+### À la main, si tu préfères
+
+```powershell
+cloudflared tunnel --url http://localhost:3000   # terminal 1
 $env:PUBLIC_URL = "https://xxxx.trycloudflare.com"
 $env:ADMIN_TOKEN = "un-secret-au-hasard"
-npm start
+npm start                                        # terminal 2
 ```
 
 ### Les deux variables
@@ -210,6 +214,18 @@ perd**. En cas de victoire partagée, chaque camp est payé à son propre tarif.
 Les scores se cumulent tant que la salle reste ouverte, y compris entre deux
 parties. Remise à zéro depuis l'onglet 🏆 de l'écran hôte ; le barème, lui,
 survit à une remise à zéro des scores.
+
+**Un redémarrage du serveur ne perd pas la soirée.** Le salon, ses joueurs,
+leurs scores et les réglages sont sauvegardés sur disque et rechargés au
+démarrage — chacun retrouve sa place en rouvrant simplement sa page. En
+revanche la manche en cours, elle, est perdue : on repart du salon. Les salons
+sauvegardés expirent au bout de 24 h.
+
+### Revoir la partie
+
+L'écran de fin propose un **déroulé manche par manche** : les indices de chacun,
+qui a voté pour qui, qui est tombé et avec quel rôle. C'est le moment où tout le
+monde découvre à côté de quoi il est passé.
 
 ---
 

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { socket, send } from '../socket.js'
-import { playForEvent, play, setEnabled, isEnabled, ambienceForPhase } from '../audio.js'
+import { playForEvent, play, cycleVolume, getVolume, ambienceForPhase } from '../audio.js'
 import { ConfirmButton, Toast } from '../components.jsx'
 import RulesSheet from '../RulesSheet.jsx'
 import HostLobby from './HostLobby.jsx'
@@ -15,7 +15,7 @@ export default function HostApp() {
   const [code, setCode] = useState(null)
   const [error, setError] = useState(null)
   const [connected, setConnected] = useState(socket.connected)
-  const [sound, setSound] = useState(isEnabled())
+  const [sound, setSound] = useState(getVolume())
   const [rulesOpen, setRulesOpen] = useState(false)
   const bootstrapped = useRef(false)
 
@@ -90,11 +90,10 @@ export default function HostApp() {
     [code],
   )
 
-  const toggleSound = () => {
-    const next = !sound
-    setSound(next)
-    setEnabled(next)
-    if (next) play('tap')
+  const nextVolume = () => {
+    const step = cycleVolume()
+    setSound(step)
+    if (step.gain > 0) play('tap')
   }
 
   if (!state || !info) {
@@ -171,8 +170,8 @@ export default function HostApp() {
             />
           )}
 
-          <button className="btn btn--ghost btn--sm" onClick={toggleSound}>
-            {sound ? '🔊' : '🔇'}
+          <button className="btn btn--ghost btn--sm" onClick={nextVolume} title={sound.label}>
+            {sound.icon}
           </button>
         </div>
       </header>
