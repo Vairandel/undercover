@@ -13,7 +13,14 @@ connexion internet nécessaire.
   avec un budget automatique selon la taille de la table et un tirage équitable.
   Trois d'entre eux (Maire, Justicier, Fantôme) ne sont **jamais révélés** avant
   le bilan final.
-- **Phase de discussion** chronométrée entre les indices et le vote.
+- **Phase de discussion** chronométrée entre les indices et le vote, et le chat
+  reste ouvert pendant le vote — on peut changer d'avis jusqu'au dernier bulletin.
+- **Réactions sur les indices** : 🤨 👍 😂 👀 💀 ⭐ collés sous l'indice de
+  quelqu'un, signés et visibles de tous.
+- **Dernier soupçon** : un civil éliminé a quelques secondes, en secret, pour
+  nommer tous les imposteurs restants.
+- **Palmarès de fin de manche** : des titres décernés d'après ce qui s'est
+  vraiment passé.
 - **Points cumulés** sur toute la soirée, avec grille de scores animée en fin de
   partie.
 - **Indices policés** : impossible de donner son propre mot, ou un indice déjà
@@ -149,6 +156,57 @@ Son téléphone bascule tout seul sur sa carte de rôle.
 
 Depuis le salon, où il n'y a pas de manche à attendre, un bouton lui permet de
 prendre sa place tout de suite.
+
+## Ce qui se passe autour des indices
+
+Trois options, toutes activables depuis ⚙️ **Réglages**, toutes allumées par
+défaut.
+
+### Réactions
+
+Chacun colle un emoji sous l'indice d'un autre — 🤨 👍 😂 👀 💀 ⭐. Ça remplit le
+seul temps mort de la partie : la description, où l'on attendait son tour en
+silence. Et ça donne un vrai signal — trois 🤨 sous le même indice, tout le monde
+le voit au moment de voter.
+
+Elles vivent **sous l'indice**, pas dans le chat : le chat n'existe que pendant
+le débat, alors que le moment à remplir est la description. Collées à l'indice,
+elles sont encore là quand le vote s'ouvre.
+
+Deux règles délibérées. Elles sont **signées, jamais anonymes** : réagir sans
+que personne puisse t'en demander compte ne coûte rien et ne veut rien dire.
+Et **seuls les vivants réagissent**, pour la même raison qu'ils sont seuls à
+pouvoir écrire — un éliminé sait des choses, et un 🤨 bien placé lui permettrait
+de continuer à diriger une partie dont il est sorti.
+
+### Dernier soupçon
+
+Un civil qui vient d'être éliminé a quelques secondes (20 par défaut) pour
+nommer **tous** les imposteurs encore debout. S'il vise juste **et que les civils
+perdent quand même**, il marque 2 points. C'est une consolation pour avoir bien
+lu la table dans une partie qu'il ne pouvait plus gagner — jamais un bonus
+ajouté à une victoire déjà acquise.
+
+Deux choses le rendent jouable :
+
+- **La réponse est secrète** jusqu'au bilan. Affichée en direct, le mort
+  deviendrait un oracle : il n'a plus rien à perdre et dirait simplement aux
+  vivants sur qui voter.
+- **Le compte à rebours ne bloque personne.** Il tourne sur son seul téléphone
+  pendant que la manche continue. Sinon on ajouterait vingt secondes d'attente
+  après chaque mort.
+
+### Palmarès
+
+Trois ou quatre titres à la fin, calculés sur ce qui s'est réellement passé :
+🦎 *le caméléon* (imposteur jamais visé par un seul vote), 🪤 *le paratonnerre*
+(le civil que tout le monde a soupçonné pour rien), 🧭 *la boussole cassée*,
+🐑 *le mouton*, 🗡️ *le bourreau*, ⭐ *la star*, 🎪 *le clown*…
+
+Aucun point en jeu — c'est le commentaire de la soirée. Chaque titre a un seuil
+en dessous duquel il se tait, et une égalité l'annule au lieu d'être départagée :
+« le plus X » n'est drôle que si quelqu'un l'était vraiment. Un joueur ne porte
+qu'un titre, et il n'y en a jamais plus de quatre.
 
 ## Qui pilote la partie
 

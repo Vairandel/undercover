@@ -2,10 +2,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   CampTracker,
   ChatFeed,
+  DyingGuesses,
   PhaseTimer,
   PlayerChip,
   Recap,
   ScoreBoard,
+  Titles,
   TurnTimer,
   outcomeStyle,
 } from '../components.jsx'
@@ -55,6 +57,9 @@ export default function HostRound({ state, act }) {
               voteState={
                 phase === 'vote' && p.canVote ? (p.hasVoted ? 'voted' : 'waiting') : undefined
               }
+              /* Read-only here: the big screen shows the mood, phones set it. */
+              reactions={state.reactions?.[p.id]}
+              players={players}
             />
           ))}
         </AnimatePresence>
@@ -264,6 +269,10 @@ function GameOver({ state, act }) {
       </motion.div>
 
       <ScoreBoard rows={state.scoreboard} />
+
+      <Titles titles={state.titles} />
+
+      <DyingGuesses guesses={state.dyingGuesses} players={state.players} />
 
       <Recap rounds={state.recap} players={state.players} />
 

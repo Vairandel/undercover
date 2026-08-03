@@ -5,6 +5,7 @@ import { getModifier, MODIFIERS, OPTIONAL_MODIFIERS } from './modifiers/index.js
 import { normalise, sameWord, tooClose } from './text.js'
 import { COLORS, AVATARS, freeAvatar, isValidAvatar, isValidColor, randomColor } from './appearance.js'
 import { scoreGame, resolvePoints, sanitisePoints, DEFAULT_POINTS } from './scoring.js'
+import { awardTitles } from './titles.js'
 
 export const PHASES = {
   LOBBY: 'lobby',
@@ -47,6 +48,15 @@ export const RECONNECT_GRACE_MS = 5 * 60_000
  */
 export const CHAT_MAX_LEN = 140
 export const CHAT_MAX_PER_ROUND = 60
+
+/**
+ * The whole reaction vocabulary, deliberately tiny.
+ *
+ * Six covers the axes that matter at this table — is that clue suspicious,
+ * convincing, funny, worth noting, catastrophic, brilliant. A longer palette
+ * would have people picking an emoji instead of playing.
+ */
+export const REACTIONS = ['🤨', '👍', '😂', '👀', '💀', '⭐']
 const CHAT_COOLDOWN_MS = 500
 
 export const DEFAULT_SETTINGS = {
@@ -56,6 +66,15 @@ export const DEFAULT_SETTINGS = {
   writtenClues: true,
   turnTimer: 0,
   discussTime: 60,
+  // Emoji stuck under a player's clue. Fills the one dead moment of the game —
+  // the description round, where everyone waits their turn in silence.
+  reactions: true,
+  // Comic awards handed out on the final screen, from what actually happened.
+  endTitles: true,
+  // A civilian who has just been eliminated gets a private, timed shot at
+  // naming every impostor still standing.
+  dyingGuess: true,
+  dyingGuessTime: 20,
   points: { ...DEFAULT_POINTS },
   roles: {
     mrwhite: true,
@@ -115,6 +134,14 @@ export class Game {
     this.clues = new Map() // playerId -> { text, timedOut }
     this.usedClues = []
     this.chat = [] // written debate for the current round
+    // targetId -> Map(reactorId -> emoji). One reaction per player per clue,
+    // wiped between rounds so last round's mood never colours this one.
+    this.reactions = new Map()
+    // Kept for the whole game, because the end-of-game titles read it.
+    this.reactionTotals = new Map() // targetId -> { emoji: count }
+    // Chat is wiped every round; the titles need the whole evening's talk.
+    this.chatTotals = new Map() // playerId -> lines posted this game
+    this.titles = []
     this.votes = new Map()
     this.lastResult = null
     this.outcome = null
@@ -677,6 +704,10 @@ export class Game {
     this.history = []
     this.usedClues = []
     this.chat = []
+    this.reactions.clear()
+    this.reactionTotals.clear()
+    this.chatTotals.clear()
+    this.titles = []
     this.clues.clear()
     this.votes.clear()
     this.pendingGuesser = null
@@ -779,8 +810,11 @@ export class Game {
   beginDescribe() {
     this.clues.clear()
     this.votes.clear()
-    // The debate belongs to the round that produced it.
+    // The debate — and the mood around it — belong to the round that produced
+    // them. Carrying reactions over would let last round's suspicion sit under
+    // a clue nobody has given yet.
     this.chat = []
+    this.reactions.clear()
     this.turnIndex = 0
 
     let order = shuffle(this.alivePlayers.filter((p) => !p.left).map((p) => p.id))
@@ -947,7 +981,12 @@ export class Game {
    * are out of, and a Fantôme typing would give himself away instantly.
    */
   postChat(playerId, text) {
-    if (this.phase !== PHASES.DISCUSS) throw new GameError("Le chat n'est ouvert que pendant la discussion.")
+    // The debate does not stop when the ballot opens. Votes can be changed
+    // until the last one is in, so the seconds before the count are exactly
+    // when a last-minute argument is worth the most.
+    if (![PHASES.DISCUSS, PHASES.VOTE].includes(this.phase)) {
+      throw new GameError("Le chat n'est ouvert que pendant la discussion et le vote.")
+    }
     if (!this.settings.writtenClues) throw new GameError('Chat désactivé pour cette partie.')
 
     const player = this.players.get(playerId)
@@ -966,6 +1005,7 @@ export class Game {
     }
 
     player.lastChatAt = now
+    this.chatTotals.set(playerId, (this.chatTotals.get(playerId) ?? 0) + 1)
     this.chat.push({
       id: `${playerId}:${now}`,
       playerId,
@@ -978,6 +1018,65 @@ export class Game {
 
     this.onEvent({ type: 'chat', playerId })
     this.touch()
+  }
+
+  /**
+   * Stick an emoji under someone's clue.
+   *
+   * Attributed on purpose, never anonymous: a reaction nobody can be held to
+   * costs nothing and means nothing. Signed, it is a social move the table can
+   * ask you about — which is exactly the material accusations are made of.
+   *
+   * Only the living may react, for the same reason they may not chat: an
+   * eliminated player knows things, and a well-placed 🤨 would let them keep
+   * steering a game they are out of.
+   */
+  react(playerId, targetId, emoji) {
+    if (!this.settings.reactions) throw new GameError('Réactions désactivées pour cette partie.')
+    if (![PHASES.DESCRIBE, PHASES.DISCUSS, PHASES.VOTE].includes(this.phase)) {
+      throw new GameError('Trop tard pour réagir.')
+    }
+    if (!REACTIONS.includes(emoji)) throw new GameError('Réaction inconnue.')
+
+    const player = this.players.get(playerId)
+    if (!player || player.left) throw new GameError('Joueur inconnu.')
+    if (!player.alive) throw new GameError('Les éliminés ne réagissent plus.')
+    if (playerId === targetId) throw new GameError('On ne réagit pas à son propre indice.')
+
+    const target = this.players.get(targetId)
+    if (!target) throw new GameError('Joueur inconnu.')
+    if (!this.clues.has(targetId)) throw new GameError("Ce joueur n'a pas encore parlé.")
+
+    const onTarget = this.reactions.get(targetId) ?? new Map()
+    // Tapping the same emoji twice takes it back; a different one replaces it.
+    // One voice per player per clue keeps the count meaningful.
+    const previous = onTarget.get(playerId)
+    if (previous === emoji) onTarget.delete(playerId)
+    else {
+      onTarget.set(playerId, emoji)
+      this.countReaction(targetId, emoji)
+    }
+    this.reactions.set(targetId, onTarget)
+
+    this.onEvent({ type: 'reaction', emoji, playerId, targetId })
+    this.touch()
+  }
+
+  /** Running total for the whole game — only the titles ever read this. */
+  countReaction(targetId, emoji) {
+    const tally = this.reactionTotals.get(targetId) ?? {}
+    tally[emoji] = (tally[emoji] ?? 0) + 1
+    this.reactionTotals.set(targetId, tally)
+  }
+
+  /** Flattened for the wire: `{ targetId: [{ by, emoji }] }`. */
+  reactionsPlain() {
+    const out = {}
+    for (const [targetId, byPlayer] of this.reactions) {
+      if (byPlayer.size === 0) continue
+      out[targetId] = [...byPlayer].map(([by, emoji]) => ({ by, emoji }))
+    }
+    return out
   }
 
   /** Host cutting the debate short — one click, no consensus needed. */
@@ -1200,6 +1299,7 @@ export class Game {
     else this.lastResult.alsoEliminated.push(record)
 
     this.onEvent({ type: 'eliminated', roleId: player.roleId, name: player.name, cause })
+    this.openDyingGuess(player)
 
     // Both the role and every modifier get a say in what dying means.
     const interrupts = []
@@ -1321,6 +1421,111 @@ export class Game {
     this.runNextInterrupt()
   }
 
+  // ----------------------------------------------------------- dying guess
+
+  /**
+   * A civilian who has just been eliminated gets one private shot at naming
+   * every impostor still standing.
+   *
+   * Two rules make it work, and both are load-bearing.
+   *
+   * It is **secret** until the final debrief. Shown live, a dead player becomes
+   * an oracle: he has nothing left to lose and would simply tell the living who
+   * to vote for, turning every elimination into a swing.
+   *
+   * It **does not block the table**. Only his own phone runs the countdown; the
+   * round carries on without him. A blocking prompt would add twenty seconds of
+   * everyone staring at a screen after every single death.
+   */
+  openDyingGuess(player) {
+    if (!this.settings.dyingGuess) return
+    if (getRole(player.roleId).team !== 'civilian') return
+
+    const targets = this.alivePlayers.filter((p) => this.teamOfPlayer(p) !== 'civilian')
+    // Nothing left to name — the game is already decided.
+    if (targets.length === 0) return
+
+    player.data.dyingGuess = {
+      round: this.round,
+      deadline: Date.now() + this.settings.dyingGuessTime * 1000,
+      // Frozen now: who was an impostor *at the moment he died* is the question,
+      // and later eliminations must not change the answer under him. The list
+      // he picks from is frozen for the same reason — the round carries on
+      // while he thinks, and the board must not shift under his thumb.
+      expected: targets.map((p) => p.id).sort(),
+      candidates: this.alivePlayers.map((p) => p.id),
+      answer: null,
+      correct: false,
+    }
+  }
+
+  submitDyingGuess(playerId, targetIds) {
+    const player = this.players.get(playerId)
+    if (!player) throw new GameError("Tu n'as pas de place dans cette partie.")
+
+    const pending = player.data?.dyingGuess
+    if (!pending || pending.answer) throw new GameError("Ce n'est pas le moment.")
+    if (Date.now() > pending.deadline) throw new GameError('Trop tard.')
+
+    const answer = [...new Set(targetIds ?? [])].filter((id) => this.players.has(id)).sort()
+    pending.answer = answer
+    pending.correct =
+      answer.length === pending.expected.length &&
+      answer.every((id, i) => id === pending.expected[i])
+
+    // No `touch()`: broadcasting here would redraw every screen the instant he
+    // answers, and an attentive table would read the timing. Only his own phone
+    // needs to know, and it already does — it just sent the answer.
+    return pending.correct
+  }
+
+  teamOfPlayer(p) {
+    return p.roleId ? getRole(p.roleId).team : null
+  }
+
+  /**
+   * Consolation points, settled once the game is over.
+   *
+   * It only ever pays out when the civilians *lost*: this rewards having read
+   * the table right in a game you could no longer win, not piling a bonus onto
+   * a victory you were already going to share.
+   */
+  dyingGuessAwards(outcome) {
+    if (!this.settings.dyingGuess) return []
+    const points = this.points.dyingGuess
+    if (points <= 0) return []
+
+    const winTeams = outcome?.teams ?? (outcome?.team ? [outcome.team] : [])
+    if (winTeams.includes('civilian')) return []
+
+    const out = []
+    for (const player of this.players.values()) {
+      if (player.data?.dyingGuess?.correct) {
+        out.push({ playerId: player.id, key: 'dyingGuess', label: 'Dernier soupçon', points })
+      }
+    }
+    return out
+  }
+
+  /** Everyone's guess, laid bare — only ever called once the game is over. */
+  dyingGuessesPlain() {
+    const out = []
+    for (const player of this.players.values()) {
+      const g = player.data?.dyingGuess
+      if (!g?.answer) continue
+      out.push({
+        playerId: player.id,
+        name: player.name,
+        avatar: player.avatar,
+        round: g.round,
+        answer: g.answer,
+        expected: g.expected,
+        correct: g.correct,
+      })
+    }
+    return out
+  }
+
   /** Ask every role and modifier in play whether the game is decided. */
   evaluateWin() {
     const ctx = this.context()
@@ -1360,7 +1565,27 @@ export class Game {
     // survival race and the Mercenaire's contract can only be judged once the
     // dust has settled.
     const ctx = this.context()
-    this.awards = this.presentTraits().flatMap((trait) => trait.onGameEnd?.(ctx) ?? [])
+    this.awards = [
+      ...this.presentTraits().flatMap((trait) => trait.onGameEnd?.(ctx) ?? []),
+      ...this.dyingGuessAwards(outcome),
+    ]
+
+    // Pure commentary — they carry no points and change nothing. Computed here
+    // only because this is the one moment where every round is in and the roles
+    // can finally be read out loud.
+    this.titles = this.settings.endTitles
+      ? awardTitles({
+          players: [...this.players.values()],
+          rounds: [...this.history, this.lastResult].filter(Boolean),
+          teamOfId: (id) => {
+            const p = this.players.get(id)
+            return p?.roleId ? getRole(p.roleId).team : null
+          },
+          reactionTotals: this.reactionTotals,
+          chatTotals: this.chatTotals,
+          blankClue: NO_CLUE,
+        })
+      : []
 
     const rows = scoreGame({
       players: [...this.players.values()],
@@ -1421,6 +1646,10 @@ export class Game {
     this.history = []
     this.usedClues = []
     this.chat = []
+    this.reactions.clear()
+    this.reactionTotals.clear()
+    this.chatTotals.clear()
+    this.titles = []
     this.clues.clear()
     this.votes.clear()
     this.pendingGuesser = null
@@ -1689,11 +1918,21 @@ export class Game {
       skipRequests: [...this.skipRequests],
       skipNeeded: this.phase === PHASES.DISCUSS ? this.activeVoters().length : 0,
       awards: this.phase === PHASES.GAME_OVER ? this.awards : [],
+      // Both are debrief material: revealing either mid-game would tell the
+      // living what a dead player worked out.
+      dyingGuesses: this.phase === PHASES.GAME_OVER ? this.dyingGuessesPlain() : [],
+      titles: this.phase === PHASES.GAME_OVER ? this.titles : [],
       recap: this.recap(),
-      // Read-only once the vote opens: the argument is over, but everyone can
-      // still re-read what was said before ticking a name.
       chat: this.settings.writtenClues ? this.chat : [],
-      chatOpen: this.phase === PHASES.DISCUSS && this.settings.writtenClues,
+      chatOpen:
+        [PHASES.DISCUSS, PHASES.VOTE].includes(this.phase) && this.settings.writtenClues,
+      // Public by design: a reaction is a signed, visible act, and the count
+      // under a clue is the table's temperature at a glance.
+      reactions: this.settings.reactions ? this.reactionsPlain() : {},
+      reactionPalette: this.settings.reactions ? REACTIONS : [],
+      reactionsOpen:
+        this.settings.reactions &&
+        [PHASES.DESCRIBE, PHASES.DISCUSS, PHASES.VOTE].includes(this.phase),
       words: revealAll ? this.words : null,
       players: [...this.players.values()].map((p) => {
         const clue = this.clues.get(p.id)
@@ -1768,6 +2007,20 @@ export class Game {
       )
       .filter(Boolean)
 
+    // His own countdown, on his own phone. Nothing about it appears in the
+    // public state, so the table never learns that anyone is answering.
+    const pendingGuess = player.data?.dyingGuess
+    const myDyingGuess =
+      pendingGuess && !pendingGuess.answer && Date.now() < pendingGuess.deadline
+        ? {
+            deadline: pendingGuess.deadline,
+            total: this.settings.dyingGuessTime,
+            count: pendingGuess.expected.length,
+            points: this.points.dyingGuess,
+            candidates: pendingGuess.candidates,
+          }
+        : null
+
     const myTiebreak =
       this.phase === PHASES.TIEBREAK && this.pendingTiebreak?.playerId === player.id
         ? {
@@ -1801,6 +2054,7 @@ export class Game {
         ? { id: 'civilian', label: 'Civil', emoji: '🧑', color: '#38bdf8' }
         : { id: role.id, label: role.label, emoji: role.emoji, color: role.color },
       tiebreak: myTiebreak,
+      dyingGuess: myDyingGuess,
       revenge:
         this.phase === PHASES.REVENGE && this.pendingRevenge?.playerId === player.id
           ? {

@@ -368,6 +368,21 @@ export function createRoomManager(io) {
       })
     }))
 
+    socket.on('player:react', guard(({ code, playerId, targetId, emoji }, cb) => {
+      requireGame(code).react(playerId, targetId, emoji)
+      ok(cb)
+    }))
+
+    /**
+     * A dead civilian naming the impostors. The answer is deliberately not
+     * broadcast — only the sender hears whether it landed, and even that waits
+     * for the final screen.
+     */
+    socket.on('player:dyingGuess', guard(({ code, playerId, targetIds }, cb) => {
+      requireGame(code).submitDyingGuess(playerId, targetIds)
+      ok(cb)
+    }))
+
     socket.on('player:appearance', guard(({ code, playerId, avatar, color }, cb) => {
       requireGame(code).setAppearance(playerId, { avatar, color })
       ok(cb)

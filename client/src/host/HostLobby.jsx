@@ -280,9 +280,12 @@ export default function HostLobby({ state, info, joinUrl, act }) {
               {info.scoring.fields
                 .filter((f) => f.group === group)
                 .map((f) => {
-                  // A knob whose role is switched off still works, but it is
-                  // greyed so the host knows it will not come up tonight.
-                  const idle = f.role && !settings.roles?.[f.role]
+                  // A knob whose role — or whose option — is switched off still
+                  // works, but it is greyed so the host knows it will not come
+                  // up tonight.
+                  const idle =
+                    (f.role && !settings.roles?.[f.role]) ||
+                    (f.setting && !settings[f.setting])
                   return (
                     <Setting
                       key={f.key}
@@ -368,6 +371,44 @@ export default function HostLobby({ state, info, joinUrl, act }) {
               ]}
             />
           </Setting>
+
+          <hr className="divider" />
+
+          <Setting
+            label="Réactions sur les indices"
+            hint="Chacun colle un emoji sous l'indice des autres — 🤨 👍 😂 👀 💀 ⭐. Signées, jamais anonymes : on peut te demander pourquoi tu as ri."
+          >
+            <Switch checked={settings.reactions} onChange={(v) => set({ reactions: v })} />
+          </Setting>
+
+          <Setting
+            label="Palmarès de fin de manche"
+            hint="Titres décernés d'après ce qui s'est réellement passé : le caméléon, le paratonnerre, la boussole cassée… Aucun point en jeu."
+          >
+            <Switch checked={settings.endTitles} onChange={(v) => set({ endTitles: v })} />
+          </Setting>
+
+          <Setting
+            label="Dernier soupçon"
+            hint="Un civil éliminé a quelques secondes, sur son seul téléphone, pour nommer tous les imposteurs restants. Réponse secrète jusqu'au bilan ; la table n'attend pas."
+          >
+            <Switch checked={settings.dyingGuess} onChange={(v) => set({ dyingGuess: v })} />
+          </Setting>
+
+          {settings.dyingGuess && (
+            <Setting label="Temps de réflexion" hint="Le compte à rebours tourne sur son téléphone pendant que la manche continue.">
+              <Segmented
+                value={settings.dyingGuessTime}
+                onChange={(v) => set({ dyingGuessTime: v })}
+                options={[
+                  { value: 10, label: '10s' },
+                  { value: 20, label: '20s' },
+                  { value: 30, label: '30s' },
+                  { value: 45, label: '45s' },
+                ]}
+              />
+            </Setting>
+          )}
         </div>
       )}
 

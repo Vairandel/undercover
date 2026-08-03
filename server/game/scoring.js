@@ -23,6 +23,7 @@ export const DEFAULT_POINTS = {
   bouffon: 3,
   duelliste: 2,
   mercenaire: 2,
+  dyingGuess: 2,
 }
 
 /**
@@ -41,6 +42,7 @@ export const POINT_FIELDS = [
   { key: 'bouffon', group: 'bonus', emoji: '🤡', label: 'Bouffon lynché', hint: 'Éliminé par le vote dès la première manche', min: 0, max: 10, role: 'bouffon' },
   { key: 'duelliste', group: 'bonus', emoji: '⚔️', label: 'Duel remporté', hint: 'Le duelliste qui survit le plus longtemps', min: 0, max: 10, role: 'duelliste' },
   { key: 'mercenaire', group: 'bonus', emoji: '💰', label: 'Contrat rempli', hint: 'La cible du mercenaire tombe dès la première manche', min: 0, max: 10, role: 'mercenaire' },
+  { key: 'dyingGuess', group: 'bonus', emoji: '🔮', label: 'Dernier soupçon', hint: 'Un civil éliminé nomme tous les imposteurs restants — et les civils perdent quand même', min: 0, max: 10, setting: 'dyingGuess' },
 ]
 
 const FIELD_BY_KEY = Object.fromEntries(POINT_FIELDS.map((f) => [f.key, f]))

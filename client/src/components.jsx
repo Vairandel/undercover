@@ -32,6 +32,163 @@ export function Toast({ message, onDone }) {
   )
 }
 
+/**
+ * Collapses `[{ by, emoji }]` into one badge per emoji, with the names behind.
+ *
+ * The count is the point: `🤨 3` reads the table's temperature at a glance in a
+ * way three separate marks never would.
+ */
+function groupReactions(list, players, mine) {
+  if (!list?.length) return []
+  const byEmoji = new Map()
+  for (const { by, emoji } of list) {
+    const entry = byEmoji.get(emoji) ?? { emoji, count: 0, who: [], byMe: false }
+    entry.count += 1
+    entry.who.push(players?.find((p) => p.id === by)?.name ?? '?')
+    if (by === mine) entry.byMe = true
+    byEmoji.set(emoji, entry)
+  }
+  return [...byEmoji.values()].sort((a, b) => b.count - a.count)
+}
+
+/**
+ * The badges under a clue, plus the ＋ that opens the palette.
+ *
+ * Shared by the big screen (read-only, `onReact` omitted) and the phones, so
+ * the same marks are read the same way on both — which is the whole point of
+ * putting them on the clue rather than in the chat.
+ */
+/**
+ * The comic awards on the final screen.
+ *
+ * Points say who won. These say how the evening actually went, and they are
+ * what gets retold afterwards — so they are staged as a reveal, one after the
+ * other, rather than dumped as a list.
+ */
+export function Titles({ titles }) {
+  if (!titles?.length) return null
+
+  return (
+    <div className="stack" style={{ gap: 8 }}>
+      <p className="eyebrow center">Palmarès de la manche</p>
+      {titles.map((t, i) => (
+        <motion.div
+          className="title-card"
+          key={t.key}
+          initial={{ opacity: 0, x: -18 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.25 + i * 0.35, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          onAnimationStart={() => play('scoreRow')}
+        >
+          <span className="title-card__emoji">{t.emoji}</span>
+          <div className="grow">
+            <div className="title-card__label">{t.label}</div>
+            <div className="title-card__who" style={{ color: t.color }}>
+              {t.avatar} {t.name}
+            </div>
+            <div className="title-card__detail">{t.detail}</div>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  )
+}
+
+/** What the dead worked out, revealed only now that it cannot help anyone. */
+export function DyingGuesses({ guesses, players }) {
+  if (!guesses?.length) return null
+  const nameOf = (id) => players.find((p) => p.id === id)?.name ?? '?'
+
+  return (
+    <div className="stack" style={{ gap: 6 }}>
+      <p className="eyebrow center">🔮 Derniers soupçons</p>
+      {guesses.map((g) => (
+        <div className="clue" key={g.playerId}>
+          <span style={{ fontSize: '1.2rem' }}>{g.avatar}</span>
+          <div className="grow">
+            <div className="clue__text" style={{ fontSize: '0.9rem' }}>
+              {g.correct ? '✅ ' : '❌ '}
+              {g.answer.map(nameOf).join(', ')}
+            </div>
+            <div className="clue__author">
+              {g.name}, éliminé manche {g.round}
+              {!g.correct && ` · c'était ${g.expected.map(nameOf).join(', ')}`}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export function ReactionBar({ reactions, players, mine, palette, onReact }) {
+  const [picking, setPicking] = useState(false)
+  const grouped = groupReactions(reactions, players, mine)
+
+  useEffect(() => {
+    if (!picking) return undefined
+    const close = () => setPicking(false)
+    // Any tap elsewhere closes it, including the one that picked an emoji.
+    window.addEventListener('pointerdown', close)
+    return () => window.removeEventListener('pointerdown', close)
+  }, [picking])
+
+  if (grouped.length === 0 && !onReact) return null
+
+  return (
+    <span className="reacts">
+      {grouped.map((r) => (
+        <button
+          type="button"
+          className={r.byMe ? 'reacts__tag reacts__tag--mine' : 'reacts__tag'}
+          key={r.emoji}
+          /* Signed, never anonymous — you can be asked about your 🤨. */
+          title={r.who.join(', ')}
+          disabled={!onReact}
+          onPointerDown={(e) => { e.stopPropagation(); onReact?.(r.emoji) }}
+        >
+          {r.emoji}
+          {r.count > 1 && <b>{r.count}</b>}
+        </button>
+      ))}
+
+      {onReact && (
+        <span className="reactpick">
+          <button
+            type="button"
+            className="reactpick__open"
+            onPointerDown={(e) => { e.stopPropagation(); play('tap'); setPicking((v) => !v) }}
+            aria-label="Réagir"
+          >
+            ＋
+          </button>
+          <AnimatePresence>
+            {picking && (
+              <motion.span
+                className="reactpick__menu"
+                initial={{ opacity: 0, y: 6, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 6, scale: 0.9 }}
+                transition={{ duration: 0.16 }}
+              >
+                {(palette ?? []).map((emoji) => (
+                  <button
+                    type="button"
+                    key={emoji}
+                    onPointerDown={(e) => { e.stopPropagation(); onReact(emoji); setPicking(false) }}
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </span>
+      )}
+    </span>
+  )
+}
+
 export function PlayerChip({
   player,
   selectable,
@@ -42,7 +199,17 @@ export function PlayerChip({
   speaking,
   highlighted,
   voteState,
+  reactions,
+  palette,
+  onReact,
+  mine,
+  players,
 }) {
+  // Reactions land on a clue, not in the chat: the chat only exists during the
+  // debate, while the dead moment worth filling is the description round.
+  // Sticking them under the clue also means they are still there at vote time.
+  const canReact = Boolean(onReact) && player.id !== mine && Boolean(player.clue)
+
   const classes = [
     'player',
     !player.alive && 'player--dead',
@@ -104,6 +271,14 @@ export function PlayerChip({
           {player.clueTimedOut ? '…' : `« ${player.clue} »`}
         </span>
       ) : null}
+
+      <ReactionBar
+        reactions={reactions}
+        players={players}
+        mine={mine}
+        palette={palette}
+        onReact={canReact ? (emoji) => onReact(player.id, emoji) : null}
+      />
 
       {votes > 0 && <span className="badge" style={{ marginTop: 4 }}>{votes} vote{votes > 1 ? 's' : ''}</span>}
       {voteState === 'voted' && <span className="player__meta" style={{ color: player.color }}>a voté</span>}

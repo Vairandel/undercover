@@ -4,11 +4,14 @@ import {
   AvatarPicker,
   CampTracker,
   ChatFeed,
+  DyingGuesses,
   ConfirmButton,
   PhaseTimer,
   PlayerChip,
+  ReactionBar,
   Recap,
   ScoreBoard,
+  Titles,
   TurnTimer,
   outcomeStyle,
 } from '../components.jsx'
@@ -81,6 +84,10 @@ export default function PlayerRound({ state, you, act, leave, connected, appeara
         </motion.div>
       </AnimatePresence>
 
+      {/* Sits above the round rather than replacing it: the table plays on
+          while this phone counts down alone. */}
+      {you.dyingGuess && <DyingGuess state={state} you={you} act={act} />}
+
       {/* Pinned below the round, so the host never has to scroll to find it. */}
       {you.isHost && <HostControls state={state} act={act} info={info} />}
 
@@ -142,6 +149,107 @@ function HostControls({ state, act, info }) {
         {control.label}
       </button>
     </div>
+  )
+}
+
+/**
+ * The eliminated civilian's private, timed shot at naming the impostors.
+ *
+ * Deliberately a panel and not a phase: the round is carrying on without him,
+ * and blocking the table for twenty seconds after every single death would put
+ * back exactly the dead time the reactions were added to remove.
+ *
+ * Nothing here reaches the public state. A dead player who could be seen
+ * answering — or worse, seen answering *correctly* — would be an oracle the
+ * living could read.
+ */
+function DyingGuess({ state, you, act }) {
+  const [picked, setPicked] = useState([])
+  const [sent, setSent] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const { deadline, total, count, points, candidates } = you.dyingGuess
+  const [left, setLeft] = useState(() => Math.max(0, deadline - Date.now()))
+
+  useEffect(() => {
+    const id = setInterval(() => setLeft(Math.max(0, deadline - Date.now())), 200)
+    return () => clearInterval(id)
+  }, [deadline])
+
+  const secs = Math.ceil(left / 1000)
+  const targets = state.players.filter((p) => candidates.includes(p.id))
+
+  const toggle = (id) => {
+    play('select')
+    setPicked((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : prev.length >= count ? prev : [...prev, id],
+    )
+  }
+
+  const submit = async () => {
+    if (busy || picked.length !== count) return
+    setBusy(true)
+    try {
+      await act('player:dyingGuess', { targetIds: picked })
+      // No feedback on whether it landed: knowing now would tell him — and
+      // anyone reading his face — something the living must not learn.
+      setSent(true)
+      play('select')
+    } catch { /* toast already shown */ } finally {
+      setBusy(false)
+    }
+  }
+
+  if (left <= 0 && !sent) return null
+
+  return (
+    <motion.div
+      className="dying"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {sent ? (
+        <p className="subtitle center" style={{ fontSize: '0.9rem' }}>
+          🔮 Ton dernier soupçon est scellé. Tu sauras à la fin de la partie.
+        </p>
+      ) : (
+        <>
+          <div className="spread">
+            <p className="eyebrow">🔮 Dernier soupçon</p>
+            <span className="badge mono" style={{ color: secs <= 5 ? 'var(--danger)' : 'var(--gold)' }}>
+              {secs}s
+            </span>
+          </div>
+          <p className="setting__hint">
+            Nomme {count === 1 ? "l'imposteur encore en jeu" : `les ${count} imposteurs encore en jeu`}.
+            Personne ne verra ta réponse. Si tu vises juste et que les civils perdent,
+            tu marques {points} point{points > 1 ? 's' : ''} quand même.
+          </p>
+
+          <div className="players">
+            {targets.map((p) => (
+              <PlayerChip
+                key={p.id}
+                player={p}
+                selectable={!busy}
+                selected={picked.includes(p.id)}
+                onSelect={toggle}
+              />
+            ))}
+          </div>
+
+          <button
+            className="btn btn--primary btn--block btn--sm"
+            disabled={busy || picked.length !== count}
+            onClick={submit}
+          >
+            {picked.length === count
+              ? 'Sceller ma réponse'
+              : `Encore ${count - picked.length} à désigner`}
+          </button>
+        </>
+      )}
+    </motion.div>
   )
 }
 
@@ -468,7 +576,7 @@ function Describe({ state, you, act }) {
         <h1 className="title">Tu observes</h1>
         <p className="subtitle">Ne dis rien. Regarde-les se déchirer.</p>
         <WordReminder you={you} />
-        <ClueList state={state} />
+        <ClueList state={state} you={you} act={act} />
       </div>
     )
   }
@@ -485,7 +593,7 @@ function Describe({ state, you, act }) {
           <TurnTimer deadline={state.turnDeadline} total={state.settings.turnTimer} />
         )}
         <WordReminder you={you} />
-        <ClueList state={state} />
+        <ClueList state={state} you={you} act={act} />
       </div>
     )
   }
@@ -525,7 +633,7 @@ function Describe({ state, you, act }) {
         {state.settings.writtenClues ? 'Valider mon indice' : "J'ai parlé →"}
       </button>
 
-      <ClueList state={state} />
+      <ClueList state={state} you={you} act={act} />
     </form>
   )
 }
@@ -584,9 +692,25 @@ function WordReminder({ you, big }) {
   )
 }
 
-function ClueList({ state }) {
+/**
+ * The round's clues, and where reactions are cast on a phone.
+ *
+ * This list is on screen during description, debate and vote alike, so a mark
+ * placed while someone was still speaking is still under their clue when the
+ * ballot opens — which is exactly when it is worth the most.
+ */
+function ClueList({ state, you, act }) {
   const given = state.players.filter((p) => p.hasClue && p.clue)
   if (!state.settings.writtenClues || given.length === 0) return null
+
+  // The dead do not react, for the same reason they do not chat: they know
+  // things, and a well-placed 🤨 would keep them steering the game.
+  const canReact = state.reactionsOpen && you?.alive && act
+
+  const react = (targetId, emoji) => {
+    play('tap')
+    act('player:react', { targetId, emoji }).catch(() => {})
+  }
 
   return (
     <div className="stack" style={{ gap: 8 }}>
@@ -605,6 +729,13 @@ function ClueList({ state }) {
               {p.name}
               {p.clueTimedOut && ' · temps écoulé'}
             </div>
+            <ReactionBar
+              reactions={state.reactions?.[p.id]}
+              players={state.players}
+              mine={you?.id}
+              palette={state.reactionPalette}
+              onReact={canReact && p.id !== you?.id ? (emoji) => react(p.id, emoji) : null}
+            />
           </div>
         </div>
       ))}
@@ -678,7 +809,7 @@ function Discuss({ state, you, act }) {
       )}
 
       <WordReminder you={you} />
-      <ClueList state={state} />
+      <ClueList state={state} you={you} act={act} />
 
       {/* One impatient player must not be able to cut the debate short: the
           vote opens only when everyone has asked, or when the host forces it. */}
@@ -834,7 +965,7 @@ function Tiebreak({ state, you, act }) {
         </button>
       )}
 
-      <ClueList state={state} />
+      <ClueList state={state} you={you} act={act} />
     </div>
   )
 }
@@ -856,7 +987,7 @@ function Vote({ state, you, act }) {
         {state.settings.writtenClues && state.chat?.length > 0 && (
           <ChatFeed messages={state.chat} meId={you.id} compact />
         )}
-        <ClueList state={state} />
+        <ClueList state={state} you={you} act={act} />
       </div>
     )
   }
@@ -911,7 +1042,7 @@ function Vote({ state, you, act }) {
         <ChatFeed messages={state.chat} meId={you.id} compact />
       )}
 
-      <ClueList state={state} />
+      <ClueList state={state} you={you} act={act} />
     </div>
   )
 }
@@ -1074,6 +1205,10 @@ function GameOver({ state, you }) {
       </div>
 
       <ScoreBoard rows={state.scoreboard} compact />
+
+      <Titles titles={state.titles} />
+
+      <DyingGuesses guesses={state.dyingGuesses} players={state.players} />
 
       <Recap rounds={state.recap} players={state.players} />
 

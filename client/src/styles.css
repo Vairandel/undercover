@@ -1293,6 +1293,130 @@ body::after {
   transition: opacity 0.15s;
 }
 
+/* ----------------------------------------------------------- end-of-game titles */
+
+.title-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.title-card__emoji { font-size: 1.6rem; line-height: 1; }
+.title-card__label { font-weight: 750; font-size: 0.95rem; }
+.title-card__who { font-weight: 650; font-size: 0.85rem; margin-top: 1px; }
+
+.title-card__detail {
+  font-size: 0.76rem;
+  color: var(--text-faint);
+  margin-top: 2px;
+  line-height: 1.35;
+}
+
+/* ------------------------------------------------------------ dying guess */
+
+/* Gold and set apart, because it is the one thing on this phone that is not
+   the round everyone else is playing. */
+.dying {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  background: linear-gradient(160deg, rgba(251, 191, 36, 0.12), rgba(124, 92, 255, 0.08));
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+/* -------------------------------------------------------------- reactions */
+
+.reacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.reacts__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.05);
+  color: inherit;
+  font: inherit;
+  font-size: 0.82rem;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+/* Read-only on the shared screen: it reports the mood, phones set it. */
+.reacts__tag:disabled { cursor: default; }
+
+/* Yours is outlined, so you can see at a glance what you already said. */
+.reacts__tag--mine {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.reacts__tag b { font-size: 0.7rem; font-weight: 800; }
+
+.reactpick { position: relative; margin-top: 4px; }
+
+.reactpick__open {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px dashed var(--border);
+  background: transparent;
+  color: var(--text-faint);
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.reactpick__open:hover { color: var(--accent); border-color: var(--accent); }
+
+.reactpick__menu {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2px;
+  padding: 5px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #182034;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  z-index: 20;
+}
+
+.reactpick__menu button {
+  border: none;
+  background: transparent;
+  /* Big enough to hit with a thumb without zooming in. */
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 3px 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.12s, background 0.12s;
+}
+
+.reactpick__menu button:hover {
+  transform: scale(1.25);
+  background: rgba(255, 255, 255, 0.08);
+}
+
 /* ------------------------------------------------------------ waiting room */
 
 .waitingroom {

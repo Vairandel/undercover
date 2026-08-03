@@ -2,10 +2,12 @@ import { AnimatePresence, motion } from 'framer-motion'
 import {
   CampTracker,
   ChatFeed,
+  DyingGuesses,
   PlayerChip,
   PhaseTimer,
   Recap,
   ScoreBoard,
+  Titles,
   TurnTimer,
   outcomeStyle,
 } from '../components.jsx'
@@ -130,6 +132,8 @@ export default function SpectatorView({ state, leave, connected, canJoin, onJoin
                 </p>
               )}
               <ScoreBoard rows={state.scoreboard} compact />
+              <Titles titles={state.titles} />
+              <DyingGuesses guesses={state.dyingGuesses} players={players} />
               <Recap rounds={state.recap} players={players} />
             </>
           )}
