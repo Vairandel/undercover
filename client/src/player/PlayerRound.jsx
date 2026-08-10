@@ -15,6 +15,7 @@ import {
   TurnTimer,
   outcomeStyle,
 } from '../components.jsx'
+import Dossier from './Dossier.jsx'
 import RulesSheet from '../RulesSheet.jsx'
 import { play, playRoleSting } from '../audio.js'
 
@@ -47,6 +48,9 @@ export default function PlayerRound({ state, you, act, leave, connected, appeara
               reconnexion…
             </span>
           )}
+          {/* Your own card and every clue given so far — the two things people
+              have actually forgotten by round three. */}
+          <Dossier state={state} you={you} />
           <button
             type="button"
             className="btn btn--ghost btn--sm"
@@ -496,18 +500,26 @@ function Reveal({ state, you, act }) {
         )}
       </div>
 
+      {/* Once tapped it turns green, goes dead, and says what it is waiting for.
+          A button that merely greys out reads as "nothing happened", and people
+          press it again unsure whether it registered. */}
       <button
-        className="btn btn--primary btn--block"
+        className={you.ready ? 'btn btn--done btn--block' : 'btn btn--primary btn--block'}
         disabled={!seen || you.ready}
         onClick={() => {
-          // Confirm the tap before the server round-trip: without it the button
-          // just sits there and people press it again, unsure it registered.
+          // Confirm the tap before the server round-trip, for the same reason.
           play('select')
           navigator.vibrate?.(30)
           act('player:ready')
         }}
       >
-        {you.ready ? '✓  Tu es prêt' : seen ? "J'ai vu ma carte" : "Regarde ta carte d'abord"}
+        {you.ready
+          ? waiting === 0
+            ? '✓  Tout le monde est prêt'
+            : `✓  En attente des autres joueurs (${waiting})`
+          : seen
+            ? "J'ai vu ma carte"
+            : "Regarde ta carte d'abord"}
       </button>
 
       {/* Who the round is still waiting on, by name and face — far clearer than
@@ -1004,24 +1016,37 @@ function Vote({ state, you, act }) {
     }
   }
 
-  const chosen = you.vote ? state.players.find((p) => p.id === you.vote) : null
+  const blank = you.vote === 'blank'
+  const chosen = you.vote && !blank ? state.players.find((p) => p.id === you.vote) : null
   const waiting = state.players.filter((p) => p.canVote && !p.hasVoted).length
+  const stakes = state.settings.detectiveMode ? state.settings.points?.detective ?? 0 : 0
 
   return (
     <div className="stack">
       <div className="center stack" style={{ gap: 6 }}>
         <p className="eyebrow">Vote</p>
         <h1 className="title">
-          {chosen ? `Tu accuses ${chosen.avatar} ${chosen.name}` : "Qui est l'imposteur ?"}
+          {blank
+            ? 'Tu votes blanc'
+            : chosen
+              ? `Tu accuses ${chosen.avatar} ${chosen.name}`
+              : "Qui est l'imposteur ?"}
         </h1>
         <p className="subtitle">
           {!you.alive && '👻 Tu es mort, mais ton bulletin compte encore. '}
-          {chosen
+          {you.vote
             ? waiting > 0
               ? `Tu peux encore changer d'avis — ${waiting} joueur${waiting > 1 ? 's' : ''} n'${waiting > 1 ? 'ont' : 'a'} pas voté.`
               : 'Dépouillement en cours…'
             : 'Touche quelqu\'un pour voter.'}
         </p>
+        {/* Say the price before the ballot, not after: the whole point of the
+            mode is that accusing someone should feel like it costs something. */}
+        {stakes > 0 && (
+          <p className="setting__hint">
+            🔍 {stakes} point{stakes > 1 ? 's' : ''} si tu vises un imposteur, autant en moins sinon.
+          </p>
+        )}
       </div>
 
       <div className="players">
@@ -1035,6 +1060,20 @@ function Vote({ state, you, act }) {
           />
         ))}
       </div>
+
+      {/* Refusing to accuse is a real answer. Without it, a table that scores
+          its ballots pushes people to name someone at random rather than admit
+          they have nothing. */}
+      {state.settings.blankVote && (
+        <button
+          type="button"
+          className={blank ? 'btn btn--done btn--block btn--sm' : 'btn btn--ghost btn--block btn--sm'}
+          disabled={busy}
+          onClick={() => { play('tap'); pick('blank') }}
+        >
+          {blank ? '✓  Vote blanc' : '🤷  Voter blanc'}
+        </button>
+      )}
 
       {/* Read-only during the vote: the argument is closed, but re-reading it
           is exactly what you want while choosing a name. */}

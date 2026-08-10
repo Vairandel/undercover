@@ -208,6 +208,70 @@ en dessous duquel il se tait, et une égalité l'annule au lieu d'être départa
 « le plus X » n'est drôle que si quelqu'un l'était vraiment. Un joueur ne porte
 qu'un titre, et il n'y en a jamais plus de quatre.
 
+## Récompense et punition
+
+Trois réglages liés, tous **éteints par défaut** — ils changent la façon de
+jouer, pas seulement de compter.
+
+| Réglage | Effet |
+|---|---|
+| **Récompense et punition** | Chaque bulletin de civil est payé : `detective` points gagnés s'il vise un imposteur, autant de perdus sinon. |
+| **Scores négatifs** | Sans lui, un score ne descend jamais sous zéro. Avec, une mauvaise soirée se paie. |
+| **Vote blanc** | Refuser d'accuser. Ne nomme personne, ne rapporte ni ne coûte rien. |
+
+**Les imposteurs ne sont jamais concernés.** Voter faux est leur métier ; les
+payer pour ça reviendrait à les récompenser deux fois. Mister White non plus.
+
+Le plancher porte sur le **score cumulé**, pas sur la manche. Bloquer chaque
+manche à zéro protégerait justement ceux qui ont déjà des points — c'est-à-dire
+exactement les gens que le mode vise. Là, une mauvaise manche coûte du terrain
+sans jamais enterrer personne.
+
+Le **vote blanc** a son propre interrupteur parce qu'il vaut le coup seul, mais
+il prend tout son sens ici : sans lui, un tableau qui paie les bulletins pousse
+à accuser au hasard plutôt qu'à reconnaître qu'on n'a rien.
+
+## Simuler des parties pour régler le barème
+
+```bash
+npm run simulate -- --games 3000 --players 7
+npm run simulate -- --config simulation.example.json
+npm run simulate -- --sweep mrwhite=3,4,5,6,7      # compare plusieurs valeurs
+```
+
+Le simulateur joue des milliers de parties contre le **vrai moteur** — mêmes
+rôles, mêmes conditions de victoire, même scoring — et rapporte le taux de
+victoire par camp, les points moyens par rôle, la fréquence de chaque titre et
+l'écart d'espérance entre les camps.
+
+Ce qu'il ne modélise **pas**, c'est le langage : un robot ne peut pas écrire un
+indice habile ou maladroit. Ce qui décide les vraies parties est donc remplacé
+par un seul bouton honnête, `skill` — la probabilité qu'un bulletin de civil
+tombe sur un imposteur. Lis la sortie comme « pour une table qui démasque 55 %
+du temps, ce barème est-il juste ? », qui est la question à laquelle un barème
+doit répondre.
+
+Tout va dans `simulations/`, et jamais dans tes vraies données.
+
+| Option | Rôle |
+|---|---|
+| `--games`, `--players`, `--skill`, `--seed` | La série à jouer. `--seed` la rend rejouable à l'identique. |
+| `--set.discussTime 0`, `--roles.mrwhite true` | N'importe quel réglage du jeu. |
+| `--points.mrwhite 4` | N'importe quelle valeur du barème. |
+| `--sweep <clé>=<v1,v2,…>` | Rejoue la même série pour chaque valeur et désigne la plus équilibrée. |
+
+## Tests
+
+```bash
+npm test
+```
+
+Ils tournent dans `tests/.scratch/` grâce à `UNDERCOVER_DATA_DIR`. C'est une
+correction, pas un détail : les suites démarrent le vrai serveur, donc chaque
+partie de robot tirait de vraies paires et les marquait « déjà jouées » dans
+l'historique de la maison. Des centaines de paires ont été brûlées par des
+robots que personne à la table n'a jamais vues.
+
 ## Qui pilote la partie
 
 Deux télécommandes en parallèle, pour ne pas dépendre de qui est assis devant

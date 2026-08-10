@@ -1,0 +1,59 @@
+{
+  "_lisezmoi": "Copie ce fichier, modifie-le, puis : npm run simulate -- --config ma-config.json",
+
+  "games": 3000,
+  "players": 7,
+
+  "_table": "Le seul vrai paramètre de comportement : la chance qu'un bulletin de civil tombe sur un imposteur. 0.35 = table distraite, 0.5 = table normale, 0.7 = table qui joue sérieusement.",
+  "skill": 0.5,
+  "skillGrowth": 0.08,
+  "blankRate": 0.1,
+  "whiteGuessRate": 0.35,
+  "whiteBlurtRate": 0.03,
+  "dyingAnswerRate": 0.9,
+
+  "_seed": "Fixe-le pour rejouer exactement la même série d'une exécution à l'autre — indispensable pour comparer deux barèmes.",
+  "seed": 42,
+
+  "_settings": "Exactement les réglages du vrai jeu.",
+  "settings": {
+    "undercoverCount": "auto",
+    "writtenClues": true,
+    "turnTimer": 0,
+    "discussTime": 0,
+    "detectiveMode": false,
+    "allowNegative": false,
+    "blankVote": false,
+    "dyingGuess": true,
+    "dyingGuessTime": 20,
+    "endTitles": true,
+    "reactions": true,
+    "roles": {
+      "mrwhite": true,
+      "bouffon": false,
+      "maire": false,
+      "justicier": false,
+      "amoureux": false,
+      "vengeuse": false,
+      "duelliste": false,
+      "fantome": false,
+      "mercenaire": false
+    },
+    "points": {
+      "civilian": 2,
+      "undercover": 3,
+      "mrwhite": 5,
+      "lovers": 4,
+      "survivor": 1,
+      "whiteGuess": 2,
+      "bouffon": 3,
+      "duelliste": 2,
+      "mercenaire": 2,
+      "dyingGuess": 2,
+      "detective": 1
+    }
+  },
+
+  "_sweep": "Facultatif : essaie plusieurs valeurs d'un même barème et compare. Retire ce bloc pour ne tester que le barème ci-dessus.",
+  "sweep": { "key": "mrwhite", "values": [3, 4, 5, 6, 7] }
+}

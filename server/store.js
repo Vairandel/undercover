@@ -1,9 +1,5 @@
 import fs from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-
-const dataDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'data')
-const statePath = path.join(dataDir, 'state.json')
+import { dataDir, statePath } from './paths.js'
 
 const EMPTY = { seenPairs: {}, gamesPlayed: 0, lastTheme: null, rooms: {} }
 

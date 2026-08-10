@@ -1,16 +1,12 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { store } from './store.js'
-
-const dataDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'data')
-const wordsDir = path.join(dataDir, 'words')
 /**
- * Everything the host adds through the editor lands here, never in the shipped
- * theme files. Keeps the bundled bank pristine and upgradable, and makes the
- * user's own additions a single file to back up or delete.
+ * `customPath` is everything the host adds through the editor — never the
+ * shipped theme files, which keeps the bundled bank pristine and upgradable and
+ * makes the user's own additions a single file to back up or delete.
  */
-const customPath = path.join(dataDir, 'custom-words.json')
+import { dataDir, wordsDir, customWordsPath as customPath } from './paths.js'
 
 let themes = []
 

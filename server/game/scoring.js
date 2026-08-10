@@ -24,6 +24,10 @@ export const DEFAULT_POINTS = {
   duelliste: 2,
   mercenaire: 2,
   dyingGuess: 2,
+  // Reward-and-punishment mode: what one civilian ballot is worth, right or
+  // wrong. Symmetric on purpose — a mode that only punished would make people
+  // abstain rather than think.
+  detective: 1,
 }
 
 /**
@@ -43,6 +47,7 @@ export const POINT_FIELDS = [
   { key: 'duelliste', group: 'bonus', emoji: '⚔️', label: 'Duel remporté', hint: 'Le duelliste qui survit le plus longtemps', min: 0, max: 10, role: 'duelliste' },
   { key: 'mercenaire', group: 'bonus', emoji: '💰', label: 'Contrat rempli', hint: 'La cible du mercenaire tombe dès la première manche', min: 0, max: 10, role: 'mercenaire' },
   { key: 'dyingGuess', group: 'bonus', emoji: '🔮', label: 'Dernier soupçon', hint: 'Un civil éliminé nomme tous les imposteurs restants — et les civils perdent quand même', min: 0, max: 10, setting: 'dyingGuess' },
+  { key: 'detective', group: 'bonus', emoji: '🔍', label: 'Vote juste / vote à côté', hint: 'Mode récompense et punition : ce que vaut un bulletin de civil, gagné s\'il vise un imposteur, perdu sinon', min: 0, max: 5, setting: 'detectiveMode' },
 ]
 
 const FIELD_BY_KEY = Object.fromEntries(POINT_FIELDS.map((f) => [f.key, f]))
@@ -115,8 +120,10 @@ export function scoreGame({ players, outcome, teamOf, lastResult, awards = [], p
       breakdown.push({ key: 'whiteGuess', label: 'Mot deviné', points: points.whiteGuess })
     }
 
+    // Negative awards are real: reward-and-punishment mode takes points off a
+    // civilian for every ballot that hit an innocent. Only a zero is noise.
     for (const award of awards) {
-      if (award.playerId !== player.id || award.points <= 0) continue
+      if (award.playerId !== player.id || award.points === 0) continue
       breakdown.push({ key: award.key, label: award.label, points: award.points })
     }
 

@@ -2,5 +2,8 @@ node_modules/
 client/dist/
 server/data/state.json
 server/data/custom-words.json
+# Throwaway data written by tests and simulations — never the household's.
+tests/.scratch/
+simulations/
 *.log
 .DS_Store

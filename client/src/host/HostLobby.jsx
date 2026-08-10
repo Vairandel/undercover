@@ -389,6 +389,29 @@ export default function HostLobby({ state, info, joinUrl, act }) {
           </Setting>
 
           <Setting
+            label="Récompense et punition"
+            hint="Chaque bulletin de civil est payé : autant de points gagnés s'il vise un imposteur, autant de perdus sinon. Les imposteurs ne sont jamais concernés — voter faux est leur métier. De quoi récompenser les bons enquêteurs et calmer les suiveurs."
+          >
+            <Switch checked={settings.detectiveMode} onChange={(v) => set({ detectiveMode: v })} />
+          </Setting>
+
+          {settings.detectiveMode && (
+            <Setting
+              label="Autoriser les scores négatifs"
+              hint="Désactivé, un score ne descend jamais sous zéro. Activé, une mauvaise soirée peut se payer cher."
+            >
+              <Switch checked={settings.allowNegative} onChange={(v) => set({ allowNegative: v })} />
+            </Setting>
+          )}
+
+          <Setting
+            label="Vote blanc"
+            hint="Permet de refuser d'accuser. Ne compte pour personne, ne rapporte ni ne coûte rien — surtout utile quand les bulletins sont payés."
+          >
+            <Switch checked={settings.blankVote} onChange={(v) => set({ blankVote: v })} />
+          </Setting>
+
+          <Setting
             label="Dernier soupçon"
             hint="Un civil éliminé a quelques secondes, sur son seul téléphone, pour nommer tous les imposteurs restants. Réponse secrète jusqu'au bilan ; la table n'attend pas."
           >

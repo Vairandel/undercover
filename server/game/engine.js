@@ -57,6 +57,9 @@ export const CHAT_MAX_PER_ROUND = 60
  * would have people picking an emoji instead of playing.
  */
 export const REACTIONS = ['🤨', '👍', '😂', '👀', '💀', '⭐']
+
+/** Sentinel target for "I refuse to accuse anyone". */
+export const BLANK_VOTE = 'blank'
 const CHAT_COOLDOWN_MS = 500
 
 export const DEFAULT_SETTINGS = {
@@ -75,6 +78,13 @@ export const DEFAULT_SETTINGS = {
   // naming every impostor still standing.
   dyingGuess: true,
   dyingGuessTime: 20,
+  // Reward-and-punishment: a civilian's ballot is worth points, right or wrong.
+  // Off by default — it changes how the game is played, not just how it scores.
+  detectiveMode: false,
+  // Whether that arithmetic may take someone below zero.
+  allowNegative: false,
+  // Its own switch, because refusing to accuse is worth having on its own.
+  blankVote: false,
   points: { ...DEFAULT_POINTS },
   roles: {
     mrwhite: true,
@@ -1069,6 +1079,38 @@ export class Game {
     this.reactionTotals.set(targetId, tally)
   }
 
+  /**
+   * Every clue given so far, round by round.
+   *
+   * Safe to hand to everyone: a clue was said out loud in front of the table
+   * the moment it was given, so nothing here is secret. What it replaces is
+   * players' memory — by round three nobody recalls what the quiet one said in
+   * round one, which is exactly the evidence the game runs on.
+   *
+   * Deliberately clues only. The secret words never enter this log, and the
+   * eliminated keep theirs hidden until the final reveal.
+   */
+  clueLog() {
+    const byRound = new Map()
+    for (const past of this.history) {
+      if (past?.clues) byRound.set(past.round, { clues: past.clues, out: outOf(past) })
+    }
+    if (this.lastResult?.clues) {
+      byRound.set(this.lastResult.round, {
+        clues: this.lastResult.clues,
+        out: outOf(this.lastResult),
+      })
+    }
+    // The round in progress lives in neither, and is the one being argued over.
+    if (this.clues.size > 0) {
+      byRound.set(this.round, { clues: this.cluesPlain(), out: byRound.get(this.round)?.out ?? [] })
+    }
+
+    return [...byRound.entries()]
+      .sort((a, b) => a[0] - b[0])
+      .map(([round, entry]) => ({ round, ...entry }))
+  }
+
   /** Flattened for the wire: `{ targetId: [{ by, emoji }] }`. */
   reactionsPlain() {
     const out = {}
@@ -1128,12 +1170,20 @@ export class Game {
     const voter = this.players.get(voterId)
     if (!voter) throw new GameError("Tu n'as pas de place dans cette partie.")
     if (this.phase !== PHASES.VOTE) return
-    const target = this.players.get(targetId)
     if (!this.canVote(voter)) throw new GameError('Les éliminés ne votent pas.')
-    if (!target?.alive) throw new GameError('Cible invalide.')
-    if (voterId === targetId) throw new GameError('Tu ne peux pas voter pour toi.')
 
-    this.votes.set(voterId, targetId)
+    // Refusing to accuse is a real answer, and worth having: without it, a table
+    // that scores its ballots pushes people to name someone at random rather
+    // than admit they have nothing.
+    if (targetId === BLANK_VOTE) {
+      if (!this.settings.blankVote) throw new GameError('Le vote blanc est désactivé.')
+      this.votes.set(voterId, BLANK_VOTE)
+    } else {
+      const target = this.players.get(targetId)
+      if (!target?.alive) throw new GameError('Cible invalide.')
+      if (voterId === targetId) throw new GameError('Tu ne peux pas voter pour toi.')
+      this.votes.set(voterId, targetId)
+    }
     this.onEvent({ type: 'voteCast' })
 
     const voters = this.activeVoters()
@@ -1142,10 +1192,14 @@ export class Game {
   }
 
   tallyVotes() {
+    this.scoreBallots()
+
     const tally = new Map()
     for (const [voterId, targetId] of this.votes) {
       const voter = this.players.get(voterId)
       if (!this.canVote(voter)) continue
+      // A blank ballot is counted as cast, but names nobody.
+      if (targetId === BLANK_VOTE) continue
       // Roles may weight a ballot — the Maire's counts double.
       let weight = 1
       for (const trait of this.traitsOf(voter)) {
@@ -1421,6 +1475,72 @@ export class Game {
     this.runNextInterrupt()
   }
 
+  // --------------------------------------------------- reward & punishment
+
+  /**
+   * Scores this round's ballots, one per civilian.
+   *
+   * The complaint this answers: being voted for nothing, round after round, by
+   * people following whoever spoke loudest. Putting a price on a ballot makes
+   * accusing someone cost something, so the followers slow down and the ones
+   * who actually read the table get paid for it.
+   *
+   * Only civilians are scored. An impostor's ballot is a bluff — voting "wrong"
+   * is his whole job, and paying him for it would be rewarding him twice.
+   * A blank counts for nothing either way, which is the point of having it.
+   */
+  scoreBallots() {
+    if (!this.settings.detectiveMode) return
+    const value = this.points.detective
+    if (value <= 0) return
+
+    for (const [voterId, targetId] of this.votes) {
+      const voter = this.players.get(voterId)
+      if (!voter || !this.canVote(voter)) continue
+      if (this.teamOfPlayer(voter) !== 'civilian') continue
+      if (targetId === BLANK_VOTE) continue
+
+      const target = this.players.get(targetId)
+      if (!target) continue
+
+      const right = this.teamOfPlayer(target) !== 'civilian'
+      const tally = (voter.data.detective ??= { right: 0, wrong: 0 })
+      if (right) tally.right += 1
+      else tally.wrong += 1
+    }
+  }
+
+  /** Settled at the end, so the running total never distracts mid-game. */
+  detectiveAwards() {
+    if (!this.settings.detectiveMode) return []
+    const value = this.points.detective
+    if (value <= 0) return []
+
+    const out = []
+    for (const player of this.players.values()) {
+      const tally = player.data?.detective
+      if (!tally) continue
+
+      if (tally.right > 0) {
+        out.push({
+          playerId: player.id,
+          key: 'detectiveRight',
+          label: `Votes justes (${tally.right})`,
+          points: tally.right * value,
+        })
+      }
+      if (tally.wrong > 0) {
+        out.push({
+          playerId: player.id,
+          key: 'detectiveWrong',
+          label: `Votes à côté (${tally.wrong})`,
+          points: -tally.wrong * value,
+        })
+      }
+    }
+    return out
+  }
+
   // ----------------------------------------------------------- dying guess
 
   /**
@@ -1568,6 +1688,7 @@ export class Game {
     this.awards = [
       ...this.presentTraits().flatMap((trait) => trait.onGameEnd?.(ctx) ?? []),
       ...this.dyingGuessAwards(outcome),
+      ...this.detectiveAwards(),
     ]
 
     // Pure commentary — they carry no points and change nothing. Computed here
@@ -1598,8 +1719,20 @@ export class Game {
 
     for (const row of rows) {
       const player = this.players.get(row.playerId)
+      const before = player.score
+      // The floor is on the running total, not on the round: clamping each
+      // round at zero would neuter the punishment for anyone already ahead,
+      // which is precisely who the mode is aimed at. This way a bad night
+      // costs you real ground without ever burying you below nothing.
+      const after = this.settings.allowNegative
+        ? before + row.points
+        : Math.max(0, before + row.points)
+
+      player.score = after
+      // What was actually applied, so the scoreboard's arithmetic adds up even
+      // when the floor swallowed part of a penalty.
+      row.points = after - before
       player.roundPoints = row.points
-      player.score += row.points
       if (row.won) player.wins += 1
     }
 
@@ -1923,6 +2056,8 @@ export class Game {
       dyingGuesses: this.phase === PHASES.GAME_OVER ? this.dyingGuessesPlain() : [],
       titles: this.phase === PHASES.GAME_OVER ? this.titles : [],
       recap: this.recap(),
+      // Public all game long: every clue in it was given in the open.
+      clueLog: this.settings.writtenClues ? this.clueLog() : [],
       chat: this.settings.writtenClues ? this.chat : [],
       chatOpen:
         [PHASES.DISCUSS, PHASES.VOTE].includes(this.phase) && this.settings.writtenClues,
@@ -2100,6 +2235,13 @@ function publicRole(p) {
  * one fact that neutralises it. Those only surface in the final post-mortem,
  * where `includeSecret` is turned on.
  */
+/** Who left the table in a given round — name only, never their word. */
+function outOf(result) {
+  return [result?.eliminated, ...(result?.alsoEliminated ?? [])]
+    .filter(Boolean)
+    .map((rec) => ({ id: rec.id, name: rec.name, avatar: rec.avatar }))
+}
+
 function publicModifiers(p, { includeSecret = false } = {}) {
   return (p.modifiers ?? [])
     .map((id) => getModifier(id))
