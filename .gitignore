@@ -2,6 +2,8 @@ node_modules/
 client/dist/
 server/data/state.json
 server/data/custom-words.json
+# Holds the admin token — machine-local, never committed.
+server/data/tunnel.json
 # Throwaway data written by tests and simulations — never the household's.
 tests/.scratch/
 simulations/

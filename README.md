@@ -88,9 +88,38 @@ Le jeu est pensé pour une même pièce : un écran partagé, des accusations à
 haute. À distance il te faudra un salon vocal, et quelqu'un pour partager
 l'écran `/host` — le reste fonctionne, chaque téléphone étant autonome.
 
-### Avec Cloudflare Tunnel (gratuit, rien à héberger)
+### Adresse fixe, sur ton propre domaine
 
-Une seule commande :
+Si tu as un domaine géré par Cloudflare, c'est la meilleure option : l'adresse
+ne change **jamais**, tes amis peuvent la mettre en favori, et le QR code
+redevient un raccourci au lieu d'être la seule façon d'entrer.
+
+La première fois, donne le nom d'hôte :
+
+```bash
+npm run tunnel:named -- --hostname undercover.tondomaine.org
+```
+
+Le script t'ouvre la page d'autorisation Cloudflare, crée le tunnel, pointe le
+DNS dessus, puis démarre tout. Les fois suivantes, il n'y a plus rien à taper :
+
+```bash
+npm run tunnel:named
+```
+
+Le nom d'hôte et le **jeton administrateur** sont retenus dans
+`server/data/tunnel.json` (non versionné). Le jeton est délibérément stable :
+avec une adresse permanente, l'éditeur de mots devient une page où l'on revient,
+et un jeton qui changerait à chaque lancement finirait par être désactivé.
+
+Prérequis : le domaine doit être dans ton compte Cloudflare, c'est-à-dire que
+ses **serveurs de noms** doivent pointer vers Cloudflare — gratuit, quel que
+soit le vendeur du domaine.
+
+### Sans domaine : le tunnel jetable
+
+Une seule commande, rien à acheter, mais **l'adresse change à chaque
+lancement** :
 
 ```bash
 npm run tunnel

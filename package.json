@@ -13,6 +13,7 @@
     "start": "node server/index.js",
     "play": "npm run build && node server/index.js",
     "tunnel": "npm run build && node scripts/tunnel.mjs",
+    "tunnel:named": "npm run build && node scripts/tunnel-named.mjs",
     "firewall": "powershell -ExecutionPolicy Bypass -File scripts/allow-firewall.ps1",
     "words:stats": "node scripts/word-stats.js",
     "simulate": "node scripts/simulate.mjs",
