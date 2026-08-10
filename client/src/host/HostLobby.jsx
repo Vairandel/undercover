@@ -395,12 +395,21 @@ export default function HostLobby({ state, info, joinUrl, act }) {
             <Switch checked={settings.detectiveMode} onChange={(v) => set({ detectiveMode: v })} />
           </Setting>
 
+          {/* Only meaningful under reward-and-punishment: nothing else in the
+              game can score negative, so there is nothing to clamp. */}
           {settings.detectiveMode && (
             <Setting
-              label="Autoriser les scores négatifs"
-              hint="Désactivé, un score ne descend jamais sous zéro. Activé, une mauvaise soirée peut se payer cher."
+              label="Limite basse des scores"
+              hint={
+                info.scoreFloors?.find((f) => f.id === settings.scoreFloor)?.hint ??
+                'Jusqu\'où une mauvaise manche peut faire descendre.'
+              }
             >
-              <Switch checked={settings.allowNegative} onChange={(v) => set({ allowNegative: v })} />
+              <Segmented
+                value={settings.scoreFloor}
+                onChange={(v) => set({ scoreFloor: v })}
+                options={(info.scoreFloors ?? []).map((f) => ({ value: f.id, label: f.label }))}
+              />
             </Setting>
           )}
 

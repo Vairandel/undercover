@@ -216,16 +216,26 @@ jouer, pas seulement de compter.
 | Réglage | Effet |
 |---|---|
 | **Récompense et punition** | Chaque bulletin de civil est payé : `detective` points gagnés s'il vise un imposteur, autant de perdus sinon. |
-| **Scores négatifs** | Sans lui, un score ne descend jamais sous zéro. Avec, une mauvaise soirée se paie. |
+| **Limite basse des scores** | Jusqu'où une mauvaise manche fait descendre — trois modes, ci-dessous. |
 | **Vote blanc** | Refuser d'accuser. Ne nomme personne, ne rapporte ni ne coûte rien. |
 
 **Les imposteurs ne sont jamais concernés.** Voter faux est leur métier ; les
 payer pour ça reviendrait à les récompenser deux fois. Mister White non plus.
 
-Le plancher porte sur le **score cumulé**, pas sur la manche. Bloquer chaque
-manche à zéro protégerait justement ceux qui ont déjà des points — c'est-à-dire
-exactement les gens que le mode vise. Là, une mauvaise manche coûte du terrain
-sans jamais enterrer personne.
+### La limite basse
+
+| Mode | Effet | Pour qui |
+|---|---|---|
+| **Par manche** | Une manche ne coûte jamais rien : au pire elle rapporte zéro. | Punir les tièdes sans jamais reprendre ce qui est acquis. |
+| **Cumulé** *(défaut)* | La manche mord dans les points déjà gagnés, mais le total ne passe pas sous zéro. | Le compromis : une mauvaise manche coûte du terrain sans enterrer personne. |
+| **Aucune** | Pas de limite. On peut finir la soirée dans le négatif. | Les tables qui veulent que ça pique. |
+
+Le choix n'est pas cosmétique : **il décide de qui la punition touche vraiment**.
+En mode `Par manche`, tout ce qui est acquis est protégé, donc les joueurs en
+tête ne risquent rien. Les deux autres les exposent.
+
+Le réglage n'apparaît que si le mode récompense/punition est allumé — rien
+d'autre dans le jeu ne peut faire descendre un score.
 
 Le **vote blanc** a son propre interrupteur parce qu'il vaut le coup seul, mais
 il prend tout son sens ici : sans lui, un tableau qui paie les bulletins pousse

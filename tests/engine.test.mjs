@@ -1,5 +1,5 @@
 import { check, section, report, FAST, NO_ROLES, driveToEnd } from './helpers.mjs'
-import { Game, BLANK_VOTE, REACTIONS } from '../server/game/engine.js'
+import { Game, BLANK_VOTE, REACTIONS, applyScore } from '../server/game/engine.js'
 import { store } from '../server/store.js'
 
 /** A started game with `n` bots, already past the reveal. */
@@ -142,31 +142,38 @@ section('Récompense et punition')
   check("l'imposteur n'est jamais scoré", !d(imp), JSON.stringify(d(imp) ?? null))
 }
 
-section('Plancher à zéro et points négatifs')
+section('Limite basse des scores')
 {
-  // A civilian who votes wrong twice and wins nothing must not go below zero
-  // unless the table asked for it.
-  const run = (allowNegative) => {
+  // The arithmetic in isolation, where the three modes are unambiguous.
+  check('par manche : une manche négative ne coûte rien', applyScore(7, -3, 'round') === 7)
+  check('par manche : une manche positive rapporte', applyScore(7, 2, 'round') === 9)
+  check('cumulé : la manche mord dans les acquis', applyScore(7, -3, 'total') === 4)
+  check('cumulé : mais jamais sous zéro', applyScore(1, -5, 'total') === 0)
+  check('aucune : le négatif passe', applyScore(1, -5, 'none') === -4)
+
+  const run = (scoreFloor) => {
     const g = new Game('N')
     const ids = Array.from({ length: 4 }, (_, i) => g.addPlayer(`P${i}`).id)
     g.updateSettings({
-      ...FAST, detectiveMode: true, allowNegative,
+      ...FAST, detectiveMode: true, scoreFloor,
       points: { civilian: 0, undercover: 0, mrwhite: 0, survivor: 0, detective: 3 },
     })
     g.start(); ids.forEach((id) => g.markReady(id))
     driveToEnd(g, (alive) => alive.find((p) => p.roleId === 'civilian'))
-    return g
+    return [...g.players.values()].map((p) => p.score)
   }
 
-  const floored = run(false)
-  check('sans négatifs, aucun score sous zéro',
-    [...floored.players.values()].every((p) => p.score >= 0),
-    [...floored.players.values()].map((p) => p.score).join(', '))
+  const round = run('round')
+  check('par manche : personne ne perd de points', round.every((s) => s >= 0), round.join(', '))
+  const total = run('total')
+  check('cumulé : rien sous zéro non plus', total.every((s) => s >= 0), total.join(', '))
+  const none = run('none')
+  check('aucune : un score finit dans le négatif', none.some((s) => s < 0), none.join(', '))
 
-  const free = run(true)
-  const anyNegative = [...free.players.values()].some((p) => p.score < 0)
-  check('avec négatifs, un score peut passer sous zéro', anyNegative,
-    [...free.players.values()].map((p) => p.score).join(', '))
+  const g = new Game('Z')
+  g.addPlayer('A')
+  g.updateSettings({ scoreFloor: 'nawak' })
+  check('un mode inconnu est ignoré', g.settings.scoreFloor === 'total', g.settings.scoreFloor)
 }
 
 section('Mister White lâche le mot en description')

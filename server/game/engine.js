@@ -81,8 +81,9 @@ export const DEFAULT_SETTINGS = {
   // Reward-and-punishment: a civilian's ballot is worth points, right or wrong.
   // Off by default — it changes how the game is played, not just how it scores.
   detectiveMode: false,
-  // Whether that arithmetic may take someone below zero.
-  allowNegative: false,
+  // How far a bad night may drag you down. See `applyScore`.
+  // Moot unless the mode above is on: nothing else in the game scores negative.
+  scoreFloor: 'total',
   // Its own switch, because refusing to accuse is worth having on its own.
   blankVote: false,
   points: { ...DEFAULT_POINTS },
@@ -565,7 +566,13 @@ export class Game {
       ? sanitisePoints(patch.points, this.settings.points)
       : this.settings.points
 
-    this.settings = { ...this.settings, ...patch, roles, themeIds, points }
+    // An unknown floor would silently fall back to clamping, which is the one
+    // mode a table might have deliberately turned off.
+    const scoreFloor = SCORE_FLOORS.some((f) => f.id === patch.scoreFloor)
+      ? patch.scoreFloor
+      : this.settings.scoreFloor
+
+    this.settings = { ...this.settings, ...patch, roles, themeIds, points, scoreFloor }
     this.touch()
   }
 
@@ -1720,13 +1727,7 @@ export class Game {
     for (const row of rows) {
       const player = this.players.get(row.playerId)
       const before = player.score
-      // The floor is on the running total, not on the round: clamping each
-      // round at zero would neuter the punishment for anyone already ahead,
-      // which is precisely who the mode is aimed at. This way a bad night
-      // costs you real ground without ever burying you below nothing.
-      const after = this.settings.allowNegative
-        ? before + row.points
-        : Math.max(0, before + row.points)
+      const after = applyScore(before, row.points, this.settings.scoreFloor)
 
       player.score = after
       // What was actually applied, so the scoreboard's arithmetic adds up even
@@ -1945,6 +1946,12 @@ export class Game {
     if (!snapshot) return this
     this.settings = { ...structuredClone(DEFAULT_SETTINGS), ...(snapshot.settings ?? {}) }
     this.settings.points = sanitisePoints(this.settings.points)
+    // Rooms saved before the floor became a three-way choice carry the old
+    // boolean. Honour what it meant rather than silently resetting it.
+    if (snapshot.settings && 'allowNegative' in snapshot.settings) {
+      this.settings.scoreFloor = snapshot.settings.allowNegative ? 'none' : 'total'
+      delete this.settings.allowNegative
+    }
     this.gameNumber = snapshot.gameNumber ?? 0
 
     for (const saved of snapshot.players ?? []) {
@@ -2235,6 +2242,39 @@ function publicRole(p) {
  * one fact that neutralises it. Those only surface in the final post-mortem,
  * where `includeSecret` is turned on.
  */
+/** The three ways a table can decide how far a bad night drags you down. */
+export const SCORE_FLOORS = [
+  {
+    id: 'round',
+    label: 'Par manche',
+    hint: "Une manche ne peut jamais coûter de points : au pire elle en rapporte zéro. Le mode punit les tièdes sans jamais reprendre ce qui est acquis.",
+  },
+  {
+    id: 'total',
+    label: 'Cumulé',
+    hint: "Une mauvaise manche reprend des points déjà gagnés, mais le total ne descend jamais sous zéro.",
+  },
+  {
+    id: 'none',
+    label: 'Aucune',
+    hint: 'Aucune limite : on peut finir la soirée dans le négatif.',
+  },
+]
+
+/**
+ * Applies a round's points to a running score under the chosen floor.
+ *
+ * The three modes differ only in *where* the clamp sits, and that changes who
+ * the punishment actually bites. `round` protects everything already banked, so
+ * it never takes from the leaders. `total` lets a bad night cost real ground
+ * while stopping at nothing. `none` lets the arithmetic run.
+ */
+export function applyScore(before, points, floor) {
+  if (floor === 'none') return before + points
+  if (floor === 'round') return before + Math.max(0, points)
+  return Math.max(0, before + points) // 'total', the default
+}
+
 /** Who left the table in a given round — name only, never their word. */
 function outOf(result) {
   return [result?.eliminated, ...(result?.alsoEliminated ?? [])]

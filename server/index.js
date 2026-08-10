@@ -20,7 +20,13 @@ import {
 import { roleCatalogue } from './game/roles/index.js'
 import { modifierCatalogue } from './game/modifiers/index.js'
 import { createRoomManager } from './game/rooms.js'
-import { DEFAULT_SETTINGS, MIN_PLAYERS, MAX_PLAYERS, specialBudget } from './game/engine.js'
+import {
+  DEFAULT_SETTINGS,
+  MIN_PLAYERS,
+  MAX_PLAYERS,
+  SCORE_FLOORS,
+  specialBudget,
+} from './game/engine.js'
 import { AVATARS, COLORS } from './game/appearance.js'
 import { POINT_FIELDS, DEFAULT_POINTS } from './game/scoring.js'
 import { store } from './store.js'
@@ -72,6 +78,8 @@ app.get('/api/info', async () => ({
   appearance: { avatars: AVATARS, colors: COLORS },
   // Field descriptors drive the settings sliders and the rulebook alike.
   scoring: { fields: POINT_FIELDS, defaults: DEFAULT_POINTS },
+  // The labels and explanations live with the rule, not duplicated in the UI.
+  scoreFloors: SCORE_FLOORS,
   budgets: Object.fromEntries(
     Array.from({ length: MAX_PLAYERS - 2 }, (_, i) => [i + 3, specialBudget(i + 3)]),
   ),
