@@ -75,6 +75,54 @@ section('Le balayage compare et tranche')
     r.variants.map((v) => v.settings.points.mrwhite).join(','))
 }
 
+section('Les soirées cumulent les scores')
+{
+  const solo = await runSim({ games: 120, players: 5, seed: 21, sessionLength: 1 })
+  const night = await runSim({ games: 120, players: 5, seed: 21, sessionLength: 6 })
+
+  check('une partie isolée = une soirée', solo.variants[0].summary.evenings.sessions === 120,
+    `${solo.variants[0].summary.evenings.sessions}`)
+  check('six parties par soirée', night.variants[0].summary.evenings.sessions === 20,
+    `${night.variants[0].summary.evenings.sessions}`)
+  check('autant de parties jouées au total', night.variants[0].summary.games === 120,
+    `${night.variants[0].summary.games}`)
+
+  const s = solo.variants[0].summary.evenings
+  const n = night.variants[0].summary.evenings
+  check('une place par joueur', n.byRank.length === 5, `${n.byRank.length}`)
+  check('le classement décroît', n.byRank.every((r, i) => i === 0 || r.avg <= n.byRank[i - 1].avg),
+    n.byRank.map((r) => r.avg.toFixed(1)).join(' > '))
+  // Six games of accumulation must leave more on the table than one.
+  check('les scores montent sur une soirée', n.byRank[0].avg > s.byRank[0].avg * 2,
+    `${s.byRank[0].avg.toFixed(1)} → ${n.byRank[0].avg.toFixed(1)}`)
+  check("l'écart 1er/dernier est mesuré", n.avgGap > 0, n.avgGap.toFixed(2))
+}
+
+section('La limite basse ne se juge que sur une soirée')
+{
+  const base = {
+    games: 120, players: 5, seed: 33, sessionLength: 6,
+    settings: {
+      detectiveMode: true,
+      points: { civilian: 1, undercover: 1, mrwhite: 1, survivor: 0, detective: 3 },
+    },
+  }
+  const round = await runSim({ ...base, settings: { ...base.settings, scoreFloor: 'round' } })
+  const total = await runSim({ ...base, settings: { ...base.settings, scoreFloor: 'total' } })
+  const none = await runSim({ ...base, settings: { ...base.settings, scoreFloor: 'none' } })
+
+  const low = (r) => r.variants[0].summary.evenings.lowest
+  check('par manche : le dernier garde ses points', low(round) >= low(total),
+    `round ${low(round)} ≥ total ${low(total)}`)
+  check('aucune limite : on finit dans le négatif', low(none) < 0, `${low(none)}`)
+  check('des scores négatifs sont comptés',
+    none.variants[0].summary.evenings.negatives > 0,
+    `${(none.variants[0].summary.evenings.negatives * 100).toFixed(1)}%`)
+  check('avec plancher, aucun négatif',
+    round.variants[0].summary.evenings.negatives === 0 &&
+    total.variants[0].summary.evenings.negatives === 0)
+}
+
 section("Les réglages du jeu sont respectés")
 {
   const r = await runSim({

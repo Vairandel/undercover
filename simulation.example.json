@@ -4,6 +4,9 @@
   "games": 3000,
   "players": 7,
 
+  "_sessionLength": "Parties jouées par la même table avant remise à zéro des scores — une soirée. À 1 tu mesures des parties isolées ; au-delà tu vois si le barème produit des soirées serrées ou un vainqueur qui écrase. C'est aussi la seule façon de juger la limite basse des scores.",
+  "sessionLength": 5,
+
   "_table": "Le seul vrai paramètre de comportement : la chance qu'un bulletin de civil tombe sur un imposteur. 0.35 = table distraite, 0.5 = table normale, 0.7 = table qui joue sérieusement.",
   "skill": 0.5,
   "skillGrowth": 0.08,

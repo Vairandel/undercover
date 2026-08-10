@@ -67,6 +67,7 @@ export default function SimulateApp() {
   const [cfg, setCfg] = useState({
     games: 2000,
     players: 6,
+    sessionLength: 5,
     skill: 0.5,
     skillGrowth: 0.08,
     blankRate: 0.1,
@@ -178,6 +179,11 @@ export default function SimulateApp() {
             label="Joueurs à table" value={cfg.players} min={info.limits.min} max={info.limits.max}
             hint="L'équilibre change beaucoup avec la taille de la table — teste celle où tu joues vraiment."
             onChange={(v) => set({ players: v })}
+          />
+          <Knob
+            label="Parties par soirée" value={cfg.sessionLength} min={1} max={20}
+            hint="Les scores se cumulent sur une soirée, comme dans une vraie salle. À 1, tu mesures des parties isolées ; au-delà, tu vois si le barème produit des soirées serrées ou un vainqueur qui écrase — et c'est la seule façon de juger la limite basse des scores."
+            onChange={(v) => set({ sessionLength: v })}
           />
 
           <hr className="divider" />
@@ -348,6 +354,95 @@ export default function SimulateApp() {
   )
 }
 
+const GAP = [
+  { max: 4, label: 'soirée serrée', color: 'var(--ok)', emoji: '✅' },
+  { max: 8, label: 'écart net', color: 'var(--gold)', emoji: '🟡' },
+  { max: Infinity, label: 'soirée écrasée', color: 'var(--danger)', emoji: '❌' },
+]
+
+/**
+ * How the evenings ended.
+ *
+ * The row-per-rank shape is the point: it is the shape of the final scoreboard,
+ * averaged. A scale that produces runaway leaders shows up as a top row far
+ * above the rest — which is something no single-game statistic can reveal.
+ */
+function Evenings({ ev }) {
+  const verdict = GAP.find((g) => ev.avgGap < g.max)
+  const top = ev.byRank[0]?.avg || 1
+
+  return (
+    <div className="card">
+      <div className="spread" style={{ marginBottom: 12 }}>
+        <div>
+          <div className="setting__label">Scores finaux</div>
+          <div className="setting__hint">
+            Moyenne par place, sur {ev.sessions.toLocaleString('fr')} soirées
+          </div>
+        </div>
+        <span className="badge" style={{ color: verdict.color, borderColor: verdict.color }}>
+          {verdict.emoji} {verdict.label}
+        </span>
+      </div>
+
+      {ev.byRank.map((r) => (
+        <div className="simbar" key={r.rank}>
+          <span className="simbar__label">
+            {r.rank === 1 ? '🥇' : r.rank === 2 ? '🥈' : r.rank === 3 ? '🥉' : `${r.rank}ᵉ`}
+            {' '}{r.rank === 1 ? '1ᵉʳ' : `${r.rank}ᵉ`}
+          </span>
+          <span className="simbar__track">
+            <motion.span
+              className="simbar__fill"
+              style={{ background: r.rank === 1 ? 'var(--gold)' : 'var(--accent)' }}
+              initial={{ width: 0 }}
+              animate={{ width: `${Math.max(0, (r.avg / top) * 100)}%` }}
+              transition={{ duration: 0.5, delay: r.rank * 0.05, ease: [0.22, 1, 0.36, 1] }}
+            />
+          </span>
+          <span className="simbar__value mono">{r.avg.toFixed(1)}</span>
+        </div>
+      ))}
+
+      <hr className="divider" />
+
+      <div className="simstats">
+        <div>
+          <span className="simstats__value mono" style={{ color: verdict.color }}>
+            {ev.avgGap.toFixed(1)}
+          </span>
+          <span className="simstats__label">écart 1ᵉʳ / dernier</span>
+        </div>
+        <div>
+          <span className="simstats__value mono">{ev.median}</span>
+          <span className="simstats__label">score médian</span>
+        </div>
+        <div>
+          <span className="simstats__value mono">{ev.lowest} – {ev.highest}</span>
+          <span className="simstats__label">du pire au meilleur</span>
+        </div>
+        <div>
+          <span className="simstats__value mono">{pct(ev.tieRate)}</span>
+          <span className="simstats__label">ex æquo en tête</span>
+        </div>
+        {ev.negatives > 0 && (
+          <div>
+            <span className="simstats__value mono" style={{ color: 'var(--danger)' }}>
+              {pct(ev.negatives)}
+            </span>
+            <span className="simstats__label">scores négatifs</span>
+          </div>
+        )}
+      </div>
+
+      <p className="setting__hint" style={{ marginTop: 10 }}>
+        L'écart entre le premier et le dernier dit si la soirée reste jouable jusqu'au bout.
+        Un barème qui creuse trop décourage ceux qui décrochent tôt.
+      </p>
+    </div>
+  )
+}
+
 function Results({ result }) {
   const [shown, setShown] = useState(0)
   const variant = result.variants[shown] ?? result.variants[0]
@@ -432,6 +527,10 @@ function Results({ result }) {
           </div>
         ))}
       </div>
+
+      {summary.evenings && summary.evenings.byRank.length > 0 && (
+        <Evenings ev={summary.evenings} />
+      )}
 
       <div className="card">
         <p className="eyebrow" style={{ marginBottom: 8 }}>Détail par rôle</p>

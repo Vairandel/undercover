@@ -261,6 +261,18 @@ rôles, mêmes conditions de victoire, même scoring — et rapporte le taux de
 victoire par camp, les points moyens par rôle, la fréquence de chaque titre et
 l'écart d'espérance entre les camps.
 
+### Les soirées
+
+Les parties sont groupées en **soirées** (`sessionLength`, 5 par défaut) : la
+même table enchaîne plusieurs parties, les scores se cumulent, puis le tableau
+final est relevé. C'est ce qui donne les **scores finaux** — moyenne par place,
+médiane, et surtout l'**écart entre le premier et le dernier**, qui dit si la
+soirée reste jouable jusqu'au bout ou si quelqu'un écrase.
+
+Sans ça, deux réglages sont tout simplement invisibles : `par manche` et
+`cumulé` se comportent à l'identique dans une partie isolée et ne divergent
+qu'une fois qu'il y a un total à entamer.
+
 Ce qu'il ne modélise **pas**, c'est le langage : un robot ne peut pas écrire un
 indice habile ou maladroit. Ce qui décide les vraies parties est donc remplacé
 par un seul bouton honnête, `skill` — la probabilité qu'un bulletin de civil

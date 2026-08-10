@@ -223,6 +223,8 @@ app.post('/api/simulate', async (req, reply) => {
   const config = {
     games,
     players,
+    // Games played by the same table before scores reset — an evening.
+    sessionLength: Math.max(1, Math.min(20, Math.round(Number(body.sessionLength) || 1))),
     skill: clamp01(body.skill, 0.5),
     skillGrowth: clamp01(body.skillGrowth, 0.08),
     blankRate: clamp01(body.blankRate, 0.1),

@@ -40,6 +40,13 @@ const { store } = await import('../server/store.js')
 const DEFAULT_SIM = {
   games: 2000,
   players: 6,
+  /**
+   * Games played by the same table before the scores are wiped — an evening.
+   * Left at 1 you measure single games; raise it and you measure how a scale
+   * behaves over a session, which is where the score floor and runaway leaders
+   * actually show up.
+   */
+  sessionLength: 5,
   /** Chance a civilian's ballot lands on an impostor rather than a neighbour. */
   skill: 0.5,
   /** How much better the table gets with each round of evidence. */
@@ -142,19 +149,43 @@ function seedEverything(seed) {
 const pick = (rng, arr) => arr[Math.floor(rng() * arr.length)]
 
 /**
- * Plays one game to completion and returns what happened.
+ * An evening: the same table playing several games in a row, scores carrying
+ * over exactly as they do in a real room.
+ *
+ * This is the only way some rules can be judged at all. The score floor is the
+ * clearest case — `par manche` and `cumulé` are indistinguishable inside a
+ * single game and only diverge once there is a running total to bite into. The
+ * same goes for the point scale itself: what matters is not who wins one game
+ * but whether an evening ends close or crushed.
+ */
+function playSession(config, rng, index) {
+  const g = new Game(`S${index}`)
+  const names = Array.from({ length: config.players }, (_, i) => `J${i + 1}`)
+  const ids = names.map((n) => g.addPlayer(n).id)
+  g.updateSettings({ ...config.settings })
+
+  const games = []
+  for (let round = 0; round < config.sessionLength; round++) {
+    if (round > 0) g.restart()
+    games.push(playGame(g, ids, config, rng))
+  }
+
+  // The evening's final table, which is what people actually argue about.
+  const standings = [...g.players.values()]
+    .map((p) => ({ name: p.name, score: p.score, wins: p.wins }))
+    .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name, 'fr'))
+
+  return { games, standings }
+}
+
+/**
+ * Plays one game of an already-seated table to completion.
  *
  * Every decision goes through the real engine, so anything the rules do — a
  * Vengeuse taking someone with her, a tie handed to the Justicier, a shared
  * victory — happens here exactly as it would at the table.
  */
-function playGame(config, rng, index) {
-  const g = new Game(`S${index}`)
-  const names = Array.from({ length: config.players }, (_, i) => `J${i + 1}`)
-  const ids = names.map((n) => g.addPlayer(n).id)
-
-  g.updateSettings({ ...config.settings })
-
+function playGame(g, ids, config, rng) {
   g.start()
   for (const id of ids) g.markReady(id)
 
@@ -300,6 +331,7 @@ function shuffled(rng, arr) {
 function summarise(g, teamOf) {
   return {
     code: g.code,
+    game: g.gameNumber,
     rounds: g.round,
     outcome: g.outcome,
     finished: g.phase === 'gameOver',
@@ -311,6 +343,8 @@ function summarise(g, teamOf) {
       modifiers: [...(p.modifiers ?? [])],
       alive: p.alive,
       points: p.roundPoints,
+      // Running total after this game — the number that makes an evening.
+      score: p.score,
       won: (g.scoreboard ?? []).find((r) => r.playerId === p.id)?.won ?? false,
       breakdown: (g.scoreboard ?? []).find((r) => r.playerId === p.id)?.breakdown ?? [],
       dyingGuess: p.data?.dyingGuess
@@ -322,6 +356,55 @@ function summarise(g, teamOf) {
 }
 
 // ------------------------------------------------------------------ report
+
+/**
+ * How the evenings ended, which is the part players remember.
+ *
+ * `byRank` averages the 1st place, the 2nd, and so on across every session, so
+ * a scale that produces runaway leaders shows up as a gap between the top row
+ * and the rest. `gap` is that gap — first minus last — and it is the number to
+ * watch: a low one means everyone stayed in it until the end.
+ */
+function aggregateSessions(sessions) {
+  if (sessions.length === 0) return null
+
+  const size = sessions[0].standings.length
+  const byRank = Array.from({ length: size }, () => ({ total: 0, best: -Infinity, worst: Infinity }))
+  const all = []
+  let gap = 0
+  let ties = 0
+
+  for (const s of sessions) {
+    s.standings.forEach((row, i) => {
+      const slot = byRank[i]
+      if (!slot) return
+      slot.total += row.score
+      slot.best = Math.max(slot.best, row.score)
+      slot.worst = Math.min(slot.worst, row.score)
+      all.push(row.score)
+    })
+    const top = s.standings[0]?.score ?? 0
+    gap += top - (s.standings[s.standings.length - 1]?.score ?? 0)
+    if (s.standings.filter((r) => r.score === top).length > 1) ties += 1
+  }
+
+  const sorted = [...all].sort((a, b) => a - b)
+  return {
+    sessions: sessions.length,
+    byRank: byRank.map((slot, i) => ({
+      rank: i + 1,
+      avg: slot.total / sessions.length,
+      best: slot.best,
+      worst: slot.worst,
+    })),
+    avgGap: gap / sessions.length,
+    tieRate: ties / sessions.length,
+    lowest: sorted[0] ?? 0,
+    highest: sorted[sorted.length - 1] ?? 0,
+    median: sorted[Math.floor(sorted.length / 2)] ?? 0,
+    negatives: all.filter((s) => s < 0).length / (all.length || 1),
+  }
+}
 
 /** Aggregates a batch into the handful of numbers that judge a point scale. */
 function aggregate(games) {
@@ -381,9 +464,10 @@ function aggregate(games) {
 const pct = (n) => `${(n * 100).toFixed(1)}%`
 const num = (n) => n.toFixed(2)
 
-function printBatch(label, agg) {
+function printBatch(label, agg, config) {
   console.log(`\n—— ${label} ——`)
   console.log(`  ${agg.games} parties · ${num(agg.avgRounds)} manches en moyenne` +
+    (config?.sessionLength > 1 ? ` · ${agg.evenings.sessions} soirées de ${config.sessionLength}` : '') +
     (agg.unfinished ? ` · ⚠️ ${agg.unfinished} non terminées` : ''))
 
   console.log('\n  Victoires par camp')
@@ -398,6 +482,22 @@ function printBatch(label, agg) {
       `    ${r.role.padEnd(12)} ${num(r.avgPoints).padStart(6)} ${pct(r.winRate).padStart(9)}` +
       ` ${String(r.worst).padStart(6)} ${String(r.best).padStart(9)}`,
     )
+  }
+
+  const ev = agg.evenings
+  if (ev && ev.byRank.length > 0) {
+    console.log('\n  Scores finaux — moyenne par place')
+    console.log(`    ${'place'.padEnd(8)} ${'moy'.padStart(7)} ${'pire'.padStart(6)} ${'meilleur'.padStart(9)}`)
+    for (const r of ev.byRank) {
+      console.log(`    ${(r.rank + (r.rank === 1 ? 'er' : 'e')).padEnd(8)} ${num(r.avg).padStart(7)}` +
+        ` ${String(r.worst).padStart(6)} ${String(r.best).padStart(9)}`)
+    }
+    console.log(`\n    écart 1er/dernier ${num(ev.avgGap).padStart(6)}   ${
+      ev.avgGap < 4 ? '✅ soirée serrée' : ev.avgGap < 8 ? '🟡 écart net' : '❌ soirée écrasée'
+    }`)
+    console.log(`    ex æquo en tête   ${pct(ev.tieRate).padStart(6)}`)
+    console.log(`    score médian      ${String(ev.median).padStart(6)}   (de ${ev.lowest} à ${ev.highest})`)
+    if (ev.negatives > 0) console.log(`    scores négatifs   ${pct(ev.negatives).padStart(6)}`)
   }
 
   if (agg.dyingGuess.asked > 0) {
@@ -503,15 +603,35 @@ for (const variant of variants) {
   // variant back on the same footing — otherwise the second scale in a sweep
   // would play subtly different games from the first.
   if (config.seed != null) store.resetAll()
+
+  const sessions = []
   const games = []
-  for (let i = 0; i < config.games; i++) {
-    try { games.push(playGame({ ...config, settings: variant.settings }, rng, i)) }
-    catch (err) { games.push({ finished: false, error: err.message, players: [], titles: [] }) }
+  const sessionCount = Math.max(1, Math.round(config.games / config.sessionLength))
+
+  for (let i = 0; i < sessionCount; i++) {
+    try {
+      const session = playSession({ ...config, settings: variant.settings }, rng, i)
+      sessions.push(session)
+      games.push(...session.games)
+    } catch (err) {
+      games.push({ finished: false, error: err.message, players: [], titles: [] })
+    }
   }
+
   const agg = aggregate(games)
-  if (!config.json) printBatch(variant.label, agg)
+  agg.evenings = aggregateSessions(sessions)
+  if (!config.json) printBatch(variant.label, agg, config)
   const balance = verdict(agg, { quiet: config.json })
-  report.variants.push({ label: variant.label, value: variant.value, settings: variant.settings, summary: agg, balance, games })
+  report.variants.push({
+    label: variant.label,
+    value: variant.value,
+    settings: variant.settings,
+    summary: agg,
+    balance,
+    games,
+    // Only the standings travel; the per-game detail is already in `games`.
+    sessions: sessions.map((s) => s.standings),
+  })
 }
 
 const best =

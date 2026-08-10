@@ -1487,6 +1487,22 @@ body::after {
 /* Wide content scrolls inside its own box; the page never scrolls sideways. */
 .scroll-x { overflow-x: auto; }
 
+.simstats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 12px;
+}
+
+.simstats > div { display: flex; flex-direction: column; gap: 2px; }
+.simstats__value { font-size: 1.15rem; font-weight: 800; line-height: 1.1; }
+
+.simstats__label {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
 .sweep { display: flex; gap: 6px; flex-wrap: wrap; }
 
 .sweep__cell {
