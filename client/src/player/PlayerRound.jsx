@@ -307,6 +307,7 @@ function Lobby({ state, you, act, appearance }) {
         <div className="card" style={{ width: '100%' }}>
           <AvatarPicker
             avatars={appearance.avatars}
+            groups={appearance.groups}
             colors={appearance.colors}
             avatar={you.avatar}
             color={you.color}

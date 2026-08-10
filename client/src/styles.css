@@ -751,15 +751,37 @@ body::after {
 /* ------------------------------------------------------- avatar picker */
 
 .avatarpick {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
-  gap: 6px;
-  max-height: 168px;
+  /* Taller than before: with families to scroll through, a 168px window showed
+     barely one and a half of them and hid the fact there were others. */
+  max-height: 240px;
   overflow-y: auto;
-  padding: 4px;
+  padding: 6px;
   border-radius: 14px;
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--border);
+}
+
+.avatarpick__family + .avatarpick__family { margin-top: 10px; }
+
+/* Sticky so you always know which family you are looking at mid-scroll. */
+.avatarpick__label {
+  position: sticky;
+  top: -6px;
+  z-index: 1;
+  margin: 0 0 5px;
+  padding: 3px 2px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  background: linear-gradient(180deg, #0c0f1c 70%, transparent);
+}
+
+.avatarpick__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+  gap: 6px;
 }
 
 .avatarpick__cell {

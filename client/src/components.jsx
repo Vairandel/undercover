@@ -793,31 +793,49 @@ export function Setting({ label, hint, children, dimmed }) {
  * end up as the same fox — recognising each other at a glance is how the
  * voting screen stays readable.
  */
-export function AvatarPicker({ avatars, colors, avatar, color, taken = [], onChange }) {
+export function AvatarPicker({ avatars, groups, colors, avatar, color, taken = [], onChange }) {
   const takenSet = new Set(taken.filter((a) => a !== avatar))
 
+  // Families keep a hundred emoji browsable; without them you scroll past the
+  // one you wanted twice. Falls back to one flat block if the server is older.
+  const families = groups?.length ? groups : [{ id: 'all', label: null, avatars }]
+
+  const cell = (a) => (
+    <button
+      key={a}
+      type="button"
+      className="avatarpick__cell"
+      data-active={String(a === avatar)}
+      disabled={takenSet.has(a)}
+      style={{ '--chip': color }}
+      onClick={() => { play('select'); onChange({ avatar: a, color }) }}
+    >
+      {a}
+    </button>
+  )
+
+  /** For anyone who does not want to browse ninety-six of anything. */
+  const surprise = () => {
+    play('select')
+    const free = avatars.filter((a) => !takenSet.has(a))
+    onChange({
+      avatar: free[Math.floor(Math.random() * free.length)] ?? avatar,
+      color: colors[Math.floor(Math.random() * colors.length)],
+    })
+  }
+
   return (
-    <div className="stack" style={{ gap: 14 }}>
-      <div className="avatarpick">
-        {avatars.map((a) => {
-          const isTaken = takenSet.has(a)
-          return (
-            <button
-              key={a}
-              type="button"
-              className="avatarpick__cell"
-              data-active={String(a === avatar)}
-              disabled={isTaken}
-              style={{ '--chip': color }}
-              onClick={() => { play('select'); onChange({ avatar: a, color }) }}
-            >
-              {a}
-            </button>
-          )
-        })}
+    <div className="stack" style={{ gap: 12 }}>
+      <div className="avatarpick scroll-y">
+        {families.map((family) => (
+          <div className="avatarpick__family" key={family.id}>
+            {family.label && <p className="avatarpick__label">{family.label}</p>}
+            <div className="avatarpick__grid">{family.avatars.map(cell)}</div>
+          </div>
+        ))}
       </div>
 
-      <div className="row" style={{ gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+      <div className="row" style={{ gap: 7, flexWrap: 'wrap', justifyContent: 'center' }}>
         {colors.map((c) => (
           <button
             key={c}
@@ -830,6 +848,10 @@ export function AvatarPicker({ avatars, colors, avatar, color, taken = [], onCha
           />
         ))}
       </div>
+
+      <button type="button" className="btn btn--ghost btn--sm" onClick={surprise}>
+        🎲  Au hasard
+      </button>
     </div>
   )
 }

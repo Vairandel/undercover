@@ -35,7 +35,8 @@ connexion internet nécessaire.
   description, il emporte la partie sur-le-champ.
 - **Variantes** : les infiltrés savent (ou non) qu'ils le sont, indices écrits,
   chrono par tour, nombre d'infiltrés, thème imposé.
-- **Avatars personnalisables** : 48 emoji × 10 couleurs, unicité garantie dans le salon.
+- **Avatars personnalisables** : 96 emoji rangés par familles × 18 couleurs,
+  unicité garantie dans le salon, et un bouton « au hasard » pour les pressés.
 - **Son** entièrement synthétisé dans le navigateur — aucun fichier audio, avec
   réverbération, ambiances de phase et stings par camp.
 

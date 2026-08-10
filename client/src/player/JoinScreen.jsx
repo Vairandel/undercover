@@ -108,6 +108,7 @@ export default function JoinScreen({ onJoin, onSpectate, connected, error, setEr
             <p className="eyebrow center">Ton avatar</p>
             <AvatarPicker
               avatars={appearance.avatars}
+              groups={appearance.groups}
               colors={appearance.colors}
               avatar={look.avatar}
               color={look.color}

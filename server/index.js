@@ -28,7 +28,7 @@ import {
   SCORE_FLOORS,
   specialBudget,
 } from './game/engine.js'
-import { AVATARS, COLORS } from './game/appearance.js'
+import { AVATARS, AVATAR_GROUPS, COLORS } from './game/appearance.js'
 import { POINT_FIELDS, DEFAULT_POINTS } from './game/scoring.js'
 import { store } from './store.js'
 
@@ -76,7 +76,8 @@ app.get('/api/info', async () => ({
   // Roles and modifiers are toggled through the same UI, so they ship together.
   roles: [...roleCatalogue(), ...modifierCatalogue()],
   defaults: DEFAULT_SETTINGS,
-  appearance: { avatars: AVATARS, colors: COLORS },
+  // `groups` drives the picker's layout; `avatars` stays the flat authority.
+  appearance: { avatars: AVATARS, groups: AVATAR_GROUPS, colors: COLORS },
   // Field descriptors drive the settings sliders and the rulebook alike.
   scoring: { fields: POINT_FIELDS, defaults: DEFAULT_POINTS },
   // The labels and explanations live with the rule, not duplicated in the UI.
