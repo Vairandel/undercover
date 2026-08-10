@@ -207,6 +207,9 @@ export default function HostLobby({ state, info, joinUrl, act }) {
           <a className="btn btn--ghost btn--block btn--sm" href="/words">
             ✏️ Modifier la banque de mots
           </a>
+          <a className="btn btn--ghost btn--block btn--sm" href="/simulate" style={{ marginTop: 8 }}>
+            🔬 Banc d'essai du barème
+          </a>
         </div>
       )}
 

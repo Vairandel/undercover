@@ -33,6 +33,7 @@ process.env.UNDERCOVER_DATA_DIR ??= path.join(simDir, '.scratch')
 const { Game, BLANK_VOTE, MIN_PLAYERS, MAX_PLAYERS } = await import('../server/game/engine.js')
 const { getRole } = await import('../server/game/roles/index.js')
 const { DEFAULT_POINTS, POINT_FIELDS } = await import('../server/game/scoring.js')
+const { store } = await import('../server/store.js')
 
 // ------------------------------------------------------------------ config
 
@@ -102,6 +103,12 @@ function coerce(v) {
   return Number.isFinite(n) && v.trim?.() !== '' ? n : v
 }
 
+async function readStdin() {
+  let data = ''
+  for await (const chunk of process.stdin) data += chunk
+  return data
+}
+
 /** Deterministic PRNG, so a run can be replayed exactly. */
 function makeRandom(seed) {
   if (seed == null) return Math.random
@@ -110,6 +117,24 @@ function makeRandom(seed) {
     s = (s * 1664525 + 1013904223) >>> 0
     return s / 4294967296
   }
+}
+
+const trueRandom = Math.random
+
+/**
+ * Seeds the engine's own randomness as well as the bots'.
+ *
+ * Role dealing, turn order and the word draw all reach for `Math.random`
+ * directly, so seeding only the bots left half the run unreproducible — two
+ * sweeps of the same scale would deal different roles and the comparison would
+ * be measuring luck. Overriding the global is heavy-handed, but this is a
+ * single-purpose script with no server in it, and the alternative is threading
+ * a generator through every corner of the engine for the benefit of one caller.
+ */
+function seedEverything(seed) {
+  const rng = makeRandom(seed)
+  Math.random = seed == null ? trueRandom : rng
+  return rng
 }
 
 // -------------------------------------------------------------------- bots
@@ -400,7 +425,7 @@ const bar = (rate) => '█'.repeat(Math.round(rate * 30))
  * much — it is average points per game, across every player of that camp,
  * winners and losers alike.
  */
-function verdict(agg) {
+function verdict(agg, { quiet = false } = {}) {
   const byTeam = new Map()
   for (const r of agg.perRole) {
     const team = getRole(r.role)?.team ?? r.role
@@ -413,20 +438,27 @@ function verdict(agg) {
   const avgs = rows.map((r) => r.avg)
   const spread = Math.max(...avgs) - Math.min(...avgs)
 
-  console.log('\n  Équilibre — points moyens par partie et par joueur du camp')
-  for (const r of rows.sort((a, b) => b.avg - a.avg)) {
-    console.log(`    ${r.team.padEnd(12)} ${num(r.avg).padStart(6)}`)
+  rows.sort((a, b) => b.avg - a.avg)
+  const grade = spread < 0.4 ? 'good' : spread < 0.9 ? 'ok' : 'bad'
+
+  if (!quiet) {
+    console.log('\n  Équilibre — points moyens par partie et par joueur du camp')
+    for (const r of rows) console.log(`    ${r.team.padEnd(12)} ${num(r.avg).padStart(6)}`)
+    console.log(`    écart max    ${num(spread).padStart(6)}  ${
+      { good: '✅ équilibré', ok: '🟡 acceptable', bad: '❌ déséquilibré' }[grade]
+    }`)
   }
-  console.log(`    écart max    ${num(spread).padStart(6)}  ${
-    spread < 0.4 ? '✅ équilibré' : spread < 0.9 ? '🟡 acceptable' : '❌ déséquilibré'
-  }`)
-  return { rows, spread }
+  return { rows, spread, grade }
 }
 
 // -------------------------------------------------------------------- main
 
 const cli = parseArgs(process.argv.slice(2))
-const fileConfig = cli.config ? JSON.parse(fs.readFileSync(cli.config, 'utf8')) : {}
+// `--config -` reads stdin, which is how the web page hands over a nested
+// config without quoting JSON through a shell and losing a character to it.
+const fileConfig = cli.config
+  ? JSON.parse(cli.config === '-' ? await readStdin() : fs.readFileSync(cli.config, 'utf8'))
+  : {}
 const config = {
   ...DEFAULT_SIM,
   ...fileConfig,
@@ -455,27 +487,40 @@ const variants = config.sweep
     }))
   : [{ label: 'barème courant', value: null, settings: config.settings }]
 
-console.log(`\n🎲  ${config.games} parties × ${variants.length} barème(s) · ${config.players} joueurs · adresse de la table ${pct(config.skill)}`)
+// In `--json` mode stdout carries the report and nothing else, so a caller can
+// parse it without stripping chatter first.
+if (!config.json) {
+  console.log(`\n🎲  ${config.games} parties × ${variants.length} barème(s) · ${config.players} joueurs · adresse de la table ${pct(config.skill)}`)
+}
 
 const started = Date.now()
 const report = { ranAt: new Date().toISOString(), config: { ...config, settings: undefined }, variants: [] }
 
 for (const variant of variants) {
-  const rng = makeRandom(config.seed)
+  const rng = seedEverything(config.seed)
+  // The word history decides which pairs are still fresh, and a draw from a
+  // half-used bank consumes the generator differently. Wiping it puts every
+  // variant back on the same footing — otherwise the second scale in a sweep
+  // would play subtly different games from the first.
+  if (config.seed != null) store.resetAll()
   const games = []
   for (let i = 0; i < config.games; i++) {
     try { games.push(playGame({ ...config, settings: variant.settings }, rng, i)) }
     catch (err) { games.push({ finished: false, error: err.message, players: [], titles: [] }) }
   }
   const agg = aggregate(games)
-  printBatch(variant.label, agg)
-  const balance = verdict(agg)
+  if (!config.json) printBatch(variant.label, agg)
+  const balance = verdict(agg, { quiet: config.json })
   report.variants.push({ label: variant.label, value: variant.value, settings: variant.settings, summary: agg, balance, games })
 }
 
-if (variants.length > 1) {
+const best =
+  variants.length > 1
+    ? [...report.variants].sort((a, b) => a.balance.spread - b.balance.spread)[0]
+    : null
+
+if (best && !config.json) {
   console.log(`\n—— Comparatif : ${config.sweep.key} ——`)
-  const best = [...report.variants].sort((a, b) => a.balance.spread - b.balance.spread)[0]
   for (const v of report.variants) {
     console.log(`    ${String(v.value).padStart(4)}  écart ${num(v.balance.spread).padStart(6)}` +
       (v === best ? '   ← le plus équilibré' : ''))
@@ -487,5 +532,20 @@ const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
 const outPath = path.resolve(config.out ?? path.join(simDir, `sim-${stamp}.json`))
 fs.writeFileSync(outPath, JSON.stringify(report, null, 2), 'utf8')
 
-console.log(`\n  ⏱  ${((Date.now() - started) / 1000).toFixed(1)}s`)
-console.log(`  📄  ${path.relative(root, outPath)}  (${(fs.statSync(outPath).size / 1024 / 1024).toFixed(1)} Mo)\n`)
+const elapsed = Date.now() - started
+
+if (config.json) {
+  // The per-game log is megabytes and nothing on screen reads it — it stays in
+  // the file for anyone who wants to dig. Only the aggregates go over the wire.
+  process.stdout.write(JSON.stringify({
+    ranAt: report.ranAt,
+    ms: elapsed,
+    file: path.relative(root, outPath),
+    sweepKey: config.sweep?.key ?? null,
+    bestValue: best?.value ?? null,
+    variants: report.variants.map(({ games: _drop, ...rest }) => rest),
+  }))
+} else {
+  console.log(`\n  ⏱  ${(elapsed / 1000).toFixed(1)}s`)
+  console.log(`  📄  ${path.relative(root, outPath)}  (${(fs.statSync(outPath).size / 1024 / 1024).toFixed(1)} Mo)\n`)
+}

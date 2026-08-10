@@ -243,6 +243,13 @@ il prend tout son sens ici : sans lui, un tableau qui paie les bulletins pousse
 
 ## Simuler des parties pour régler le barème
 
+**Le plus simple : ouvre `/simulate`** (lien depuis les réglages de l'écran
+hôte). Tous les paramètres sont au curseur, on lance, et les résultats
+s'affichent — victoires par camp, points moyens, verdict d'équilibre, et le
+balayage qui désigne la meilleure valeur.
+
+En ligne de commande, si tu préfères :
+
 ```bash
 npm run simulate -- --games 3000 --players 7
 npm run simulate -- --config simulation.example.json
@@ -261,11 +268,18 @@ tombe sur un imposteur. Lis la sortie comme « pour une table qui démasque 55 %
 du temps, ce barème est-il juste ? », qui est la question à laquelle un barème
 doit répondre.
 
-Tout va dans `simulations/`, et jamais dans tes vraies données.
+Tout va dans `simulations/`, et jamais dans tes vraies données — le serveur
+lance un **processus séparé** avec `UNDERCOVER_DATA_DIR` redirigé, ce qui est la
+seule façon d'en être sûr.
+
+**La graine rend une série rejouable à l'identique**, y compris la distribution
+des rôles et l'ordre de passage. C'est ce qui rend un balayage honnête : les
+cinq valeurs comparées jouent exactement les mêmes parties, donc l'écart mesuré
+vient du barème et de rien d'autre.
 
 | Option | Rôle |
 |---|---|
-| `--games`, `--players`, `--skill`, `--seed` | La série à jouer. `--seed` la rend rejouable à l'identique. |
+| `--games`, `--players`, `--skill`, `--seed` | La série à jouer. |
 | `--set.discussTime 0`, `--roles.mrwhite true` | N'importe quel réglage du jeu. |
 | `--points.mrwhite 4` | N'importe quelle valeur du barème. |
 | `--sweep <clé>=<v1,v2,…>` | Rejoue la même série pour chaque valeur et désigne la plus équilibrée. |

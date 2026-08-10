@@ -1435,6 +1435,81 @@ body::after {
   background: rgba(255, 255, 255, 0.08);
 }
 
+/* --------------------------------------------------------- balance workbench */
+
+.simbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+}
+
+.simbar__label {
+  flex: 0 0 clamp(90px, 26%, 170px);
+  font-size: 0.84rem;
+  font-weight: 650;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.simbar__track {
+  flex: 1;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.simbar__fill { display: block; height: 100%; border-radius: 999px; }
+
+.simbar__value {
+  flex: 0 0 62px;
+  text-align: right;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.simtable { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+
+.simtable th {
+  text-align: left;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  padding: 0 10px 6px 0;
+  white-space: nowrap;
+}
+
+.simtable td { padding: 6px 10px 6px 0; border-top: 1px solid var(--border); white-space: nowrap; }
+
+/* Wide content scrolls inside its own box; the page never scrolls sideways. */
+.scroll-x { overflow-x: auto; }
+
+.sweep { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.sweep__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 64px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.sweep__cell b { font-size: 1.05rem; font-weight: 800; }
+.sweep__cell span { font-size: 0.74rem; font-weight: 700; }
+.sweep__cell--on { border-color: var(--accent); background: rgba(124, 92, 255, 0.16); }
+.sweep__cell--best { box-shadow: inset 0 -3px 0 var(--ok); }
+
 /* ------------------------------------------------------------ waiting room */
 
 .waitingroom {

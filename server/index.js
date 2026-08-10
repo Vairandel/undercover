@@ -1,5 +1,6 @@
 import path from 'node:path'
 import fs from 'node:fs'
+import { spawn } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import Fastify from 'fastify'
 import fastifyStatic from '@fastify/static'
@@ -85,6 +86,8 @@ app.get('/api/info', async () => ({
   ),
   limits: { min: MIN_PLAYERS, max: MAX_PLAYERS },
   bank: { pairs: totalPairs(), gamesPlayed: store.state.gamesPlayed },
+  // Lets the editor and the workbench know whether to ask for a token.
+  needsToken: isExposed,
 }))
 
 /**
@@ -189,6 +192,106 @@ app.post('/api/words/:themeId/pair', async (req, reply) =>
 // Fastify already percent-decodes route params, so the key arrives verbatim.
 app.delete('/api/words/:themeId/pair/:key', async (req, reply) =>
   edit(req, reply, () => removePair(req.params.themeId, req.params.key)))
+
+// -------------------------------------------------------------- simulation
+
+/** Ceilings, so one request cannot pin the machine the game is running on. */
+const SIM_MAX_GAMES = 20000
+const SIM_TIMEOUT_MS = 120_000
+let simRunning = false
+
+/**
+ * Runs the balance simulator and hands back its aggregates.
+ *
+ * Deliberately a **child process**, not an in-process call. This server holds
+ * the household's real word history in memory and on disk; a few thousand
+ * simulated games running inside it would draw real pairs and stamp them
+ * "already played". The child gets `UNDERCOVER_DATA_DIR` pointed somewhere
+ * disposable, which is the only way to be sure.
+ *
+ * One at a time: it is CPU-bound, and two runs at once would just make both
+ * slow while the game itself stutters.
+ */
+app.post('/api/simulate', async (req, reply) => {
+  if (!requireAdmin(req, reply)) return reply
+  if (simRunning) return reply.code(429).send({ error: 'Une simulation tourne déjà.' })
+
+  const body = req.body ?? {}
+  const games = Math.max(1, Math.min(SIM_MAX_GAMES, Math.round(Number(body.games) || 1000)))
+  const players = Math.max(MIN_PLAYERS, Math.min(MAX_PLAYERS, Math.round(Number(body.players) || 6)))
+
+  const config = {
+    games,
+    players,
+    skill: clamp01(body.skill, 0.5),
+    skillGrowth: clamp01(body.skillGrowth, 0.08),
+    blankRate: clamp01(body.blankRate, 0.1),
+    whiteGuessRate: clamp01(body.whiteGuessRate, 0.35),
+    whiteBlurtRate: clamp01(body.whiteBlurtRate, 0.03),
+    dyingAnswerRate: clamp01(body.dyingAnswerRate, 0.9),
+    seed: Number.isFinite(Number(body.seed)) ? Number(body.seed) : null,
+    settings: body.settings ?? {},
+    sweep:
+      body.sweep?.key && Array.isArray(body.sweep.values) && body.sweep.values.length > 0
+        ? { key: String(body.sweep.key), values: body.sweep.values.slice(0, 8).map(Number) }
+        : null,
+  }
+
+  simRunning = true
+  try {
+    return await runSimulator(config)
+  } catch (err) {
+    return reply.code(500).send({ error: err.message })
+  } finally {
+    simRunning = false
+  }
+})
+
+function clamp01(raw, fallback) {
+  const n = Number(raw)
+  return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : fallback
+}
+
+function runSimulator(config) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(
+      process.execPath,
+      [path.join(here, '..', 'scripts', 'simulate.mjs'), '--json', '--config', '-'],
+      {
+        cwd: path.join(here, '..'),
+        env: {
+          ...process.env,
+          UNDERCOVER_DATA_DIR: path.join(here, '..', 'simulations', '.scratch'),
+        },
+        stdio: ['pipe', 'pipe', 'pipe'],
+      },
+    )
+
+    let out = ''
+    let err = ''
+    const timer = setTimeout(() => {
+      child.kill()
+      reject(new Error(`La simulation a dépassé ${SIM_TIMEOUT_MS / 1000}s — réduis le nombre de parties.`))
+    }, SIM_TIMEOUT_MS)
+
+    child.stdout.on('data', (c) => { out += c })
+    child.stderr.on('data', (c) => { err += c })
+    child.on('error', (e) => { clearTimeout(timer); reject(e) })
+    child.on('close', (code) => {
+      clearTimeout(timer)
+      if (code !== 0) return reject(new Error(err.trim().split('\n').pop() || `Code ${code}`))
+      try {
+        resolve(JSON.parse(out))
+      } catch {
+        reject(new Error('Sortie du simulateur illisible.'))
+      }
+    })
+
+    // The config travels on stdin rather than the command line: it nests, and
+    // quoting JSON through a shell is a reliable way to lose a character.
+    child.stdin.end(JSON.stringify(config))
+  })
+}
 
 // ------------------------------------------------------------ static client
 
