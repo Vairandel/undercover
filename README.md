@@ -171,6 +171,97 @@ npm start                                        # terminal 2
 Rien de tout ça ne s'active sur ton wifi : sans `PUBLIC_URL`, le comportement
 reste exactement celui d'avant.
 
+## Héberger le jeu ailleurs que sur ton PC
+
+Sur la machine `e2-micro` **gratuite à vie** de Google Cloud, pour que le jeu
+soit joignable même quand ton ordinateur est éteint.
+
+Google, plutôt qu'Oracle, pour une raison précise : Oracle **récupère les
+machines inactives** au bout de 7 jours sous 20 % d'utilisation — soit
+exactement le profil d'un serveur de soirée. Google ne le fait pas. Le prix à
+payer est la latence : les régions gratuites sont toutes aux États-Unis, donc
+~130 ms depuis la France au lieu de ~15 ms.
+
+### 1. Créer la machine
+
+Sur https://console.cloud.google.com :
+
+1. Crée un projet, ajoute une carte (vérification d'identité — voir l'avertissement plus bas)
+2. **Facturation → Budgets → Créer un budget à 1 €** avec alerte par mail. Fais-le tout de suite.
+3. **Compute Engine → Instances de VM → Créer une instance**
+
+| Réglage | Valeur |
+|---|---|
+| Région | `us-central1` (Iowa), `us-west1` (Oregon) ou `us-east1` (Caroline du Sud) — **aucune autre n'est gratuite** |
+| Type de machine | **E2 → `e2-micro`** |
+| Disque de démarrage | Debian 12, **disque persistant standard**, 30 Go |
+| Pare-feu | **Ne coche rien** — le tunnel n'a besoin d'aucun port entrant |
+
+### 2. Envoyer le projet
+
+Depuis ton PC, avec le [SDK gcloud](https://cloud.google.com/sdk/docs/install) :
+
+```powershell
+npm run push
+```
+
+Le client est compilé **sur ton PC** puis envoyé tout fait : sur 1 Go de RAM,
+Vite se ferait tuer par le noyau. Le script exclut `server/data`, donc les
+scores et les mots ajoutés côté serveur ne sont jamais écrasés.
+
+Si ton instance ne s'appelle pas `undercover` ou n'est pas en `us-central1-a` :
+
+```powershell
+$env:GCP_INSTANCE = "mon-instance"; $env:GCP_ZONE = "us-west1-b"; npm run push
+```
+
+### 3. Installer, une seule fois
+
+Connecte-toi en SSH (bouton **SSH** dans la console Google), puis :
+
+```bash
+cd ~/undercover
+bash scripts/server-setup.sh undercover.tondomaine.org
+```
+
+Il installe Node, crée **2 Go de fichier d'échange** (sans quoi la compilation
+meurt), compile, et pose un service système qui redémarre tout seul.
+
+Puis le tunnel :
+
+```bash
+cloudflared tunnel login          # ouvre l'adresse affichée sur ton PC
+bash scripts/server-tunnel.sh undercover.tondomaine.org
+```
+
+### Au quotidien
+
+```powershell
+npm run push                      # publier tes modifications
+```
+
+```bash
+sudo systemctl status undercover cloudflared
+sudo journalctl -u undercover -f
+```
+
+Les deux services démarrent au boot : la machine peut redémarrer sans toi.
+
+### ⚠️ La carte bancaire
+
+Elle sert à la vérification d'identité — une machine gratuite allumée en
+permanence attire les mineurs et les spammeurs.
+
+**Le risque réel** : passé les 90 jours de crédits d'essai, il faut basculer en
+compte payant pour continuer, et tout dépassement est alors **facturé
+automatiquement**, sans validation. Le tier gratuit permanent continue sans
+frais, mais la barrière est moins haute que chez Oracle. D'où le budget à 1 €
+dès l'inscription.
+
+Les quotas gratuits : **1 seule** `e2-micro`, 30 Go de disque standard, et
+**1 Go de trafic sortant par mois**. Ce dernier point est large pour ton usage —
+le client compressé fait ~127 Ko et se met en cache.
+
 ## Arriver en retard
 
 Rien à faire de particulier : on entre le code et son pseudo comme tout le
