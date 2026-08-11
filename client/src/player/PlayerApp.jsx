@@ -304,7 +304,6 @@ export default function PlayerApp() {
       <JoinScreen
         onJoin={join}
         onCreate={createGame}
-        onSpectate={spectate}
         connected={connected}
         error={error}
         setError={setError}
