@@ -80,6 +80,13 @@ export const DEFAULT_SETTINGS = {
   // naming every impostor still standing.
   dyingGuess: true,
   dyingGuessTime: 20,
+  /**
+   * Who may find this room without being told its code.
+   *
+   * Private by default, and deliberately so: a room opened between friends
+   * should never become discoverable because somebody forgot to check a box.
+   */
+  visibility: 'private',
   // Reward-and-punishment: a civilian's ballot is worth points, right or wrong.
   // Off by default — it changes how the game is played, not just how it scores.
   detectiveMode: false,
@@ -588,7 +595,13 @@ export class Game {
       ? patch.scoreFloor
       : this.settings.scoreFloor
 
-    this.settings = { ...this.settings, ...patch, roles, themeIds, points, scoreFloor }
+    // Anything unrecognised falls back to private: a typo must never be what
+    // makes a room discoverable by strangers.
+    const visibility = patch.visibility === 'public' || patch.visibility === 'private'
+      ? patch.visibility
+      : this.settings.visibility
+
+    this.settings = { ...this.settings, ...patch, roles, themeIds, points, scoreFloor, visibility }
     this.touch()
   }
 

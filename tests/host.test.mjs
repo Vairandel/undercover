@@ -123,6 +123,55 @@ try {
     check('et ne règle rien',
       (await tryAsk(impostor, 'host:settings', { code: made.code, settings: {} })).ok === false)
   }
+  section('Parties publiques : on concentre, on ne refuse jamais')
+  {
+    const before = await (await fetch(`${URL}/api/public`)).json()
+
+    // Personne n'attend : le premier ouvre au lieu de se voir refuser.
+    const first = await fresh()
+    const opened = await ask(first, 'player:joinPublic', { name: 'Pub1' })
+    check("le premier ouvre une partie", opened.opened === true, String(opened.opened))
+    check('et il y est assis', opened.state.players.length === 1)
+    check('avec la couronne', opened.you.isHost === true)
+
+    const now = await (await fetch(`${URL}/api/public`)).json()
+    check('le compteur le voit', now.players === before.players + 1, `${before.players} → ${now.players}`)
+
+    // Le suivant rejoint la même plutôt que d'en ouvrir une seconde : c'est
+    // tout l'intérêt de concentrer.
+    const second = await fresh()
+    const joined = await ask(second, 'player:joinPublic', { name: 'Pub2' })
+    check('le second rejoint la même', joined.code === opened.code, `${joined.code} vs ${opened.code}`)
+    check("il n'en ouvre pas une seconde", joined.opened === false)
+    check('ils sont deux à table', joined.state.players.length === 2)
+
+    // Une partie privée reste introuvable, même vide et en attente.
+    const owner = await fresh()
+    const priv = await ask(owner, 'player:createGame', { name: 'Prive' })
+    const third = await fresh()
+    const elsewhere = await ask(third, 'player:joinPublic', { name: 'Pub3' })
+    check('une partie privée ne se fait pas trouver',
+      elsewhere.code !== priv.code, `${elsewhere.code} vs ${priv.code}`)
+
+    // Mais son hôte peut l'ouvrir.
+    await ask(owner, 'host:settings', {
+      code: priv.code, playerId: priv.playerId, settings: { visibility: 'public' },
+    })
+    await wait(120)
+    const after = await (await fetch(`${URL}/api/public`)).json()
+    check("passer en public la rend visible", after.players > now.players, `${now.players} → ${after.players}`)
+
+    // Et une valeur farfelue ne doit surtout pas ouvrir la porte.
+    const guard2 = await fresh()
+    const room = await ask(guard2, 'player:createGame', { name: 'Garde' })
+    await ask(guard2, 'host:settings', {
+      code: room.code, playerId: room.playerId, settings: { visibility: 'nawak' },
+    })
+    await wait(120)
+    const still = await (await fetch(`${URL}/api/public`)).json()
+    check('une visibilité inconnue reste privée', still.players === after.players,
+      `${after.players} → ${still.players}`)
+  }
 } finally {
   sockets.forEach((s) => s.close())
   server.kill()

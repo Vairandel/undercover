@@ -1,4 +1,4 @@
-import { Game, GameError } from './engine.js'
+import { Game, GameError, PHASES, MAX_PLAYERS } from './engine.js'
 import { store } from '../store.js'
 
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ' // no I/O — unreadable on a TV
@@ -158,6 +158,26 @@ export function createRoomManager(io) {
     rooms.delete(coldest.code)
     store.forgetRoom(coldest.code)
     return true
+  }
+
+  /**
+   * How many people are currently waiting in public lobbies.
+   *
+   * A count rather than a listing: the join button needs to say something true
+   * ("four people are waiting"), not offer a choice between rooms that would
+   * only split them further.
+   */
+  function publicWaiting() {
+    let rooms_ = 0
+    let players = 0
+    for (const game of rooms.values()) {
+      if (game.settings.visibility !== 'public') continue
+      if (game.phase !== PHASES.LOBBY || game.sessionOver) continue
+      if (game.players.size === 0) continue
+      rooms_ += 1
+      players += game.players.size
+    }
+    return { rooms: rooms_, players }
   }
 
   function createRoom() {
@@ -377,11 +397,73 @@ export function createRoomManager(io) {
      * `player:join` would leave an orphan room behind whenever the pseudo was
      * refused, and the caller would have to clean up after a failure.
      */
-    socket.on('player:createGame', guard(({ name, avatar, color }, cb) => {
+    /**
+     * Drops the player into a public game, opening one if none is waiting.
+     *
+     * Deliberately not a list to browse. A list only has value once it is full,
+     * and with a handful of players it does the opposite of what is needed:
+     * six people spread across three public rooms is three rooms that cannot
+     * start, since a table needs three. So this concentrates — it joins the
+     * fullest room still in its lobby.
+     *
+     * And it never refuses. Finding nothing means you become the first person
+     * waiting, in a room the next arrival will find. "No games available" is
+     * how a public lobby dies before it exists.
+     */
+    socket.on('player:joinPublic', guard(({ name, avatar, color }, cb) => {
+      const waiting = [...rooms.values()]
+        .filter((g) =>
+          g.settings.visibility === 'public' &&
+          g.phase === PHASES.LOBBY &&
+          !g.sessionOver &&
+          g.players.size > 0 &&
+          g.players.size < MAX_PLAYERS)
+        .sort((a, b) => b.players.size - a.players.size)
+
+      let game = waiting[0]
+      let opened = false
+      if (!game) {
+        if (roomsCreated >= MAX_ROOMS_PER_SOCKET) {
+          throw new GameError('Trop de parties créées depuis cet appareil.')
+        }
+        game = createRoom()
+        game.updateSettings({ visibility: 'public' })
+        opened = true
+      }
+
+      let player
+      try {
+        player = game.addPlayer(name, { avatar, color })
+      } catch (err) {
+        if (opened) { game.dispose(); rooms.delete(game.code) }
+        throw err
+      }
+      if (opened) roomsCreated += 1
+
+      joined = { code: game.code, playerId: player.id }
+      isScreen = false
+      socket.join(`room:${game.code}`)
+      socket.join(`player:${player.id}`)
+      game.claimSocket(player.id, socket.id)
+
+      ok(cb, {
+        code: game.code,
+        playerId: player.id,
+        // Lets the client say "you opened one" rather than "you joined one",
+        // which is the difference between waiting on purpose and waiting
+        // wondering whether something broke.
+        opened,
+        state: game.publicState(),
+        you: game.privateState(player.id),
+      })
+    }))
+
+    socket.on('player:createGame', guard(({ name, avatar, color, visibility }, cb) => {
       if (roomsCreated >= MAX_ROOMS_PER_SOCKET) {
         throw new GameError('Trop de parties créées depuis cet appareil.')
       }
       const game = createRoom()
+      if (visibility === 'public') game.updateSettings({ visibility: 'public' })
       let player
       try {
         // First to sit down gets the crown, from `addPlayer` — no special case.
@@ -536,6 +618,7 @@ export function createRoomManager(io) {
   return {
     rooms,
     restored,
+    publicWaiting,
     stats: () => ({ rooms: rooms.size, players: [...rooms.values()].reduce((n, g) => n + g.players.size, 0) }),
   }
 }

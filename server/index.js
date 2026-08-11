@@ -120,6 +120,17 @@ function joinUrlFor(req) {
   return `${proto}://${host}`
 }
 
+/**
+ * Who is waiting in a public lobby right now.
+ *
+ * Its own endpoint rather than part of `/api/info`: the join screen fetches
+ * that once on load, while this number is only meaningful if it is fresh.
+ */
+app.get('/api/public', async (_req, reply) => {
+  reply.header('Cache-Control', 'no-store')
+  return gameRooms.publicWaiting()
+})
+
 /** The join address as the client sees it — lets the UI stay in sync too. */
 app.get('/api/where', async (req) => ({ url: joinUrlFor(req) }))
 

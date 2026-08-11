@@ -19,9 +19,10 @@ import { play } from '../audio.js'
  * the code, so the most common path of an evening is now shorter than it was,
  * not longer.
  */
-export default function JoinScreen({ onJoin, onCreate, connected, error, setError }) {
+export default function JoinScreen({ onJoin, onCreate, onJoinPublic, connected, error, setError }) {
   const [step, setStep] = useState('choose') // 'choose' | 'identity'
-  const [mode, setMode] = useState(null) // 'create' | 'join'
+  const [mode, setMode] = useState(null) // 'create' | 'join' | 'public'
+  const [waiting, setWaiting] = useState(null)
   const [code, setCode] = useState('')
   const [name, setName] = useState('')
   const [look, setLook] = useState(null)
@@ -45,6 +46,18 @@ export default function JoinScreen({ onJoin, onCreate, connected, error, setErro
       })
       .catch(() => setInfo({ appearance: { avatars: [], colors: [] }, roles: [] }))
   }, [])
+
+  // Refreshed whenever the first screen is shown: a stale "4 people waiting"
+  // is worse than no number at all.
+  useEffect(() => {
+    if (step !== 'choose') return undefined
+    let alive = true
+    fetch('/api/public')
+      .then((r) => r.json())
+      .then((d) => { if (alive) setWaiting(d) })
+      .catch(() => {})
+    return () => { alive = false }
+  }, [step])
 
   // The QR code carries `?code=ABCD`, so a scan already answers the first
   // question. Asking it again would be the one place this flow got worse.
@@ -77,6 +90,7 @@ export default function JoinScreen({ onJoin, onCreate, connected, error, setErro
     if (!name.trim() || !look || !connected) return
     await go(async () => {
       if (mode === 'create') return onCreate(name, look)
+      if (mode === 'public') return onJoinPublic(name, look)
       const res = await onJoin(code, name, look)
       // Joining a game already under way puts you in the stands rather than
       // turning you away. Say so, or landing on a board you cannot touch reads
@@ -163,6 +177,23 @@ export default function JoinScreen({ onJoin, onCreate, connected, error, setErro
                 </button>
               )}
 
+              {/* For anyone with nobody to play with, and for the table that is
+                  two people short. Never says "nothing available": with no room
+                  waiting, you open one and become the first in it. */}
+              <button
+                type="button"
+                className="btn btn--ghost btn--block"
+                disabled={!connected}
+                onClick={() => { play('tap'); setMode('public'); setStep('identity') }}
+              >
+                🌍  Partie publique
+                {waiting?.players > 0 && (
+                  <span className="badge" style={{ marginLeft: 6 }}>
+                    {waiting.players} en attente
+                  </span>
+                )}
+              </button>
+
               {!connected && (
                 <p className="subtitle faint" style={{ fontSize: '0.85rem' }}>
                   Vérifie que tu es bien sur le même wifi que l'ordinateur.
@@ -178,9 +209,17 @@ export default function JoinScreen({ onJoin, onCreate, connected, error, setErro
               <div className="stack" style={{ gap: 6 }}>
                 <div style={{ fontSize: '3rem', lineHeight: 1 }}>{look?.avatar ?? '🕵️'}</div>
                 <h1 className="title">
-                  {mode === 'create' ? 'Ta nouvelle partie' : `Partie ${code}`}
+                  {mode === 'create'
+                    ? 'Ta nouvelle partie'
+                    : mode === 'public'
+                      ? 'Partie publique'
+                      : `Partie ${code}`}
                 </h1>
-                <p className="subtitle">Choisis ton pseudo et ta tête.</p>
+                <p className="subtitle">
+                  {mode === 'public'
+                    ? 'Tu vas rejoindre des joueurs que tu ne connais pas.'
+                    : 'Choisis ton pseudo et ta tête.'}
+                </p>
               </div>
 
               <input
@@ -212,7 +251,9 @@ export default function JoinScreen({ onJoin, onCreate, connected, error, setErro
                   ? 'On y va…'
                   : mode === 'create'
                     ? '✨  Créer la partie'
-                    : '▶  Rejoindre'}
+                    : mode === 'public'
+                      ? '🌍  Trouver une partie'
+                      : '▶  Rejoindre'}
               </button>
 
               <button

@@ -36,10 +36,20 @@ let failed = 0
 for (const file of suites) {
   const res = await run(file)
   const summary = res.out.trim().split('\n').filter((l) => /réussis/.test(l)).pop() ?? '(pas de résumé)'
-  console.log(`${res.code === 0 ? '✅' : '❌'} ${file.padEnd(24)} ${summary.trim()}`)
-  if (res.code !== 0) {
+
+  // A suite that asserted nothing has not passed — it did not run. Without
+  // this, a server that fails to boot leaves every check unexecuted and the
+  // run still reports green, which is worse than a plain failure.
+  const ran = Number(summary.match(/(\d+)\s+réussis/)?.[1] ?? 0)
+  const empty = res.code === 0 && ran === 0
+  const ok = res.code === 0 && !empty
+
+  console.log(`${ok ? '✅' : '❌'} ${file.padEnd(24)} ${empty ? '⚠️  aucune assertion exécutée' : summary.trim()}`)
+
+  if (!ok) {
     failed += 1
-    for (const line of res.out.split('\n').filter((l) => l.includes('✘'))) console.log(`   ${line.trim()}`)
+    const lines = res.out.split('\n').filter((l) => l.includes('✘') || /Error|ECONNREFUSED|EADDRINUSE/.test(l))
+    for (const line of lines.slice(0, 6)) console.log(`   ${line.trim()}`)
   }
 }
 

@@ -225,6 +225,15 @@ export function RulesPanel({ state, info, act }) {
 
   return (
     <div className="card">
+      <Field id="visibility">
+        <Switch
+          checked={settings.visibility === 'public'}
+          onChange={(v) => set({ visibility: v ? 'public' : 'private' })}
+        />
+      </Field>
+
+      <hr className="divider" />
+
       <Field id="undercoverCount">
         <Segmented
           value={settings.undercoverCount}

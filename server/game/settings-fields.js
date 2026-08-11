@@ -17,6 +17,7 @@
  */
 
 export const SETTING_GROUPS = [
+  { id: 'room', emoji: '🚪', label: 'Le salon', blurb: 'Qui peut entrer, et comment.' },
   { id: 'deal', emoji: '🎲', label: 'La distribution', blurb: 'Qui reçoit quoi, et avec quels mots.' },
   { id: 'flow', emoji: '⏱️', label: 'Le déroulé', blurb: 'Comment une manche s\'enchaîne.' },
   { id: 'mood', emoji: '🎭', label: "L'ambiance", blurb: 'Ce qui se passe autour du jeu.' },
@@ -24,6 +25,14 @@ export const SETTING_GROUPS = [
 ]
 
 export const SETTING_FIELDS = [
+  {
+    key: 'visibility',
+    group: 'room',
+    emoji: '🌍',
+    label: 'Partie publique',
+    hint: "Des joueurs que tu ne connais pas peuvent te rejoindre sans avoir le code.",
+    when: "À activer quand il vous manque deux ou trois personnes pour démarrer. Le jeu vit surtout de connaître les gens qu'on accuse — entre inconnus il reste bon, mais il est nettement plus sec. La couronne peut toujours expulser quelqu'un, et repasser en privé ferme la porte immédiatement.",
+  },
   {
     key: 'themeIds',
     group: 'deal',

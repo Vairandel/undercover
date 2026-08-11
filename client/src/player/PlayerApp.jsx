@@ -218,6 +218,26 @@ export default function PlayerApp() {
     return res.code
   }
 
+  /**
+   * Drop into a public game — or open one and become the first to wait.
+   *
+   * Never fails for want of a room: the server opens one rather than saying
+   * there is nothing, because "no games available" is how a public lobby dies
+   * before it has a chance to exist.
+   */
+  const joinPublic = async (name, look = {}) => {
+    const res = await send('player:joinPublic', { name, avatar: look.avatar, color: look.color })
+    const s = { code: res.code, playerId: res.playerId, name, look }
+    saveSession(s)
+    setSession(s)
+    setState(res.state)
+    setYou(res.you)
+    if (res.opened) {
+      setError("Tu es le premier — la partie est ouverte, les autres te rejoindront ici.")
+    }
+    return res
+  }
+
   const join = async (code, name, look = {}) => {
     try {
       const res = await send('player:join', {
@@ -322,6 +342,7 @@ export default function PlayerApp() {
       <JoinScreen
         onJoin={join}
         onCreate={createGame}
+        onJoinPublic={joinPublic}
         connected={connected}
         error={error}
         setError={setError}

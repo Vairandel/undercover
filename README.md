@@ -262,6 +262,26 @@ Les quotas gratuits : **1 seule** `e2-micro`, 30 Go de disque standard, et
 **1 Go de trafic sortant par mois**. Ce dernier point est large pour ton usage —
 le client compressé fait ~127 Ko et se met en cache.
 
+## Jouer avec des inconnus
+
+Les parties sont **privées par défaut** : on n'y entre qu'avec le code.
+
+Le bouton **🌍 Partie publique** de l'écran d'accueil place le joueur dans une
+partie ouverte, et **n'échoue jamais** : s'il n'y a personne, il en ouvre une et
+le joueur devient le premier à attendre — la suivante le trouvera. « Aucune
+partie disponible » est la façon dont un salon public meurt avant d'exister.
+
+Délibérément **pas une liste à parcourir**. Une liste n'a de valeur qu'une fois
+pleine, et à faible affluence elle fait l'inverse de ce qu'il faut : six
+personnes réparties sur trois salons, ce sont trois salons qui ne peuvent pas
+démarrer, puisqu'il en faut trois par table. Le bouton rejoint donc **le salon
+le plus rempli** encore au lobby.
+
+Une partie déjà ouverte se rend publique depuis ⚙️ **Réglages → Le salon**.
+Utile surtout quand il manque deux ou trois personnes pour démarrer : le jeu vit
+de connaître ceux qu'on accuse, et entre inconnus complets il reste bon mais
+nettement plus sec.
+
 ## Arriver en retard
 
 Rien à faire de particulier : on entre le code et son pseudo comme tout le
