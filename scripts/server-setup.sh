@@ -71,13 +71,21 @@ else
 fi
 
 # ------------------------------------------------------------ dépendances
-step "Dépendances et compilation du client"
+step "Dépendances"
 cd "$APP_DIR"
 npm ci --omit=dev --ignore-scripts >/dev/null 2>&1 || npm install --omit=dev >/dev/null
-# Le client a besoin de ses outils de compilation, absents de --omit=dev.
-npm install --prefix client >/dev/null
-npm run build
-echo "  client compilé"
+
+# `npm run push` envoie le client déjà compilé, précisément pour ne pas faire
+# tourner Vite ici : sur un cœur partagé à 1 Go, la compilation prend des
+# minutes quand elle ne se fait pas tuer par le noyau. On ne compile donc que
+# si le résultat manque vraiment.
+if [[ -f client/dist/index.html ]]; then
+  echo "  client déjà compilé, reçu depuis le PC"
+else
+  warn "client/dist absent — compilation sur place, ce sera long."
+  npm install --prefix client >/dev/null
+  npm run build
+fi
 
 # -------------------------------------------------------------- variables
 step "Configuration"

@@ -1,4 +1,4 @@
-# Envoie le projet vers le serveur Google Cloud et redémarre le jeu.
+﻿# Envoie le projet vers le serveur Google Cloud et redémarre le jeu.
 #
 # À lancer depuis ton PC, à la racine du projet :
 #   npm run push
@@ -63,17 +63,12 @@ gcloud compute scp $archive "${Instance}:/tmp/undercover.tar.gz" --zone $Zone
 if ($LASTEXITCODE -ne 0) { throw "L'envoi a échoué." }
 
 Step "Installation et redémarrage"
-$remote = @'
-set -e
-mkdir -p ~/undercover
-tar -xzf /tmp/undercover.tar.gz -C ~/undercover
-rm -f /tmp/undercover.tar.gz
-cd ~/undercover
-npm ci --omit=dev --ignore-scripts >/dev/null 2>&1 || npm install --omit=dev >/dev/null
-sudo systemctl restart undercover
-sleep 2
-systemctl is-active --quiet undercover && echo "  service actif" || (echo "  ECHEC"; sudo journalctl -u undercover -n 20 --no-pager)
-'@
+# Tenu sur UNE seule ligne : `gcloud compute ssh` découpe son argument sur les
+# retours à la ligne, si bien qu'un script multiligne arrive en morceaux et que
+# la moitié se retrouve interprétée comme des options de gcloud. Tout ce qui
+# dépasse une ligne vit dans server-update.sh, envoyé avec le reste.
+$remote = 'mkdir -p ~/undercover && tar -xzf /tmp/undercover.tar.gz -C ~/undercover && rm -f /tmp/undercover.tar.gz && bash ~/undercover/scripts/server-update.sh'
+
 gcloud compute ssh $Instance --zone $Zone --command $remote
 if ($LASTEXITCODE -ne 0) { throw "Le redémarrage a échoué." }
 
