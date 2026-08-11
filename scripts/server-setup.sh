@@ -28,6 +28,31 @@ if [[ -z "$HOSTNAME_ARG" ]]; then
   exit 1
 fi
 
+# La console web de Google et `gcloud compute ssh` ouvrent des sessions sous
+# deux comptes Linux differents. Installer depuis le mauvais donne un service
+# tournant sous un utilisateur qui ne peut pas ecrire dans server/data : les
+# scores et les mots ajoutes ne seraient jamais sauvegardes, sans erreur
+# visible. Mieux vaut refuser tout de suite, avec la commande pour s'en sortir.
+OWNER="$(stat -c '%U' "$APP_DIR")"
+if [[ "$OWNER" != "$APP_USER" ]]; then
+  cat <<EOF
+
+  Mauvais compte.
+
+  Ces fichiers appartiennent a « $OWNER », tu es connecte en « $APP_USER ».
+  C'est « $OWNER » qui doit installer, sinon le service tournera sans le
+  droit d'ecrire ses donnees.
+
+  Bascule, puis relance :
+
+    sudo -iu $OWNER
+    cd ~/undercover
+    bash scripts/server-setup.sh $HOSTNAME_ARG
+
+EOF
+  exit 1
+fi
+
 # --------------------------------------------------------------------- swap
 #
 # 1 Go de RAM ne suffit pas à Vite. Sans échange, `npm run build` se fait tuer

@@ -13,6 +13,15 @@ set -euo pipefail
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$APP_DIR"
 
+# Meme garde que server-setup.sh : installer depuis le mauvais compte echoue
+# sur une pile d'erreurs npm illisible plutot que sur une explication.
+OWNER="$(stat -c '%U' "$APP_DIR")"
+if [[ "$OWNER" != "$(id -un)" ]]; then
+  echo "  Mauvais compte : ces fichiers sont a « $OWNER », tu es « $(id -un) »."
+  echo "  Fais : sudo -iu $OWNER"
+  exit 1
+fi
+
 # Premier envoi : Node n'existe pas encore, c'est server-setup.sh qui
 # l'installe. Sortir en succès plutôt qu'en erreur — le transfert a bien
 # eu lieu, il ne reste qu'à installer, et un échec ici ferait croire le
