@@ -18,6 +18,10 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+# Le serveur parle UTF-8 ; sans ça la console Windows rend sa sortie en
+# charabia et on croit à une erreur là où il n'y en a pas.
+try { [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false) } catch { }
+
 if (-not $Instance) { $Instance = 'undercover' }
 if (-not $Zone)     { $Zone = 'us-central1-a' }
 
