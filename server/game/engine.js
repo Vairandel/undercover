@@ -6,6 +6,7 @@ import { normalise, sameWord, tooClose } from './text.js'
 import { COLORS, AVATARS, freeAvatar, isValidAvatar, isValidColor, randomColor } from './appearance.js'
 import { scoreGame, resolvePoints, sanitisePoints, DEFAULT_POINTS } from './scoring.js'
 import { awardTitles } from './titles.js'
+import { blankCareer, recordGame, QUEST_TRAITS, QUEST_AWARDS } from './career.js'
 
 export const PHASES = {
   LOBBY: 'lobby',
@@ -158,6 +159,9 @@ export class Game {
     this.reactions = new Map()
     // Kept for the whole game, because the end-of-game titles read it.
     this.reactionTotals = new Map() // targetId -> { emoji: count }
+    this.reactionsGiven = new Map() // reactorId -> how many they placed
+    // Order in which cards were turned over this round; see `markReady`.
+    this.readyCounter = 0
     // Chat is wiped every round; the titles need the whole evening's talk.
     this.chatTotals = new Map() // playerId -> lines posted this game
     this.titles = []
@@ -715,9 +719,15 @@ export class Game {
       p.left = false
       p.kicked = false
       p.data = {}
+      // Counted round by round, folded into the career at `finish`. Lives on
+      // `data` so it clears with the game, like everything else per-game.
+      p.data.tally = blankTally()
       p.modifiers = []
       p.roundPoints = 0
+      p.career ??= blankCareer(this.gameNumber)
     }
+    this.readyCounter = 0
+    this.readySettled = false
 
     this.assignRoles()
 
@@ -824,7 +834,13 @@ export class Game {
     const player = this.players.get(playerId)
     if (!player) throw new GameError("Tu n'as pas de place dans cette partie.")
     if (this.phase !== PHASES.REVEAL) return
+    if (player.ready) return
+
     player.ready = true
+    // Every table has the friend everyone ends up waiting for. Recording the
+    // order is the only way to name them at the end of the evening — and it
+    // costs one integer.
+    player.data.readyRank = ++this.readyCounter
 
     if (this.everyoneRevealed()) this.beginDescribe()
     else this.touch()
@@ -850,12 +866,43 @@ export class Game {
     }
     this.turnOrder = order
 
+    // Opening the round is its own kind of exposure: nothing to lean on, and
+    // everyone calibrates against you afterwards.
+    const opener = this.players.get(order[0])
+    if (opener?.data?.tally) opener.data.tally.spokeFirst += 1
+
+    this.settleReadyOrder()
+
     this.phase = PHASES.DESCRIBE
     this.onEvent({ type: 'roundStarted', round: this.round })
 
     if (!this.settleTurn()) return
     this.startTurnTimer()
     this.touch()
+  }
+
+  /**
+   * Records who turned their card over first and last.
+   *
+   * Only counted when the whole table actually tapped: if the round started
+   * because someone had dropped out, being "last" says nothing about them.
+   */
+  settleReadyOrder() {
+    // Once per game, not once per round: `beginDescribe` runs again every round
+    // and the ranks stay on `data`, so without this the same player collected
+    // the title as many times as the game had rounds.
+    if (this.readySettled) return
+    this.readySettled = true
+
+    const ranked = [...this.players.values()]
+      .filter((p) => !p.left && Number.isFinite(p.data?.readyRank))
+      .sort((a, b) => a.data.readyRank - b.data.readyRank)
+
+    const seated = [...this.players.values()].filter((p) => !p.left)
+    if (ranked.length < 2 || ranked.length !== seated.length) return
+
+    ranked[0].data.tally.readyFirst += 1
+    ranked[ranked.length - 1].data.tally.readyLast += 1
   }
 
   settleTurn() {
@@ -907,6 +954,7 @@ export class Game {
 
     this.usedClues.push({ text: clue, by: player.name, round: this.round })
     this.clues.set(playerId, { text: clue, timedOut: false })
+    if (player.data?.tally) player.data.tally.cluesGiven += 1
 
     // Mister White naming the majority word out loud wins on the spot.
     //
@@ -963,7 +1011,11 @@ export class Game {
       // Out of time: record an explicit blank so the table can see who froze,
       // rather than silently skipping them.
       const id = this.currentSpeakerId
-      if (id && !this.clues.has(id)) this.clues.set(id, { text: NO_CLUE, timedOut: true })
+      if (id && !this.clues.has(id)) {
+        this.clues.set(id, { text: NO_CLUE, timedOut: true })
+        const tally = this.players.get(id)?.data?.tally
+        if (tally) tally.cluesTimedOut += 1
+      }
       this.onEvent({ type: 'timeout' })
       this.advanceTurn()
     }, this.settings.turnTimer * 1000)
@@ -1080,6 +1132,9 @@ export class Game {
     else {
       onTarget.set(playerId, emoji)
       this.countReaction(targetId, emoji)
+      // Counted separately from what a player *receives*: one measures how the
+      // table reads you, the other whether you take part at all.
+      this.reactionsGiven.set(playerId, (this.reactionsGiven.get(playerId) ?? 0) + 1)
     }
     this.reactions.set(targetId, onTarget)
 
@@ -1208,6 +1263,7 @@ export class Game {
 
   tallyVotes() {
     this.scoreBallots()
+    this.recordBallots()
 
     const tally = new Map()
     for (const [voterId, targetId] of this.votes) {
@@ -1525,6 +1581,45 @@ export class Game {
     }
   }
 
+  /**
+   * Notes down who voted for whom, for the end-of-evening awards.
+   *
+   * Separate from `scoreBallots`, which only exists under reward-and-punishment
+   * and only looks at civilians. This runs every round whatever the settings —
+   * the awards describe the evening, not one scoring mode.
+   *
+   * Called before the count, while `this.votes` still holds every ballot.
+   */
+  recordBallots() {
+    const counts = new Map()
+    for (const [voterId, targetId] of this.votes) {
+      if (targetId !== BLANK_VOTE) counts.set(targetId, (counts.get(targetId) ?? 0) + 1)
+    }
+    const top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null
+
+    for (const [voterId, targetId] of this.votes) {
+      const voter = this.players.get(voterId)
+      const tally = voter?.data?.tally
+      if (!tally) continue
+
+      tally.votesCast += 1
+      if (targetId === BLANK_VOTE) { tally.votesBlank += 1; continue }
+      if (targetId === top) tally.votedWithPack += 1
+      if (this.teamOfPlayer(this.players.get(targetId)) !== 'civilian') tally.votesRight += 1
+    }
+
+    for (const [targetId, n] of counts) {
+      const target = this.players.get(targetId)
+      const tally = target?.data?.tally
+      if (!tally) continue
+      tally.votesReceived += n
+      // Being suspected while innocent is the table's mistake, not the
+      // player's — worth counting apart from plain unpopularity.
+      if (this.teamOfPlayer(target) === 'civilian') tally.votesReceivedInnocent += n
+      if (this.round === 1) tally.accusedFirstRound += n
+    }
+  }
+
   /** Settled at the end, so the running total never distracts mid-game. */
   detectiveAwards() {
     if (!this.settings.detectiveMode) return []
@@ -1732,6 +1827,10 @@ export class Game {
       points: this.points,
     })
 
+    // Folded in before anything is cleared: `restart` wipes every scratch field
+    // a few moments later, and the end-of-evening awards live off exactly this.
+    this.recordCareers(rows)
+
     for (const row of rows) {
       const player = this.players.get(row.playerId)
       const before = player.score
@@ -1744,6 +1843,11 @@ export class Game {
       player.roundPoints = row.points
       if (row.won) player.wins += 1
     }
+
+    // Standing after this game, kept so a comeback can be recognised as one —
+    // the final table alone never says where somebody came from.
+    const order = [...this.players.values()].sort((a, b) => b.score - a.score)
+    order.forEach((p, i) => p.career?.ranks.push(i))
 
     // Snapshot the standings so the end screen can animate from "before" to
     // "after" without recomputing anything client-side.
@@ -1764,6 +1868,54 @@ export class Game {
 
     this.onEvent({ type: 'gameOver', team: outcome.team })
     this.touch()
+  }
+
+  /**
+   * Folds this game's facts into every player's evening record.
+   *
+   * The one place that knows all of it at once: the round counters on `data`,
+   * the reactions still in memory, the awards just computed, and who was on
+   * which side — which stops being knowable the moment roles are cleared.
+   */
+  recordCareers(rows) {
+    const lastRound = this.round
+    const questTraits = new Set(QUEST_TRAITS)
+    const questAwards = new Set(QUEST_AWARDS)
+
+    for (const player of this.players.values()) {
+      const tally = player.data?.tally
+      if (!tally) continue
+
+      player.career ??= blankCareer(this.gameNumber)
+      const row = rows.find((r) => r.playerId === player.id)
+      const guess = player.data?.dyingGuess
+      const mine = this.awards.filter((a) => a.playerId === player.id)
+
+      // Side objectives: how many were dealt, and how many actually landed.
+      const quests = [player.roleId, ...(player.modifiers ?? [])].filter((id) => questTraits.has(id))
+      const done = mine.filter((a) => questAwards.has(a.key)).length
+
+      recordGame(player.career, {
+        points: row?.points ?? 0,
+        roleId: player.roleId,
+        modifiers: player.modifiers,
+        alive: player.alive,
+        firstOut: player.data?.eliminatedOrder === 1,
+        // Someone still standing lived the whole game.
+        lifespan: player.alive ? lastRound : (player.data?.eliminatedRound ?? lastRound),
+        ...tally,
+        whiteGuesses: this.lastResult?.guess?.by === player.id ? 1 : 0,
+        whiteGuessRight: this.lastResult?.guess?.by === player.id && this.lastResult.guess.correct ? 1 : 0,
+        dyingAsked: guess ? 1 : 0,
+        dyingRight: guess?.correct ? 1 : 0,
+        quests: quests.length,
+        questsDone: Math.min(done, quests.length),
+        cluesGiven: tally.cluesGiven,
+        chatLines: this.chatTotals.get(player.id) ?? 0,
+        reactionsGot: this.reactionTotals.get(player.id) ?? {},
+        reactionsGiven: this.reactionsGiven.get(player.id) ?? 0,
+      })
+    }
   }
 
   continueRound() {
@@ -1942,6 +2094,9 @@ export class Game {
           score: p.score,
           wins: p.wins,
           isHost: p.isHost,
+          // The evening's record travels with the scores: losing it to a server
+          // restart would empty the final awards of everything but the ranking.
+          career: p.career ?? null,
         })),
     }
   }
@@ -1988,6 +2143,10 @@ export class Game {
         roundPoints: 0,
         wins: Number(saved.wins) || 0,
         isHost: Boolean(saved.isHost),
+        // Merged onto a blank rather than trusted wholesale: a room saved
+        // before a counter existed would otherwise carry a hole into the
+        // awards, which read every field without checking.
+        career: { ...blankCareer(saved.career?.joinedAtGame ?? 0), ...(saved.career ?? {}) },
       })
     }
     this.ensureHost()
@@ -2285,6 +2444,16 @@ export function applyScore(before, points, floor) {
   if (floor === 'none') return before + points
   if (floor === 'round') return before + Math.max(0, points)
   return Math.max(0, before + points) // 'total', the default
+}
+
+/** Per-game counters, folded into the career once the game ends. */
+function blankTally() {
+  return {
+    votesCast: 0, votesRight: 0, votesBlank: 0, votedWithPack: 0, executions: 0,
+    votesReceived: 0, votesReceivedInnocent: 0, accusedFirstRound: 0,
+    cluesGiven: 0, cluesTimedOut: 0, spokeFirst: 0,
+    readyLast: 0, readyFirst: 0,
+  }
 }
 
 /** Who left the table in a given round — name only, never their word. */
