@@ -104,18 +104,36 @@ EOF
 echo "  /etc/cloudflared/config.yml écrit"
 
 # ----------------------------------------------------------------- service
-step "Service système"
+step "Service systeme"
+# Desinstalle avant de reinstaller : un service laisse par un essai precedent
+# continue de pointer vers l'ancien tunnel, et `service install` refuse alors de
+# l'ecraser. En avalant cette erreur, on redemarrait l'ancien service — le nom
+# d'hote pointait vers le nouveau tunnel, le connecteur servait l'ancien, et
+# Cloudflare renvoyait 1033 sans que rien n'ait l'air casse.
 sudo systemctl stop cloudflared 2>/dev/null || true
-sudo cloudflared service install 2>/dev/null || true
+sudo cloudflared service uninstall 2>/dev/null || true
+sudo rm -f /etc/systemd/system/cloudflared.service
+sudo systemctl daemon-reload
+
+sudo cloudflared service install
 sudo systemctl daemon-reload
 sudo systemctl enable cloudflared >/dev/null 2>&1 || true
 sudo systemctl restart cloudflared
-sleep 2
+sleep 5
 
-if systemctl is-active --quiet cloudflared; then
-  echo "  cloudflared actif"
+systemctl is-active --quiet cloudflared ||
+  die "cloudflared n'a pas demarre. Regarde : sudo journalctl -u cloudflared -n 40"
+
+# « actif » ne suffit pas : le processus peut tourner sans jamais s'etre
+# enregistre aupres de Cloudflare, ce qui donne exactement la meme page 1033.
+# On verifie donc la connexion, pas le processus.
+if sudo journalctl -u cloudflared -n 60 --no-pager 2>/dev/null |
+     grep -qi "Registered tunnel connection\|Connection .* registered"; then
+  echo "  cloudflared connecte a Cloudflare"
 else
-  die "cloudflared n'a pas démarré. Regarde : sudo journalctl -u cloudflared -n 40"
+  echo
+  sudo journalctl -u cloudflared -n 25 --no-pager || true
+  die "cloudflared tourne mais ne s'est pas connecte — voir les lignes ci-dessus."
 fi
 
 cat <<EOF
