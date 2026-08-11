@@ -136,4 +136,61 @@ section('Sur une vraie soirée jouée')
   for (const h of out) console.log(`     ${h.emoji} ${h.label.padEnd(22)} ${h.name.padEnd(5)} ${h.detail}`)
 }
 
+section('Clore la soirée, puis en rouvrir une')
+{
+  const g = new Game('F')
+  const ids = ['Ana', 'Bo', 'Cy', 'Dan'].map((n) => g.addPlayer(n).id)
+  g.updateSettings({ ...FAST })
+
+  let refused = null
+  try { g.endSession() } catch (e) { refused = e.message }
+  check('rien à clore avant la première partie', refused !== null, refused)
+
+  for (let n = 0; n < 3; n++) {
+    if (n > 0) g.restart()
+    g.start()
+    ids.forEach((id) => g.markReady(id))
+    driveToEnd(g, (alive) => alive.find((p) => p.roleId === 'civilian') ?? alive[0])
+  }
+
+  check('la partie est finie', g.phase === 'gameOver', g.phase)
+  g.endSession()
+
+  const pub = g.publicState()
+  check('la soirée est close', pub.sessionOver === true)
+  check('le classement final est là', pub.finalStandings.length === 4)
+  check('il est trié par score',
+    pub.finalStandings.every((p, i, a) => i === 0 || a[i - 1].score >= p.score),
+    pub.finalStandings.map((p) => p.score).join(' ≥ '))
+  check('chacun a son titre',
+    new Set(pub.honours.map((h) => h.playerId)).size === 4,
+    pub.honours.map((h) => `${h.name}:${h.label}`).join(' · '))
+
+  // Clore ne doit rien détruire : mêmes joueurs, même code, mêmes scores.
+  check('les joueurs sont toujours là', g.players.size === 4)
+  check('les scores tiennent', pub.finalStandings.some((p) => p.score > 0))
+
+  const before = pub.finalStandings[0].score
+  g.newEvening()
+  const after = g.publicState()
+  check('nouvelle soirée : retour au salon', after.phase === 'lobby', after.phase)
+  check('scores remis à zéro', after.players.every((p) => p.score === 0), `avant ${before}`)
+  check('carnets remis à zéro', [...g.players.values()].every((p) => p.career.games === 0))
+  check('titres effacés', after.honours.length === 0)
+  check('le salon garde son code et ses joueurs', after.code === 'F' && after.players.length === 4)
+}
+
+section('On ne clôt pas au milieu d\'une manche')
+{
+  const g = new Game('M')
+  const ids = ['A', 'B', 'C', 'D'].map((n) => g.addPlayer(n).id)
+  g.updateSettings({ ...FAST })
+  g.start(); ids.forEach((id) => g.markReady(id))
+
+  let refused = null
+  try { g.endSession() } catch (e) { refused = e.message }
+  check('refusé pendant la description', refused !== null, refused)
+  check('et le message dit quoi faire', /abandonne|termine/i.test(refused ?? ''), refused)
+}
+
 process.exit(report() ? 0 : 1)

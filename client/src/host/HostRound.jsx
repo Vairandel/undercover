@@ -277,13 +277,22 @@ function GameOver({ state, act, control = true }) {
       <Recap rounds={state.recap} players={state.players} />
 
       {control && (
-        <div className="row" style={{ gap: 12 }}>
+        <div className="row" style={{ gap: 12, flexWrap: 'wrap' }}>
           <button
             className="btn btn--primary grow"
             onClick={() => act('host:restart')}
             style={{ minHeight: 60, fontSize: '1.05rem' }}
           >
             ↻ Rejouer avec les mêmes joueurs
+          </button>
+          {/* Offered exactly where an evening actually ends: nobody decides to
+              stop in the middle of a round. */}
+          <button
+            className="btn"
+            onClick={() => act('host:endSession')}
+            style={{ minHeight: 60, fontSize: '1.05rem' }}
+          >
+            🏁 Terminer la soirée
           </button>
         </div>
       )}

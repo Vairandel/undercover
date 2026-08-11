@@ -6,6 +6,7 @@ import { normalise, sameWord, tooClose } from './text.js'
 import { COLORS, AVATARS, freeAvatar, isValidAvatar, isValidColor, randomColor } from './appearance.js'
 import { scoreGame, resolvePoints, sanitisePoints, DEFAULT_POINTS } from './scoring.js'
 import { awardTitles } from './titles.js'
+import { awardHonours } from './honours.js'
 import { blankCareer, recordGame, QUEST_TRAITS, QUEST_AWARDS } from './career.js'
 
 export const PHASES = {
@@ -165,6 +166,9 @@ export class Game {
     // Chat is wiped every round; the titles need the whole evening's talk.
     this.chatTotals = new Map() // playerId -> lines posted this game
     this.titles = []
+    // The evening as a whole, not the game: see `endSession`.
+    this.sessionOver = false
+    this.honours = []
     this.votes = new Map()
     this.lastResult = null
     this.outcome = null
@@ -1996,9 +2000,69 @@ export class Game {
       p.score = 0
       p.wins = 0
       p.roundPoints = 0
+      // The record has to go with the scores: awards drawn from one evening's
+      // play would otherwise describe games nobody remembers scoring.
+      p.career = blankCareer(0)
     }
     this.gameNumber = 0
+    this.sessionOver = false
+    this.honours = []
     this.touch()
+  }
+
+  // --------------------------------------------------------- fin de soirée
+
+  /**
+   * Closes the evening and hands out its awards.
+   *
+   * Deliberately a flag rather than a phase: phases describe a game, and this
+   * is about the room. The players, their seats and the code all survive — only
+   * the screen changes, and `newEvening` puts everything back.
+   *
+   * Allowed from the lobby or once a game is over, never mid-round: ending an
+   * evening in the middle of an accusation would compute awards from a game
+   * that never finished scoring.
+   */
+  endSession() {
+    if (![PHASES.LOBBY, PHASES.GAME_OVER].includes(this.phase)) {
+      throw new GameError("Termine ou abandonne la partie en cours avant de clore la soirée.")
+    }
+    if (this.gameNumber === 0) throw new GameError("Aucune partie jouée pour l'instant.")
+
+    this.sessionOver = true
+    this.honours = awardHonours({
+      players: [...this.players.values()],
+      totalGames: this.gameNumber,
+      reactionsOn: Boolean(this.settings.reactions),
+    })
+    this.onEvent({ type: 'sessionOver' })
+    this.touch()
+  }
+
+  /** Same room, same people, everything back to zero. */
+  newEvening() {
+    this.sessionOver = false
+    this.honours = []
+    this.resetScores()
+    this.restart()
+  }
+
+  /** The evening's final table, kept in one place for the closing screen. */
+  finalStandings() {
+    return [...this.players.values()]
+      .map((p) => ({
+        id: p.id,
+        name: p.name,
+        avatar: p.avatar,
+        color: p.color,
+        score: p.score,
+        wins: p.wins,
+        games: p.career?.games ?? 0,
+        // Someone who walked off still played, and may well have earned a
+        // title — dropping them would also reward quitting while last.
+        left: Boolean(p.left),
+      }))
+      .sort((a, b) => b.score - a.score || b.wins - a.wins || a.name.localeCompare(b.name, 'fr'))
   }
 
   // ------------------------------------------------------------------ views
@@ -2233,6 +2297,11 @@ export class Game {
       // living what a dead player worked out.
       dyingGuesses: this.phase === PHASES.GAME_OVER ? this.dyingGuessesPlain() : [],
       titles: this.phase === PHASES.GAME_OVER ? this.titles : [],
+      // The closing screen: a flag rather than a phase, since the room and
+      // everyone in it carry on existing behind it.
+      sessionOver: this.sessionOver,
+      honours: this.sessionOver ? this.honours : [],
+      finalStandings: this.sessionOver ? this.finalStandings() : [],
       recap: this.recap(),
       // Public all game long: every clue in it was given in the open.
       clueLog: this.settings.writtenClues ? this.clueLog() : [],

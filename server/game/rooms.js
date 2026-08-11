@@ -300,6 +300,17 @@ export function createRoomManager(io) {
       ok(cb)
     }))
 
+    /** Closes the evening: podium, awards, and the two ways out. */
+    socket.on('host:endSession', guard(({ code }, cb) => {
+      requireController(code).endSession()
+      ok(cb)
+    }))
+
+    socket.on('host:newEvening', guard(({ code }, cb) => {
+      requireController(code).newEvening()
+      ok(cb)
+    }))
+
     socket.on('host:resetScores', guard(({ code }, cb) => {
       requireController(code).resetScores()
       ok(cb)

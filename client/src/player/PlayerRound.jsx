@@ -154,6 +154,18 @@ function HostControls({ state, act, info }) {
       >
         {control.label}
       </button>
+      {/* Only where an evening plausibly ends — between two games, never in the
+          middle of one. */}
+      {(state.phase === 'gameOver' || state.phase === 'lobby') && state.gameNumber > 0 && (
+        <button
+          className="btn btn--sm"
+          disabled={busy}
+          onClick={() => run('host:endSession')}
+          title="Terminer la soirée"
+        >
+          🏁
+        </button>
+      )}
     </div>
   )
 }

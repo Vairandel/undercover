@@ -4,6 +4,7 @@ import { socket, send } from '../socket.js'
 import { playForEvent, play, cycleVolume, getVolume, ambienceForPhase } from '../audio.js'
 import { ConfirmButton, Toast } from '../components.jsx'
 import RulesSheet from '../RulesSheet.jsx'
+import Finale from '../Finale.jsx'
 import HostLobby from './HostLobby.jsx'
 import HostRound from './HostRound.jsx'
 
@@ -205,6 +206,24 @@ export default function HostApp() {
         </motion.div>
         <p className="subtitle">{error ?? 'Démarrage du serveur…'}</p>
       </div>
+    )
+  }
+
+  // The evening is over: the podium takes the whole screen. Checked before the
+  // phase, because this is about the room rather than about a game.
+  if (state?.sessionOver) {
+    return (
+      <Finale
+        state={state}
+        canControl={control}
+        onNewEvening={() => act('host:newEvening')}
+        onLeave={() => {
+          sessionStorage.removeItem(CODE_KEY)
+          sessionStorage.removeItem(TOKEN_KEY)
+          setState(null)
+          setCode(null)
+        }}
+      />
     )
   }
 

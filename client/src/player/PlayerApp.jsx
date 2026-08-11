@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { socket, send, saveSession, loadSession, clearSession } from '../socket.js'
 import { playForEvent, play, ambienceForPhase } from '../audio.js'
 import { Toast } from '../components.jsx'
+import Finale from '../Finale.jsx'
 import JoinScreen from './JoinScreen.jsx'
 import PlayerRound from './PlayerRound.jsx'
 import SpectatorView from './SpectatorView.jsx'
@@ -280,6 +281,23 @@ export default function PlayerApp() {
       play('error')
       setError(e.message)
     }
+  }
+
+  // The evening is over. Shown to seated players and watchers alike — the
+  // podium is the one screen nobody should be excluded from.
+  if (state?.sessionOver) {
+    return (
+      <>
+        <Finale
+          state={state}
+          compact
+          canControl={Boolean(you?.isHost)}
+          onNewEvening={() => act('host:newEvening')}
+          onLeave={leave}
+        />
+        <Toast message={error} onDone={() => setError(null)} />
+      </>
+    )
   }
 
   // Watching: no seat, no private payload, no actions.
