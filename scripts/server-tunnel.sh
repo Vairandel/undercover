@@ -43,18 +43,38 @@ else
 fi
 
 CREDS="$HOME/.cloudflared/$UUID.json"
-[[ -f "$CREDS" ]] || die "Fichier d'identifiants manquant : $CREDS"
+if [[ ! -f "$CREDS" ]]; then
+  # Le secret d'un tunnel n'existe que sur la machine qui l'a cree : Cloudflare
+  # ne le redonne jamais. Un tunnel visible dans la liste mais sans son fichier
+  # local est donc inutilisable ici — typiquement parce qu'il a ete cree
+  # ailleurs, sur le PC de la maison par exemple.
+  cat <<EOF
+
+  Le tunnel « $TUNNEL_NAME » existe, mais son fichier secret n'est pas sur
+  cette machine — il est reste la ou le tunnel a ete cree.
+
+  Le plus simple, puisque rien n'y est encore attache :
+
+    cloudflared tunnel delete -f $TUNNEL_NAME
+    bash scripts/server-tunnel.sh $HOSTNAME_ARG $TUNNEL_NAME
+
+  (Sinon : recopier $UUID.json depuis ~/.cloudflared de l'autre machine.)
+
+EOF
+  exit 1
+fi
 
 # --------------------------------------------------------------------- dns
 step "Route DNS vers $HOSTNAME_ARG"
-# Réappliquée à chaque fois : Cloudflare répond « already exists » quand elle est
-# déjà bonne, ce qui n'est pas une erreur.
-if cloudflared tunnel route dns "$TUNNEL_NAME" "$HOSTNAME_ARG" 2>&1 | tee /tmp/route.log; then
+# `--overwrite-dns` est indispensable et non cosmetique : si le tunnel a ete
+# recree, l'enregistrement existant pointe encore vers l'ancien, mort. Traiter
+# « already exists » comme un succes laisserait le nom d'hote branche sur un
+# tunnel qui n'existe plus, et plus rien ne repondrait — sans erreur nulle part.
+if cloudflared tunnel route dns --overwrite-dns "$TUNNEL_NAME" "$HOSTNAME_ARG" >/tmp/route.log 2>&1; then
   echo "  en place"
-elif grep -qi "already exists\|record with that host" /tmp/route.log; then
-  echo "  déjà en place"
 else
-  die "Impossible de router $HOSTNAME_ARG. Le domaine est-il bien géré par Cloudflare ?"
+  cat /tmp/route.log
+  die "Impossible de router $HOSTNAME_ARG. Le domaine est-il bien gere par Cloudflare ?"
 fi
 
 # ------------------------------------------------------------------ config
