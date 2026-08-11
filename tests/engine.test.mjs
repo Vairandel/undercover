@@ -267,4 +267,36 @@ section('Titres')
   check('des titres sortent sur des parties plus longues', sawTitles)
 }
 
+section('Chaque réglage est documenté')
+{
+  // Le garde-fou qui donne sa valeur à la page de référence : ajouter un
+  // réglage sans l'expliquer casse ici, pas six mois plus tard devant un
+  // joueur qui se demande à quoi sert la case.
+  const { DEFAULT_SETTINGS } = await import('../server/game/engine.js')
+  const { SETTING_FIELDS, SETTING_GROUPS } = await import('../server/game/settings-fields.js')
+
+  // `points` et `roles` ont leurs propres descripteurs.
+  const described = new Set(SETTING_FIELDS.map((f) => f.key))
+  const expected = Object.keys(DEFAULT_SETTINGS).filter((k) => !['points', 'roles'].includes(k))
+
+  const missing = expected.filter((k) => !described.has(k))
+  check('aucun réglage sans description', missing.length === 0, missing.join(', ') || '—')
+
+  const orphans = [...described].filter((k) => !(k in DEFAULT_SETTINGS))
+  check('aucune description orpheline', orphans.length === 0, orphans.join(', ') || '—')
+
+  const groups = new Set(SETTING_GROUPS.map((g) => g.id))
+  check('chaque réglage est rangé dans un groupe connu',
+    SETTING_FIELDS.every((f) => groups.has(f.group)),
+    SETTING_FIELDS.filter((f) => !groups.has(f.group)).map((f) => f.key).join(', ') || '—')
+
+  check('chacun porte un libellé, un résumé et un conseil',
+    SETTING_FIELDS.every((f) => f.label && f.hint && f.when && f.emoji),
+    SETTING_FIELDS.filter((f) => !(f.label && f.hint && f.when && f.emoji)).map((f) => f.key).join(', ') || '—')
+
+  check('les dépendances pointent vers de vrais réglages',
+    SETTING_FIELDS.every((f) => !f.dependsOn || f.dependsOn in DEFAULT_SETTINGS),
+    SETTING_FIELDS.filter((f) => f.dependsOn && !(f.dependsOn in DEFAULT_SETTINGS)).map((f) => f.key).join(', ') || '—')
+}
+
 process.exit(report() ? 0 : 1)

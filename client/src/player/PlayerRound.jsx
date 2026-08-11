@@ -102,6 +102,7 @@ export default function PlayerRound({ state, you, act, leave, connected, appeara
         onClose={() => setRulesOpen(false)}
         activeRoles={activeRoles}
         points={state.settings?.points}
+        settings={state.settings}
       />
     </div>
   )

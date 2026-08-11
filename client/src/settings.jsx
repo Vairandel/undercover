@@ -202,14 +202,30 @@ export function PointsPanel({ state, info, act }) {
   )
 }
 
-/** How the round itself is played. */
+/**
+ * How the round itself is played.
+ *
+ * Labels and hints come from `info.settingFields`, not from here — the same
+ * descriptors the rulebook reads. Only the *controls* live in this file,
+ * because each one is specific: a switch, a set of durations, a three-way
+ * choice. A generic renderer driven by data would be more code and less clear
+ * than thirteen explicit lines.
+ */
 export function RulesPanel({ state, info, act }) {
   const { settings } = state
   const set = (patch) => act('host:settings', { settings: patch })
 
+  const fields = Object.fromEntries((info.settingFields ?? []).map((f) => [f.key, f]))
+  /** Wraps a control in its described `Setting`, or omits it if undescribed. */
+  const Field = ({ id, children, hint }) => {
+    const f = fields[id]
+    if (!f) return null
+    return <Setting label={`${f.emoji} ${f.label}`} hint={hint ?? f.hint}>{children}</Setting>
+  }
+
   return (
     <div className="card">
-      <Setting label="Infiltrés" hint="« Auto » suit la taille de la table.">
+      <Field id="undercoverCount">
         <Segmented
           value={settings.undercoverCount}
           onChange={(v) => set({ undercoverCount: v })}
@@ -218,20 +234,17 @@ export function RulesPanel({ state, info, act }) {
             { value: 1, label: '1' }, { value: 2, label: '2' }, { value: 3, label: '3' },
           ]}
         />
-      </Setting>
+      </Field>
 
-      <Setting
-        label="Les infiltrés savent qu'ils le sont"
-        hint="Désactivé : ils reçoivent une carte de civil et doivent comprendre seuls qu'ils ont le mauvais mot. Beaucoup plus tendu."
-      >
+      <Field id="undercoverKnowsRole">
         <Switch checked={settings.undercoverKnowsRole} onChange={(v) => set({ undercoverKnowsRole: v })} />
-      </Setting>
+      </Field>
 
-      <Setting label="Indices écrits" hint="Chaque joueur tape son indice ; il s'affiche pour tout le monde.">
+      <Field id="writtenClues">
         <Switch checked={settings.writtenClues} onChange={(v) => set({ writtenClues: v })} />
-      </Setting>
+      </Field>
 
-      <Setting label="Chrono par tour" hint="Temps écoulé sans indice : « … » s'affiche.">
+      <Field id="turnTimer">
         <Segmented
           value={settings.turnTimer}
           onChange={(v) => set({ turnTimer: v })}
@@ -240,12 +253,9 @@ export function RulesPanel({ state, info, act }) {
             { value: 40, label: '40s' }, { value: 60, label: '60s' },
           ]}
         />
-      </Setting>
+      </Field>
 
-      <Setting
-        label="Temps de discussion"
-        hint="Débat libre entre les indices et le vote. C'est là que la partie se joue vraiment."
-      >
+      <Field id="discussTime">
         <Segmented
           value={settings.discussTime}
           onChange={(v) => set({ discussTime: v })}
@@ -254,65 +264,48 @@ export function RulesPanel({ state, info, act }) {
             { value: 60, label: '1min' }, { value: 120, label: '2min' },
           ]}
         />
-      </Setting>
+      </Field>
 
       <hr className="divider" />
 
-      <Setting
-        label="Réactions sur les indices"
-        hint="Chacun colle un emoji sous l'indice des autres — 🤨 👍 😂 👀 💀 ⭐. Signées, jamais anonymes : on peut te demander pourquoi tu as ri."
-      >
+      <Field id="reactions">
         <Switch checked={settings.reactions} onChange={(v) => set({ reactions: v })} />
-      </Setting>
+      </Field>
 
-      <Setting
-        label="Palmarès de fin de manche"
-        hint="Titres décernés d'après ce qui s'est réellement passé : le caméléon, le paratonnerre, la boussole cassée… Aucun point en jeu."
-      >
+      <Field id="endTitles">
         <Switch checked={settings.endTitles} onChange={(v) => set({ endTitles: v })} />
-      </Setting>
+      </Field>
 
-      <Setting
-        label="Récompense et punition"
-        hint="Chaque bulletin de civil est payé : autant de points gagnés s'il vise un imposteur, autant de perdus sinon. Les imposteurs ne sont jamais concernés — voter faux est leur métier."
-      >
+      <Field id="detectiveMode">
         <Switch checked={settings.detectiveMode} onChange={(v) => set({ detectiveMode: v })} />
-      </Setting>
+      </Field>
 
       {/* Only meaningful under reward-and-punishment: nothing else in the game
-          can score negative, so there is nothing to clamp. */}
+          can score negative, so there is nothing to clamp. The hint follows the
+          chosen mode rather than describing all three at once. */}
       {settings.detectiveMode && (
-        <Setting
-          label="Limite basse des scores"
-          hint={
-            info.scoreFloors?.find((f) => f.id === settings.scoreFloor)?.hint ??
-            "Jusqu'où une mauvaise manche peut faire descendre."
-          }
+        <Field
+          id="scoreFloor"
+          hint={info.scoreFloors?.find((f) => f.id === settings.scoreFloor)?.hint}
         >
           <Segmented
             value={settings.scoreFloor}
             onChange={(v) => set({ scoreFloor: v })}
             options={(info.scoreFloors ?? []).map((f) => ({ value: f.id, label: f.label }))}
           />
-        </Setting>
+        </Field>
       )}
 
-      <Setting
-        label="Vote blanc"
-        hint="Permet de refuser d'accuser. Ne compte pour personne, ne rapporte ni ne coûte rien — surtout utile quand les bulletins sont payés."
-      >
+      <Field id="blankVote">
         <Switch checked={settings.blankVote} onChange={(v) => set({ blankVote: v })} />
-      </Setting>
+      </Field>
 
-      <Setting
-        label="Dernier soupçon"
-        hint="Un civil éliminé a quelques secondes, sur son seul téléphone, pour nommer tous les imposteurs restants. Réponse secrète jusqu'au bilan ; la table n'attend pas."
-      >
+      <Field id="dyingGuess">
         <Switch checked={settings.dyingGuess} onChange={(v) => set({ dyingGuess: v })} />
-      </Setting>
+      </Field>
 
       {settings.dyingGuess && (
-        <Setting label="Temps de réflexion" hint="Le compte à rebours tourne sur son téléphone pendant que la manche continue.">
+        <Field id="dyingGuessTime">
           <Segmented
             value={settings.dyingGuessTime}
             onChange={(v) => set({ dyingGuessTime: v })}
@@ -321,7 +314,7 @@ export function RulesPanel({ state, info, act }) {
               { value: 30, label: '30s' }, { value: 45, label: '45s' },
             ]}
           />
-        </Setting>
+        </Field>
       )}
     </div>
   )

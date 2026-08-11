@@ -329,6 +329,7 @@ export default function HostApp() {
         onClose={() => setRulesOpen(false)}
         activeRoles={activeRoles}
         points={state.settings?.points}
+        settings={state.settings}
       />
 
       <Toast message={error} onDone={() => setError(null)} />

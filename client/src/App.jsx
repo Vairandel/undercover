@@ -3,6 +3,7 @@ import HostApp from './host/HostApp.jsx'
 import PlayerApp from './player/PlayerApp.jsx'
 import WordsApp from './WordsApp.jsx'
 import SimulateApp from './SimulateApp.jsx'
+import RulesPage from './RulesPage.jsx'
 import { unlock } from './audio.js'
 
 export default function App() {
@@ -28,5 +29,6 @@ export default function App() {
 
   if (path.startsWith('/words')) return <WordsApp />
   if (path.startsWith('/simulate')) return <SimulateApp />
+  if (path.startsWith('/regles')) return <RulesPage />
   return path.startsWith('/host') ? <HostApp /> : <PlayerApp />
 }

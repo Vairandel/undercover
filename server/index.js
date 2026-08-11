@@ -29,6 +29,7 @@ import {
   specialBudget,
 } from './game/engine.js'
 import { AVATARS, AVATAR_GROUPS, COLORS } from './game/appearance.js'
+import { SETTING_FIELDS, SETTING_GROUPS } from './game/settings-fields.js'
 import { POINT_FIELDS, DEFAULT_POINTS } from './game/scoring.js'
 import { store } from './store.js'
 
@@ -82,6 +83,11 @@ app.get('/api/info', async () => ({
   scoring: { fields: POINT_FIELDS, defaults: DEFAULT_POINTS },
   // The labels and explanations live with the rule, not duplicated in the UI.
   scoreFloors: SCORE_FLOORS,
+  // Same principle for the settings themselves: the panel and the rulebook read
+  // these, so a wording can never say one thing in one place and another
+  // elsewhere. Defaults are not repeated — they come from `defaults` above.
+  settingFields: SETTING_FIELDS,
+  settingGroups: SETTING_GROUPS,
   budgets: Object.fromEntries(
     Array.from({ length: MAX_PLAYERS - 2 }, (_, i) => [i + 3, specialBudget(i + 3)]),
   ),

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import Reference from './Reference.jsx'
 import { play } from './audio.js'
 
 /**
@@ -10,7 +11,7 @@ import { play } from './audio.js'
  * The text comes from the roles themselves (`rules` on each definition), so it
  * cannot drift away from the code that implements it.
  */
-export default function RulesSheet({ info, open, onClose, activeRoles, points }) {
+export default function RulesSheet({ info, open, onClose, activeRoles, points, settings }) {
   const [tab, setTab] = useState('roles')
 
   useEffect(() => {
@@ -52,6 +53,7 @@ export default function RulesSheet({ info, open, onClose, activeRoles, points })
                   ['roles', 'Rôles'],
                   ['flow', 'Déroulé'],
                   ['points', 'Points'],
+                  ['settings', 'Réglages'],
                 ].map(([id, label]) => (
                   <button
                     key={id}
@@ -89,6 +91,10 @@ export default function RulesSheet({ info, open, onClose, activeRoles, points })
               {tab === 'flow' && <Flow />}
 
               {tab === 'points' && <Points info={info} points={points} />}
+
+              {/* Same component as the standalone /regles page — one source, so
+                  the two can never describe the game differently. */}
+              {tab === 'settings' && <Reference info={info} settings={settings} />}
             </div>
           </motion.div>
         </motion.div>

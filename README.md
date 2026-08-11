@@ -466,6 +466,21 @@ d'inconnus. L'écran qui crée la partie reçoit un **jeton** — c'est lui qui
 prouve, après un rafraîchissement, qu'il s'agit bien du même écran et non de
 quelqu'un qui a lu le code sur le mur.
 
+## Où lire les règles
+
+Trois portes vers la même chose :
+
+- **📖 dans le jeu** — écran d'accueil, téléphone, ou grand écran. Quatre onglets :
+  Rôles, Déroulé, Points, **Réglages**. Atteignable en pleine manche sans perdre
+  sa place.
+- **`/regles`** — la même chose en page autonome, à envoyer avant une soirée.
+- Le tableau ci-dessous, pour qui lit le dépôt.
+
+Ces trois-là ne peuvent pas se contredire : les descriptions vivent dans
+[`server/game/settings-fields.js`](server/game/settings-fields.js) et sont lues
+aussi bien par le panneau ⚙️ que par la fiche. Un test refuse d'ajouter un
+réglage sans le décrire.
+
 ## Réglages
 
 | Réglage | Effet |
