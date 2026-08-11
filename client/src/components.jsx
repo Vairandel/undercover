@@ -121,6 +121,53 @@ export function DyingGuesses({ guesses, players }) {
   )
 }
 
+/**
+ * Hands the game's address to someone else.
+ *
+ * The link carries the code, so whoever receives it lands straight on "pick a
+ * pseudo" — the same shortcut the QR code takes. Reading four letters aloud
+ * works in a living room and nowhere else; this is what a game started on a
+ * phone actually needs.
+ *
+ * Prefers the system share sheet where there is one, because on a phone the
+ * useful next step is almost always "send this to a conversation", not "paste
+ * it somewhere myself".
+ */
+export function InviteButton({ code, className = 'btn btn--ghost btn--block btn--sm' }) {
+  const [done, setDone] = useState(false)
+
+  useEffect(() => {
+    if (!done) return undefined
+    const t = setTimeout(() => setDone(false), 2200)
+    return () => clearTimeout(t)
+  }, [done])
+
+  const link = `${window.location.origin}/?code=${code}`
+
+  const invite = async () => {
+    play('tap')
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'Undercover', text: `Rejoins la partie ${code}`, url: link })
+        return
+      }
+      await navigator.clipboard.writeText(link)
+      setDone(true)
+    } catch {
+      // A cancelled share sheet lands here too, which is not a failure worth
+      // reporting. Copying is the last resort, and if even that is blocked the
+      // code stays readable on screen.
+      try { await navigator.clipboard.writeText(link); setDone(true) } catch { /* tant pis */ }
+    }
+  }
+
+  return (
+    <button type="button" className={done ? `${className} btn--done` : className} onClick={invite}>
+      {done ? '✓  Lien copié' : '🔗  Inviter des amis'}
+    </button>
+  )
+}
+
 export function ReactionBar({ reactions, players, mine, palette, onReact }) {
   const [picking, setPicking] = useState(false)
   const grouped = groupReactions(reactions, players, mine)

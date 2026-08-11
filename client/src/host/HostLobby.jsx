@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
-import { ConfirmButton, PlayerChip, ScoreBoard } from '../components.jsx'
+import { ConfirmButton, InviteButton, PlayerChip, ScoreBoard } from '../components.jsx'
 import { SETTINGS_TABS } from '../settings.jsx'
 import { play } from '../audio.js'
 
@@ -72,6 +72,10 @@ export default function HostLobby({ state, info, joinUrl, act, control = true })
             {isLanAddress ? 'Connecte-toi au wifi, puis ouvre ' : 'Ouvre '}
             <strong>{joinUrl.replace(/^https?:\/\//, '')}</strong> et entre ce code.
           </p>
+          {/* For the friend who is not in the room to scan anything. */}
+          <div style={{ maxWidth: 280 }}>
+            <InviteButton code={state.code} />
+          </div>
         </div>
 
         {qr && <div className="qr" dangerouslySetInnerHTML={{ __html: qr }} aria-label="QR code" />}

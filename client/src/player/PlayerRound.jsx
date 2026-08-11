@@ -6,6 +6,7 @@ import {
   ChatFeed,
   DyingGuesses,
   ConfirmButton,
+  InviteButton,
   PhaseTimer,
   PlayerChip,
   ReactionBar,
@@ -298,11 +299,14 @@ function Lobby({ state, you, act, appearance, info }) {
 
       {/* The code, big enough to read out loud — a game started from a phone has
           no shared screen to display it. */}
-      <div className="stack center" style={{ gap: 2 }}>
+      <div className="stack center" style={{ gap: 2, width: '100%' }}>
         <p className="eyebrow">Code de la partie</p>
         <div className="joincode mono" style={{ fontSize: 'clamp(2rem, 12vw, 3rem)' }}>
           {state.code}
         </div>
+        {/* Reading four letters aloud works in a living room and nowhere else.
+            Anyone at the table can invite, not just the crown. */}
+        <InviteButton code={state.code} />
       </div>
 
       {you.isHost && <HostSheet state={state} info={info} act={act} />}
