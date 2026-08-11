@@ -4,7 +4,7 @@ import { AvatarPicker, Toast } from '../components.jsx'
 import RulesSheet from '../RulesSheet.jsx'
 import { play } from '../audio.js'
 
-export default function JoinScreen({ onJoin, onSpectate, connected, error, setError }) {
+export default function JoinScreen({ onJoin, onCreate, onSpectate, connected, error, setError }) {
   const [code, setCode] = useState('')
   const [name, setName] = useState('')
   const [look, setLook] = useState(null)
@@ -119,6 +119,28 @@ export default function JoinScreen({ onJoin, onSpectate, connected, error, setEr
 
         <button className="btn btn--primary btn--block" disabled={!ready || busy || !connected}>
           {!connected ? 'Connexion…' : busy ? 'On y va…' : 'Rejoindre'}
+        </button>
+
+        {/* Starting a game no longer needs a computer. Offered as soon as the
+            pseudo is filled in — the code field is exactly what this replaces. */}
+        <button
+          type="button"
+          className="btn btn--block"
+          disabled={!name.trim() || !look || busy || !connected}
+          onClick={async () => {
+            setBusy(true)
+            try {
+              play('tap')
+              await onCreate(name, look)
+            } catch (err) {
+              play('error')
+              setError(err.message)
+            } finally {
+              setBusy(false)
+            }
+          }}
+        >
+          ✨  Créer une partie
         </button>
 
         {/* For someone who wants the stands even when a seat is free — during a

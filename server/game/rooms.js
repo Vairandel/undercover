@@ -178,6 +178,9 @@ export function createRoomManager(io) {
     // True for the shared `/host` display, false for a player's phone. A socket
     // is one or the other, never both.
     let isScreen = false
+    // Whether this screen may *drive* the game, as opposed to merely showing it.
+    // Only the screen that opened the room gets it; see `host:watch`.
+    let hasControl = false
     // One connection opening room after room is the abuse shape worth stopping;
     // a real host opens one and reuses it all evening.
     let roomsCreated = 0
@@ -208,14 +211,19 @@ export function createRoomManager(io) {
     /**
      * Gate for everything that drives the game forward.
      *
-     * Two kinds of remote control are legitimate: the shared `/host` screen,
-     * and the phone of the player wearing the crown. Everyone else is refused —
-     * before this existed, any connected client could start the game, kick a
-     * player or wipe the scores just by emitting the event by hand.
+     * Two kinds of remote control are legitimate: the shared screen that opened
+     * the room, and the phone of the player wearing the crown. Everyone else is
+     * refused — before this existed, any connected client could start the game,
+     * kick a player or wipe the scores just by emitting the event by hand.
+     *
+     * A screen proves it is *that* screen with the token handed out at creation.
+     * Being on the right room is not proof: a four-letter code is guessable, and
+     * once the game is open to strangers, "knows the code" and "owns the room"
+     * stop being the same thing.
      */
     function requireController(code) {
       const game = requireGame(code)
-      if (isScreen && joined?.code === game.code) return game
+      if (hasControl && joined?.code === game.code) return game
 
       const player = joined?.playerId ? game.players.get(joined.playerId) : null
       if (player?.isHost && !player.left) return game
@@ -233,16 +241,28 @@ export function createRoomManager(io) {
       const game = createRoom()
       joined = { code: game.code }
       isScreen = true
+      hasControl = true
       socket.join(`room:${game.code}`)
-      ok(cb, { code: game.code, state: game.publicState() })
+      // The token is what lets this screen come back after a refresh without
+      // handing the same power to anyone who reads the code off the wall.
+      ok(cb, { code: game.code, screenToken: game.screenToken, state: game.publicState() })
     }))
 
-    socket.on('host:watch', guard(({ code }, cb) => {
+    /**
+     * A screen attaching to a room.
+     *
+     * With the room's token it is the original screen returning from a refresh,
+     * and keeps its controls. Without it — a TV joining a game that was started
+     * from someone's phone — it displays everything and commands nothing. That
+     * is deliberately the same amount of information a spectator already gets.
+     */
+    socket.on('host:watch', guard(({ code, screenToken }, cb) => {
       const game = requireGame(code)
-      joined = { code: game.code }
+      joined = { code: game.code, screenToken }
       isScreen = true
+      hasControl = Boolean(screenToken) && screenToken === game.screenToken
       socket.join(`room:${game.code}`)
-      ok(cb, { code: game.code, state: game.publicState() })
+      ok(cb, { code: game.code, control: hasControl, state: game.publicState() })
     }))
 
     socket.on('host:settings', guard(({ code, settings }, cb) => {
@@ -334,6 +354,49 @@ export function createRoomManager(io) {
     }))
 
     // ---- players -----------------------------------------------------------
+
+    /**
+     * Open a room straight from a phone, and sit down in it.
+     *
+     * The shared screen used to be the only way to start anything, which made a
+     * computer a prerequisite for playing at all — fine around a television,
+     * a dead end for anyone arriving alone with a link.
+     *
+     * Deliberately one event and not two: `host:create` followed by
+     * `player:join` would leave an orphan room behind whenever the pseudo was
+     * refused, and the caller would have to clean up after a failure.
+     */
+    socket.on('player:createGame', guard(({ name, avatar, color }, cb) => {
+      if (roomsCreated >= MAX_ROOMS_PER_SOCKET) {
+        throw new GameError('Trop de parties créées depuis cet appareil.')
+      }
+      const game = createRoom()
+      let player
+      try {
+        // First to sit down gets the crown, from `addPlayer` — no special case.
+        player = game.addPlayer(name, { avatar, color })
+      } catch (err) {
+        // Nobody ever saw this room; leaving it to the sweeper would hold a slot
+        // against the ceiling for ten minutes for nothing.
+        game.dispose()
+        rooms.delete(game.code)
+        throw err
+      }
+
+      roomsCreated += 1
+      joined = { code: game.code, playerId: player.id }
+      isScreen = false
+      socket.join(`room:${game.code}`)
+      socket.join(`player:${player.id}`)
+      game.claimSocket(player.id, socket.id)
+
+      ok(cb, {
+        code: game.code,
+        playerId: player.id,
+        state: game.publicState(),
+        you: game.privateState(player.id),
+      })
+    }))
 
     socket.on('player:join', guard(({ code, name, avatar, color }, cb) => {
       const game = requireGame(code)

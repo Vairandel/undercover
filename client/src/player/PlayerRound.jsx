@@ -16,6 +16,7 @@ import {
   outcomeStyle,
 } from '../components.jsx'
 import Dossier from './Dossier.jsx'
+import HostSheet from './HostSheet.jsx'
 import RulesSheet from '../RulesSheet.jsx'
 import { play, playRoleSting } from '../audio.js'
 
@@ -84,7 +85,7 @@ export default function PlayerRound({ state, you, act, leave, connected, appeara
           exit={{ opacity: 0, y: -18 }}
           transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
         >
-          <Body state={state} you={you} act={act} appearance={appearance} />
+          <Body state={state} you={you} act={act} appearance={appearance} info={info} />
         </motion.div>
       </AnimatePresence>
 
@@ -109,10 +110,9 @@ export default function PlayerRound({ state, you, act, leave, connected, appeara
 /**
  * Flow controls on the crowned player's phone.
  *
- * The shared screen keeps everything; this is the subset that stops a round
- * from stalling while everyone waits for whoever is sitting at the computer.
- * Settings, kicking and abandoning stay on the big screen on purpose — they are
- * fiddly on a phone and expensive to get wrong.
+ * Just the one button that moves the round on, kept pinned so it never has to
+ * be hunted for. Everything else the crown can do — settings, themes, scale,
+ * kicking, passing the crown — lives in the sheet reachable from the lobby.
  */
 function HostControls({ state, act, info }) {
   const [busy, setBusy] = useState(false)
@@ -257,9 +257,9 @@ function DyingGuess({ state, you, act }) {
   )
 }
 
-function Body({ state, you, act, appearance }) {
+function Body({ state, you, act, appearance, info }) {
   switch (state.phase) {
-    case 'lobby': return <Lobby state={state} you={you} act={act} appearance={appearance} />
+    case 'lobby': return <Lobby state={state} you={you} act={act} appearance={appearance} info={info} />
     case 'reveal': return <Reveal state={state} you={you} act={act} />
     case 'describe': return <Describe state={state} you={you} act={act} />
     case 'discuss': return <Discuss state={state} you={you} act={act} />
@@ -275,7 +275,7 @@ function Body({ state, you, act, appearance }) {
 
 // ------------------------------------------------------------------- lobby
 
-function Lobby({ state, you, act, appearance }) {
+function Lobby({ state, you, act, appearance, info }) {
   const [editing, setEditing] = useState(false)
   const taken = state.players.filter((p) => p.id !== you.id).map((p) => p.avatar)
 
@@ -291,9 +291,20 @@ function Lobby({ state, you, act, appearance }) {
       <h1 className="title">Tu es dans la partie</h1>
       <p className="subtitle">
         {you.isHost
-          ? 'Tu tiens la télécommande : lance la partie quand tout le monde est là.'
+          ? 'Tu tiens la télécommande : règle la partie et lance quand tout le monde est là.'
           : "L'hôte lance la partie dans un instant."}
       </p>
+
+      {/* The code, big enough to read out loud — a game started from a phone has
+          no shared screen to display it. */}
+      <div className="stack center" style={{ gap: 2 }}>
+        <p className="eyebrow">Code de la partie</p>
+        <div className="joincode mono" style={{ fontSize: 'clamp(2rem, 12vw, 3rem)' }}>
+          {state.code}
+        </div>
+      </div>
+
+      {you.isHost && <HostSheet state={state} info={info} act={act} />}
 
       <button
         type="button"

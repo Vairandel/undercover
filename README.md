@@ -431,26 +431,40 @@ robots que personne à la table n'a jamais vues.
 
 ## Qui pilote la partie
 
-Deux télécommandes en parallèle, pour ne pas dépendre de qui est assis devant
-l'ordinateur.
+**Le grand écran n'est plus obligatoire.** N'importe qui peut ouvrir une partie
+depuis son téléphone : bouton **✨ Créer une partie** sur l'écran d'accueil. Le
+créateur porte la couronne 👑 et dispose de tout.
 
-| | Écran `/host` | Téléphone de l'hôte 👑 |
+| | Téléphone 👑 | Écran `/host` |
 |---|---|---|
+| Créer une partie | ✅ | ✅ |
 | Lancer, passer au vote, manche suivante, rejouer | ✅ | ✅ |
-| Réglages, thèmes, barème | ✅ | — |
-| Expulser un joueur, abandonner | ✅ | — |
-| Donner la couronne à quelqu'un d'autre | ✅ | — |
+| Thèmes, rôles, barème, réglages | ✅ | ✅ |
+| Expulser, donner la couronne | ✅ | ✅ |
 
-Le premier joueur à rejoindre porte la couronne. L'écran `/host` peut la donner
-à n'importe qui via le bouton 👑 sur sa carte, et elle passe automatiquement à
-un autre joueur si l'hôte quitte la partie.
+Sur le téléphone tout se trouve derrière **⚙️ Régler la partie**, dans le salon.
+Les panneaux sont littéralement les mêmes objets que ceux du grand écran, pas
+des copies — deux versions divergeraient à la première option ajoutée.
 
-Les réglages et l'expulsion restent volontairement sur le grand écran : ce sont
-les actions pénibles à faire sur un téléphone et coûteuses à rater.
+L'écran `/host` reste ce qu'il a de meilleur à offrir : la grille d'indices que
+tout le monde lit ensemble, la carte de l'éliminé qui se retourne, le palmarès
+animé. Il devient un **complément**, plus un péage.
 
-Côté serveur, une action `host:*` n'est acceptée que si elle vient de l'écran
-partagé de cette partie **ou** du joueur qui porte la couronne. Tout le reste
-est refusé.
+### Qui a le droit de commander
+
+| Situation | Résultat |
+|---|---|
+| L'écran qui a **ouvert** la partie | ✅ commande |
+| Le joueur qui porte la **couronne** | ✅ commande |
+| Un écran qui rejoint par le code | 👁 **affichage seul** |
+| N'importe qui d'autre | ❌ refusé |
+
+Ce dernier point est délibéré. `/host` peut désormais afficher une partie
+existante, et si connaître un code à quatre lettres suffisait à obtenir les
+pouvoirs d'hôte, n'importe qui pourrait deviner un code et saborder la partie
+d'inconnus. L'écran qui crée la partie reçoit un **jeton** — c'est lui qui
+prouve, après un rafraîchissement, qu'il s'agit bien du même écran et non de
+quelqu'un qui a lu le code sur le mur.
 
 ## Réglages
 

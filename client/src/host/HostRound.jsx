@@ -12,7 +12,7 @@ import {
   outcomeStyle,
 } from '../components.jsx'
 
-export default function HostRound({ state, act }) {
+export default function HostRound({ state, act, control = true }) {
   const { phase, players, settings } = state
   const alive = players.filter((p) => p.alive)
   const speaker = players.find((p) => p.id === state.currentSpeakerId)
@@ -21,7 +21,7 @@ export default function HostRound({ state, act }) {
   // The final standings take over the whole screen — it is the moment everyone
   // looks up from their phone.
   if (phase === 'gameOver') {
-    return <GameOver state={state} act={act} />
+    return <GameOver state={state} act={act} control={control} />
   }
 
   return (
@@ -78,7 +78,7 @@ export default function HostRound({ state, act }) {
         </p>
       )}
 
-      <Footer state={state} act={act} />
+      <Footer state={state} act={act} control={control} />
     </>
   )
 }
@@ -243,7 +243,7 @@ function Headline({ state, speaker }) {
   return null
 }
 
-function GameOver({ state, act }) {
+function GameOver({ state, act, control = true }) {
   const team = outcomeStyle(state.outcome)
 
   return (
@@ -276,20 +276,24 @@ function GameOver({ state, act }) {
 
       <Recap rounds={state.recap} players={state.players} />
 
-      <div className="row" style={{ gap: 12 }}>
-        <button
-          className="btn btn--primary grow"
-          onClick={() => act('host:restart')}
-          style={{ minHeight: 60, fontSize: '1.05rem' }}
-        >
-          ↻ Rejouer avec les mêmes joueurs
-        </button>
-      </div>
+      {control && (
+        <div className="row" style={{ gap: 12 }}>
+          <button
+            className="btn btn--primary grow"
+            onClick={() => act('host:restart')}
+            style={{ minHeight: 60, fontSize: '1.05rem' }}
+          >
+            ↻ Rejouer avec les mêmes joueurs
+          </button>
+        </div>
+      )}
     </>
   )
 }
 
-function Footer({ state, act }) {
+function Footer({ state, act, control = true }) {
+  if (!control) return null
+
   if (state.phase === 'discuss') {
     return (
       <button

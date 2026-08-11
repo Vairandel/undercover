@@ -144,6 +144,14 @@ export class Game {
     this.turnIndex = 0
     this.clues = new Map() // playerId -> { text, timedOut }
     this.usedClues = []
+    /**
+     * Proof of ownership for the shared screen that opened this room.
+     *
+     * Held rather than derived, and never public: a four-letter code is easy to
+     * guess, so "knows the code" cannot be what grants the right to kick people
+     * or rewrite the settings.
+     */
+    this.screenToken = randomUUID()
     this.chat = [] // written debate for the current round
     // targetId -> Map(reactorId -> emoji). One reaction per player per clue,
     // wiped between rounds so last round's mood never colours this one.
@@ -1921,6 +1929,9 @@ export class Game {
     return {
       settings: this.settings,
       gameNumber: this.gameNumber,
+      // Kept so a server restart does not lock the shared screen out of a room
+      // it legitimately owns.
+      screenToken: this.screenToken,
       players: [...this.players.values()]
         .filter((p) => !p.left)
         .map((p) => ({
@@ -1946,6 +1957,7 @@ export class Game {
     if (!snapshot) return this
     this.settings = { ...structuredClone(DEFAULT_SETTINGS), ...(snapshot.settings ?? {}) }
     this.settings.points = sanitisePoints(this.settings.points)
+    if (snapshot.screenToken) this.screenToken = snapshot.screenToken
     // Rooms saved before the floor became a three-way choice carry the old
     // boolean. Honour what it meant rather than silently resetting it.
     if (snapshot.settings && 'allowNegative' in snapshot.settings) {

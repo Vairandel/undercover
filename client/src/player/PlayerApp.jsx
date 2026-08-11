@@ -200,6 +200,23 @@ export default function PlayerApp() {
    * chosen everything they need; the only thing left to decide is whether they
    * wait for the next round, and they always do.
    */
+  /**
+   * Open a game from this phone.
+   *
+   * The shared screen used to be the only way to start one, so playing at all
+   * required somebody to go and open a computer. Here the creator simply
+   * becomes the first player, and the crown follows.
+   */
+  const createGame = async (name, look = {}) => {
+    const res = await send('player:createGame', { name, avatar: look.avatar, color: look.color })
+    const s = { code: res.code, playerId: res.playerId, name, look }
+    saveSession(s)
+    setSession(s)
+    setState(res.state)
+    setYou(res.you)
+    return res.code
+  }
+
   const join = async (code, name, look = {}) => {
     try {
       const res = await send('player:join', {
@@ -286,6 +303,7 @@ export default function PlayerApp() {
     return (
       <JoinScreen
         onJoin={join}
+        onCreate={createGame}
         onSpectate={spectate}
         connected={connected}
         error={error}
